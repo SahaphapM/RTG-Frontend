@@ -1,20 +1,86 @@
 <template>
-  <NuxtLayout name="default">
-    <div class="p-6">
-      <h1 class="text-2xl font-bold mb-4">Users List</h1>
-      <NuxtLink to="/users/create" class="btn btn-primary mb-4"
-        >Add User</NuxtLink
-      >
-
-      <Table :items="users" />
+  <div class="p-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-4xl font-bold">User Management</h1>
+      <button @click="openAddUserModal" class="btn btn-primary">
+        + Add User
+      </button>
     </div>
-  </NuxtLayout>
+
+    <!-- User Table -->
+    <Table
+      :users="userStore.users"
+      :isLoading="userStore.isloading"
+      @edit="editUser"
+      @delete="deleteUser"
+      @save="saveUser"
+    />
+
+    <!-- User Modal (Add/Edit) -->
+    <UserModal
+      v-if="isModalOpen"
+      :user="selectedUser"
+      @save="saveUser"
+      @close="closeModal"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import Table from "~/components/Table.vue";
-import useCrud from "~/composables/userCrud";
+import UserModal from "~/components/UserModal.vue";
+import useServiceUsers from "~/composables/usersService";
+import { ref, onMounted, nextTick } from "vue";
+import type { User } from "~/types/user";
 
-const { fetchUsers } = useCrud();
-const users = await fetchUsers();
+const userStore = useUserStore();
+const { fetchUsers, createUser } = useServiceUsers();
+
+const isModalOpen = ref(false);
+const selectedUser = ref<User | null>(null);
+
+// Load Users on Page Load
+onMounted(async () => {
+  await nextTick(async () => {
+    getUsers();
+  });
+});
+
+// Fetch Users
+const getUsers = async () => {
+  await userStore.getUsers();
+};
+
+// Open Modal for Adding New User
+const openAddUserModal = () => {
+  selectedUser.value = null; // New user
+  isModalOpen.value = true;
+};
+
+// Open Modal for Editing User
+const editUser = (user: User) => {
+  selectedUser.value = user;
+  isModalOpen.value = true;
+};
+
+// Save (Add or Edit) User
+const saveUser = async (userData: Omit<User, "id">) => {
+  await createUser(userData);
+  isModalOpen.value = false;
+  getUsers();
+};
+
+// Delete User
+const deleteUser = async (id: number) => {
+  if (confirm("Are you sure you want to delete this user?")) {
+    await userStore.deleteUser(id);
+    getUsers();
+  }
+};
+
+// Close Modal
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 </script>
