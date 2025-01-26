@@ -5,7 +5,7 @@
     <!-- Sidebar -->
     <div
       :class="[
-        'fixed top-0 left-0 w-64 h-screen bg-base-200 p-4 transition-transform shadow duration-500 text-center flex flex-col items-center',
+        'fixed top-0 left-0 w-64 h-screen shadow-xl p-4 transition-transform shadow duration-500 text-center flex flex-col items-center',
         isOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
     >

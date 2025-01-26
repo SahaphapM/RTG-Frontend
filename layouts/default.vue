@@ -1,16 +1,20 @@
 <template>
-  <div class="flex">
+  <div class="flex flex-col min-h-screen">
     <!-- Sidebar with v-model -->
+
+    <div class="transition-all duration-500" :class="isOpen ? 'ml-64' : 'ml-0'">
+      <Navbar @toggle-sidebar="toggle" />
+    </div>
 
     <Sidebar v-model:isOpen="isOpen" :update:isOpen="isOpen" />
     <!-- Toggle Button: Moves Smoothly with Sidebar -->
-    <button
+    <!-- <button
       @click="toggle"
       class="btn fixed top-4 transition-transform duration-500 ease-in-out z-50"
       :class="isOpen ? 'translate-x-48' : 'translate-x-4'"
     >
       ☰
-    </button>
+    </button> -->
 
     <!-- Content Area -->
     <div
