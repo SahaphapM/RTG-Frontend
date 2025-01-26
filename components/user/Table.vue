@@ -17,7 +17,7 @@
 
       <!-- Table Body (Loading Placeholder) -->
       <tbody v-if="isLoading">
-        <tr v-for="n in 10" :key="n">
+        <tr v-for="n in 5" :key="n">
           <td v-for="i in 6" :key="i" class="py-4 px-6">
             <div class="h-4 bg-gray-200 rounded w-full"></div>
           </td>

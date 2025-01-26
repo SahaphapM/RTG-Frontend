@@ -13,7 +13,7 @@
       :users="userStore.users"
       :isLoading="userStore.isloading"
       @edit="editUser"
-      @delete="confirmDeleteUser"
+      @delete="deleteUser"
       @save="saveUser"
     />
 
@@ -24,18 +24,6 @@
       @save="saveUser"
       @close="closeModal"
     />
-
-    <!-- Reusable Delete Confirmation Modal -->
-    <ConfirmDelete
-      v-if="isDeleteModalOpen"
-      :isOpen="isDeleteModalOpen"
-      title="Confirm Delete"
-      message="Are you sure you want to delete this user?"
-      confirmText="Yes, Delete"
-      cancelText="Cancel"
-      @confirm="confirmDeleteUser"
-      @cancel="isDeleteModalOpen = false"
-    />
   </div>
 </template>
 
@@ -45,15 +33,12 @@ import UserModal from "~/components/user/UserModal.vue";
 import useServiceUsers from "~/composables/usersService";
 import { ref, onMounted, nextTick } from "vue";
 import type { User } from "~/types/user";
-import user from "~/server/api/user";
 
 const userStore = useUserStore();
 const { fetchUsers, createUser } = useServiceUsers();
 
 const isModalOpen = ref(false);
 const selectedUser = ref<User | null>(null);
-const isDeleteModalOpen = ref(false);
-const userToDelete = ref<number | null>(null);
 
 // Load Users on Page Load
 onMounted(async () => {
@@ -86,17 +71,10 @@ const saveUser = async (userData: Omit<User, "id">) => {
   getUsers();
 };
 
-// Open Delete Confirmation Modal
-const confirmDeleteUser = (id: number) => {
-  userToDelete.value = id;
-  isDeleteModalOpen.value = true;
-};
-
 // Delete User
 const deleteUser = async (id: number) => {
-  if (userToDelete.value === id) {
+  if (confirm("Are you sure you want to delete this user?")) {
     await userStore.deleteUser(id);
-    isDeleteModalOpen.value = false;
     getUsers();
   }
 };
