@@ -1,14 +1,22 @@
 <template>
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <Sidebar :isOpen="isOpen" @toggle="toggleSidebar" />
+  <div class="flex">
+    <!-- Sidebar with v-model -->
 
-    <!-- Content -->
+    <Sidebar v-model:isOpen="isOpen" :update:isOpen="isOpen" />
+    <!-- Toggle Button: Moves Smoothly with Sidebar -->
+    <button
+      @click="toggle"
+      class="btn fixed top-4 transition-transform duration-500 ease-in-out z-50"
+      :class="isOpen ? 'translate-x-48' : 'translate-x-4'"
+    >
+      ☰
+    </button>
+
+    <!-- Content Area -->
     <div
       class="flex-1 p-6 transition-all duration-300"
-      :class="isOpen ? 'ml-64' : 'ml-0 '"
+      :class="isOpen ? 'ml-64' : 'ml-5'"
     >
-      <!-- เพิ่ม ml-64 เพื่อดันเนื้อหา -->
       <slot />
     </div>
   </div>
@@ -16,9 +24,13 @@
 
 <script setup lang="ts">
 import Sidebar from "~/components/Sidebar.vue";
+import { ref } from "vue";
+
 const isOpen = ref(true);
 
-const toggleSidebar = () => {
+const toggle = () => {
+  console.log(isOpen.value);
   isOpen.value = !isOpen.value;
+  console.log(isOpen.value);
 };
 </script>
