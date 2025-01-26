@@ -5,10 +5,18 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt"],
   tailwindcss: {
     exposeConfig: true,
     viewer: true,
     // and more...
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: "http://localhost:5000", // NestJS API base URL
+    },
+  },
+  pinia: {
+    storesDirs: ["./stores/**"],
   },
 });
