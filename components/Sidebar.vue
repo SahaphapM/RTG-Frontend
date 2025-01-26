@@ -17,7 +17,7 @@
             :to="item.to"
             class="flex items-center gap-2 p-3 rounded-lg transition duration-300"
             :class="{
-              'bg-zinc-800 text-white': $route.path === item.to,
+              'bg-base-300 ': $route.path === item.to,
             }"
           >
             <component :is="item.icon" class="w-5 h-5" />
