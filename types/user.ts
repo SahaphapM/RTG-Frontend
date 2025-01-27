@@ -5,6 +5,4 @@ export interface User {
   contact: string;
   email: string;
   role: string;
-  createdAt: string;
-  updatedAt: string;
 }

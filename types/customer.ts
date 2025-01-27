@@ -4,6 +4,4 @@ export type Customer = {
   email: string;
   contact: string;
   address: string;
-  createdAt: Date;
-  updatedAt: Date;
 };
