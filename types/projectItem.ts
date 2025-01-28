@@ -1,7 +1,7 @@
 import type { Item } from "./item";
 
 export type ProjectItem = {
-  id: number;
+  id?: number;
   quantity: number;
   price: number | null;
   totalPrice: number | null;

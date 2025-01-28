@@ -11,7 +11,7 @@ export type Project = {
   endDate: Date | null;
   discount: number | null;
   totalProjectPrice: number | null;
-  customer?: Customer;
+  customer?: Customer | null;
   projectItems?: ProjectItem[];
   jobQuotations?: jobQuotation[];
 };

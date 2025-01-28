@@ -40,6 +40,7 @@ export default function useProjectService() {
           body: project,
         }
       );
+
       return data.value;
     } catch (error) {
       console.error("Error creating project:", error);
@@ -49,9 +50,32 @@ export default function useProjectService() {
   // Update Project
   const updateProject = async (id: number, project: Partial<Project>) => {
     try {
+      // Transform `projectItems` to use `itemId`
+      const formattedProjectItems =
+        project.projectItems?.map((item) => ({
+          itemId: item.item.id, // Ensure only `itemId` is sent
+          quantity: item.quantity,
+          price: item.item.price,
+        })) || [];
+
+      // Create the final payload
+      console.log("project", project);
+      const projectData = {
+        name: project.name,
+        description: project.description,
+        number: project.number,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        customerId: project.customer?.id, // Ensure only `customerId` is sent
+        projectItems: formattedProjectItems, // Use transformed items
+      };
+
+      console.log("project data", projectData);
+
+      // Send the request
       await useFetch(`${config.public.apiBase}/projects/${id}`, {
         method: "PUT",
-        body: project,
+        body: projectData,
       });
     } catch (error) {
       console.error("Error updating project:", error);
