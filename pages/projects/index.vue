@@ -11,7 +11,6 @@
       :projects="projectStore.projects"
       :isLoading="projectStore.isLoading"
       @edit="editProject"
-      @delete="confirmDeleteProject"
     />
   </div>
 </template>
@@ -33,6 +32,7 @@ onMounted(async () => {
 
 const editProject = (project: Project) => {
   navigateTo(`/projects/${project.id}`);
+  projectStore.isEditing = true;
 };
 
 const confirmDeleteProject = (id: number) => {

@@ -34,9 +34,9 @@
             </button>
             <button
               @click.stop="$emit('delete', project.id)"
-              class="btn btn-error btn-sm"
+              class="btn btn-info btn-sm"
             >
-              Delete
+              Print
             </button>
           </td>
         </tr>
