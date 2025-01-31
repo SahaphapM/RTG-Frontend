@@ -2,12 +2,12 @@
   <div class="p-6">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">
-        {{ isNewProject ? "New Project" : project?.name }}
+        {{ isNewProject ? "New Project" : projectStore.project?.name }}
       </h1>
       <button
         v-if="!isEditing"
         @click="isEditing = true"
-        class="btn btn-warning"
+        class="w-32 btn btn-warning"
       >
         Edit
       </button>
@@ -27,21 +27,21 @@
     />
 
     <!-- Buttons -->
-    <div class="flex justify-end mt-6" v-if="isEditing">
+    <div class="flex justify-end items-center" v-if="isEditing">
       <button
         type="button"
         @click="resetForm(), (isEditing = false)"
-        class="btn btn-secondary mr-2"
+        class="btn btn-secondary w-32"
       >
         Cancel
       </button>
-      <button @click="saveProject" class="btn btn-success">Save</button>
+      <button @click="saveProject" class="btn btn-success w-32">Save</button>
     </div>
 
     <div class="h-5"></div>
     <div class="flex justify-end gap-2" v-if="!isEditing">
-      <button @click="goBack" class="btn btn-secondary">Back</button>
-      <button @click="goNext" class="btn btn-primary">Next</button>
+      <button @click="goBack" class="btn btn-secondary w-32">Back</button>
+      <button @click="goNext" class="btn btn-primary w-32">Next</button>
     </div>
   </div>
 </template>
@@ -50,7 +50,6 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import useProjectService from "~/composables/projectService";
-import type { Project } from "~/types/project";
 import type { ProjectItem } from "~/types/projectItem";
 import type { Customer } from "~/types/customer";
 import ProjectOrder from "~/components/project/ProjectOrder.vue";
@@ -59,9 +58,9 @@ import type { Item } from "~/types/item";
 const route = useRoute();
 const router = useRouter();
 const { fetchProject, createProject, updateProject } = useProjectService();
+const projectStore = useProjectStore();
 
 const isNewProject = ref(false);
-const project = ref<Project | null>(null);
 const isEditing = ref(false);
 
 const form = ref({
@@ -71,6 +70,7 @@ const form = ref({
   startDate: new Date(),
   endDate: new Date(),
   projectItems: [] as ProjectItem[],
+  totalProjectPrice: 0,
 });
 
 // Load project data
@@ -80,7 +80,7 @@ onMounted(async () => {
     isEditing.value = true;
   } else {
     nextTick(async () => {
-      project.value = await fetchProject(Number(route.params.id));
+      projectStore.project = await fetchProject(Number(route.params.id));
       resetForm();
     });
   }
@@ -89,30 +89,38 @@ onMounted(async () => {
 // Save Project
 const saveProject = async () => {
   if (isNewProject.value) {
-    await createProject(form.value);
+    const updatedProject = await createProject(form.value);
+    if (updatedProject) projectStore.project = updatedProject;
   } else {
-    await updateProject(project.value!.id, form.value);
+    await updateProject(projectStore.project!.id, form.value);
   }
   isEditing.value = false;
 };
 
 const resetForm = () => {
-  if (project.value) {
+  if (projectStore.project) {
     form.value = {
-      name: project.value.name,
-      description: project.value.description,
-      customer: project.value.customer || null,
-      startDate: project.value.startDate || new Date(),
-      endDate: project.value.endDate || new Date(),
-      projectItems: project.value.projectItems
-        ? JSON.parse(JSON.stringify(project.value.projectItems))
+      name: projectStore.project.name,
+      description: projectStore.project.description,
+      customer: projectStore.project.customer || null,
+      startDate: projectStore.project.startDate || new Date(),
+      endDate: projectStore.project.endDate || new Date(),
+      projectItems: projectStore.project.projectItems
+        ? JSON.parse(JSON.stringify(projectStore.project.projectItems))
         : [], // Ensure it's always an array
+      totalProjectPrice: projectStore.project.totalProjectPrice || 0,
     };
+
     console.log("form", form.value);
   }
 };
 
 const goBack = () => router.push("/projects");
+
+const goNext = () => {
+  projectStore.project = projectStore.project;
+  router.push(`/projects/${route.params.id}/job-quotation`);
+};
 
 ////////// item ////////////
 

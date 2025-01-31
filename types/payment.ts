@@ -1,4 +1,4 @@
-export type Installment = {
+export type Payment = {
   id: number;
   price: number;
   date: Date;

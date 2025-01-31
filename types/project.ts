@@ -1,5 +1,5 @@
 import type { Customer } from "./customer";
-import type { jobQuotation } from "./job-quatation";
+import type { jobQuotation } from "./job-quotation";
 import type { ProjectItem } from "./projectItem";
 
 export type Project = {

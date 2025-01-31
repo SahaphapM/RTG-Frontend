@@ -14,6 +14,7 @@ export const useProjectStore = defineStore("project", () => {
 
   const isEditing = ref(false);
   const projects = ref<Project[]>([]);
+  const project = ref<Project | null>(null);
   const isLoading = ref(false);
 
   // Fetch Projects
@@ -37,5 +38,6 @@ export const useProjectStore = defineStore("project", () => {
     updateProject,
     deleteProject,
     isEditing,
+    project,
   };
 });
