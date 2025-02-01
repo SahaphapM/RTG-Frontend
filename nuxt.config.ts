@@ -19,4 +19,5 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ["./stores/**"],
   },
+  pages: true, // Ensure automatic routing is enabled
 });

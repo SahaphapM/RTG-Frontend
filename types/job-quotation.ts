@@ -3,6 +3,7 @@ import type { Payment } from "./payment";
 export type JobQuotation = {
   id?: number;
   description: string;
+  customerRef: string;
   priceOffered?: number;
   paymentTerms: string;
   deliveryTime: string;
@@ -12,4 +13,5 @@ export type JobQuotation = {
   bestRegards: string;
   payments?: Payment[];
   createdAt?: Date;
+  updatedAt?: Date;
 };

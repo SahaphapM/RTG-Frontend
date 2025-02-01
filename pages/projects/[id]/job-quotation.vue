@@ -12,7 +12,9 @@
           Edit
         </button>
 
-        <button class="btn btn-outline w-32">Export</button>
+        <button class="btn btn-outline w-32" @click="exportToPDF">
+          Export
+        </button>
       </div>
     </div>
 
@@ -170,8 +172,7 @@ import useProjectService from "~/composables/projectService";
 const route = useRoute();
 const router = useRouter();
 const projectStore = useProjectStore();
-const { fetchByProjectId, updateJobQuotation, createJobQuotation } =
-  useJobQuotationService();
+const { updateJobQuotation, createJobQuotation } = useJobQuotationService();
 const { fetchProject } = useProjectService();
 
 const jobQuotations = ref<JobQuotation[]>([]);
@@ -204,19 +205,23 @@ const selectedQuotationId = ref<number | null>(null);
 onMounted(async () => {
   nextTick(async () => {
     if (!projectStore.project?.jobQuotations) {
-      projectStore.project = await fetchProject(Number(route.params.id));
+      const { data: projectData } = await useAsyncData("projectData", () =>
+        fetchProject(Number(route.params.id))
+      );
+      projectStore.project = projectData.value;
       jobQuotations.value = projectStore.project?.jobQuotations;
       if (jobQuotations.value[0].id) {
         quotation.value = { ...jobQuotations.value[0] }; // Set initial values
       }
     } else {
       jobQuotations.value = projectStore.project?.jobQuotations;
+      quotation.value.priceOffered =
+        projectStore.project.totalProjectPrice || 0;
+      quotation.value = projectStore.project.jobQuotations[0];
+      selectedQuotationId.value =
+        projectStore.project.jobQuotations[0].id || null;
+      originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
     }
-    quotation.value.priceOffered = projectStore.project.totalProjectPrice || 0;
-    quotation.value = projectStore.project.jobQuotations[0];
-    selectedQuotationId.value =
-      projectStore.project.jobQuotations[0].id || null;
-    originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
   });
 });
 
@@ -273,6 +278,56 @@ const goBack = () => {
 
 const goNext = () => {
   alert("Proceeding to the next step...");
+};
+
+// Export Job Quotation as a PDF
+const exportToPDF = async () => {
+  if (!quotation.value || !projectStore.project) {
+    console.error("Error: Job Quotation or Project Data is not available");
+    return;
+  }
+
+  // Import jsPDF only when function is called (client-side only)
+  const { default: jsPDF } = await import("jspdf");
+  const { default: autoTable } = await import("jspdf-autotable");
+
+  const doc = new jsPDF();
+
+  // Generate PDF (Same as above)
+  doc.setFontSize(18);
+  doc.text(projectStore.project?.name || "No Project Name", 14, 20);
+
+  if (projectStore.project.customer) {
+    doc.setFontSize(12);
+    doc.text(`Customer: ${projectStore.project.customer.name}`, 14, 30);
+    doc.text(`Address: ${projectStore.project.customer.address}`, 14, 40);
+  }
+
+  doc.text("Description:", 14, 50);
+  doc.setFontSize(10);
+  doc.text(quotation.value.description || "No Description", 14, 60, {
+    maxWidth: 180,
+  });
+
+  autoTable(doc, {
+    startY: 80,
+    head: [["Condition", "Details"]],
+    body: [
+      ["Payment", quotation.value.paymentTerms || "N/A"],
+      ["Delivery", quotation.value.deliveryTime || "N/A"],
+      ["Delivery Place", quotation.value.deliveryPlace || "N/A"],
+      [
+        "VAT",
+        quotation.value.vatPercentage
+          ? `${quotation.value.vatPercentage}%`
+          : "N/A",
+      ],
+      ["Best Regards", quotation.value.bestRegards || "N/A"],
+    ],
+    theme: "grid",
+  });
+
+  doc.save(`Job_Quotation_${quotation.value.id || "New"}.pdf`);
 };
 </script>
 
