@@ -178,7 +178,7 @@ const { fetchProject } = useProjectService();
 const jobQuotations = ref<JobQuotation[]>([]);
 const isEditing = ref(false);
 const originalQuotation = ref<JobQuotation | null>(null);
-const newQuotation = ref<JobQuotation>({
+const newQuotation = <JobQuotation>{
   description: "",
   paymentTerms: "",
   deliveryTime: "",
@@ -187,19 +187,11 @@ const newQuotation = ref<JobQuotation>({
   bestRegards: "",
   message: "",
   payments: [],
-});
+  customerRef: "",
+  agentName: "",
+};
 
-const quotation = ref<JobQuotation>({
-  description: "",
-  paymentTerms: "",
-  deliveryTime: "",
-  deliveryPlace: "",
-  vatPercentage: 0,
-  bestRegards: "",
-  priceOffered: 0,
-  message: "",
-  payments: [],
-});
+const quotation = ref<JobQuotation>(JSON.parse(JSON.stringify(newQuotation)));
 const selectedQuotationId = ref<number | null>(null);
 
 onMounted(async () => {
@@ -248,7 +240,7 @@ const saveQuotation = async (selectedQuotation: JobQuotation) => {
 
 const addQuotation = () => {
   selectedQuotationId.value = null;
-  quotation.value = newQuotation.value;
+  quotation.value = newQuotation;
   isEditing.value = true;
 };
 
@@ -280,54 +272,190 @@ const goNext = () => {
   alert("Proceeding to the next step...");
 };
 
-// Export Job Quotation as a PDF
 const exportToPDF = async () => {
   if (!quotation.value || !projectStore.project) {
     console.error("Error: Job Quotation or Project Data is not available");
     return;
   }
 
-  // Import jsPDF only when function is called (client-side only)
+  // ✅ Dynamically import jsPDF
   const { default: jsPDF } = await import("jspdf");
-  const { default: autoTable } = await import("jspdf-autotable");
 
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    unit: "mm",
+    format: "a4",
+    orientation: "portrait",
+  });
 
-  // Generate PDF (Same as above)
-  doc.setFontSize(18);
-  doc.text(projectStore.project?.name || "No Project Name", 14, 20);
+  const marginLeft = 14; // Left margin
+  const maxWidth = 180; // Max text width before wrapping
+  let yPos = 10; // Initial Y position
 
-  if (projectStore.project.customer) {
+  // ✅ Load the logo image
+  const logoPath = "/image/microtecnology-logo.png"; // Ensure correct path
+  const img = new Image();
+  img.src = logoPath;
+
+  img.onload = function () {
+    // ✅ Add the logo (align top-left)
+    doc.addImage(img, "PNG", marginLeft, yPos, 110, 35);
+
+    yPos += 2; // Move Y down after logo
+
+    // ✅ Company Address (Right-Aligned & Blue)
+    doc.setFont("sans", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 255);
+    const companyX = 140; // Align right
+    doc.text("MICROTECNOLOGY SRL CO. LTD.", companyX, yPos);
+    doc.text("Tax ID: 0105554041131", companyX, (yPos += 6));
+    doc.text("E: Socrate@microtecnologysrl.com", companyX, (yPos += 6));
+    doc.text("T: +66 (0)80 050 5462", companyX, (yPos += 6));
+    doc.text("44/47 Moo Baan Harmony view,", companyX, (yPos += 6));
+    doc.text("Sukhaphiban 5, Soi 80, Saimai,", companyX, (yPos += 6));
+    doc.text("Bangkok 10220 Thailand", companyX, (yPos += 6));
+    yPos += 14; // Extra space after address
+
+    // ✅ Reset text color to black for the rest
+    doc.setTextColor(0, 0, 0);
+
+    // ✅ Date & Reference (Left-Aligned)
+    doc.setFont("sans", "bold");
+    doc.setFontSize(11);
+    doc.text(
+      `Bangkok: ${new Date().toLocaleDateString("en-GB")}`,
+      marginLeft,
+      yPos
+    );
+    doc.text(
+      `Cus ref: ${quotation.value.customerRef || "Kn 006 / 2025"}`,
+      marginLeft,
+      (yPos += 6)
+    );
+
+    // let splitDescription = doc.splitTextToSize(description, maxWidth);
+    // doc.text(splitDescription, marginLeft, (yPos += 8));
+
+    // ✅ Customer Address (Right-Aligned)
+    doc.setFont("sans", "bold");
+    doc.text(`${projectStore.project?.customer?.name}`, companyX, (yPos -= 6));
+    doc.setFontSize(11);
+    const exampleAddress =
+      "456 Elm Street, Suite 3, Los Angeles, CA 90001, USA456 Elm Street, Suite 3, Los Angeles, CA 90001, USA Road: Laksi: Bangkok 10210-0299: Thailand";
+    let wrappedAddress = doc.splitTextToSize(exampleAddress, 60);
+
+    // ✅ Print wrapped address and adjust Y position
+    doc.setFont("sans", "normal");
+    doc.setFontSize(10);
+    doc.text(wrappedAddress, companyX, (yPos += 6));
+
+    // ✅ Increase Y position dynamically based on the number of lines
+    yPos += wrappedAddress.length * 4; // Moves down depending on text lines
+
+    // ✅ Attention Line
+    doc.setFont("sans", "bold");
     doc.setFontSize(12);
-    doc.text(`Customer: ${projectStore.project.customer.name}`, 14, 30);
-    doc.text(`Address: ${projectStore.project.customer.address}`, 14, 40);
-  }
+    doc.text(
+      `Attn: ${quotation.value.agentName || "Mr. Robert Smith secretary"}`,
+      marginLeft,
+      (yPos += 10)
+    );
 
-  doc.text("Description:", 14, 50);
-  doc.setFontSize(10);
-  doc.text(quotation.value.description || "No Description", 14, 60, {
-    maxWidth: 180,
-  });
+    // ✅ Job Quotation Subject
+    doc.setFontSize(12);
+    doc.text(
+      "Subject: Repair Gear Box Gantry RTG No 8",
+      marginLeft,
+      (yPos += 10)
+    );
 
-  autoTable(doc, {
-    startY: 80,
-    head: [["Condition", "Details"]],
-    body: [
-      ["Payment", quotation.value.paymentTerms || "N/A"],
-      ["Delivery", quotation.value.deliveryTime || "N/A"],
-      ["Delivery Place", quotation.value.deliveryPlace || "N/A"],
+    // ✅ Proposal Message (Auto-Wrap)
+    doc.setFont("sans", "normal");
+    doc.setFontSize(11);
+    let message = "We would like to propose our best price for:";
+    let splitMessage = doc.splitTextToSize(message, maxWidth);
+    doc.text(splitMessage, marginLeft, (yPos += 14));
+
+    // ✅ Job Description (Auto-Wrap)
+    doc.setFont("sans", "bold");
+    doc.setFontSize(12);
+    doc.text("Repair the Gear Box Gantry RTG No 8", marginLeft, (yPos += 8));
+    doc.setFont("sans", "bold");
+
+    let description = `At this price is included the dismounting the Gear Box from the Gantry, changing all necessary parts reassembling all new parts in the Gear Box and reassembling the Gear Box in the Gantry with the wheels.`;
+    let splitDescription = doc.splitTextToSize(description, maxWidth);
+    doc.text(splitDescription, marginLeft, (yPos += 8));
+
+    // ✅ Price Offered (Right-Aligned)
+    doc.setFont("sans", "bold");
+    let priceText = `${quotation.value.priceOffered?.toLocaleString()} Baht`;
+    let pageWidth = doc.internal.pageSize.getWidth(); // Get total page width
+    let marginRight = 14; // Right margin distance
+
+    doc.text(priceText, pageWidth - marginRight, (yPos += 18), {
+      align: "right",
+    });
+
+    // ✅ Commercial Conditions (Formatted as Text)
+    yPos += 10;
+    doc.setFont("sans", "bold");
+    doc.setFontSize(12);
+    doc.text("Commercial Condition", marginLeft, (yPos += 2));
+    doc.setFontSize(11);
+
+    let conditions = [
       [
-        "VAT",
-        quotation.value.vatPercentage
-          ? `${quotation.value.vatPercentage}%`
-          : "N/A",
+        "Payment",
+        quotation.value.paymentTerms || "100% at 30 Days after delivery",
       ],
-      ["Best Regards", quotation.value.bestRegards || "N/A"],
-    ],
-    theme: "grid",
-  });
+      [
+        "Delivery",
+        quotation.value.deliveryTime || "2 months after receiving your P.O.",
+      ],
+      ["Delivery Place", quotation.value.deliveryPlace || "At your I C D 1"],
+      ["V.A.T", `${quotation.value.vatPercentage || 7} %`],
+    ];
 
-  doc.save(`Job_Quotation_${quotation.value.id || "New"}.pdf`);
+    yPos += 8;
+    conditions.forEach(([label, value]) => {
+      doc.setFont("sans", "bold");
+      doc.text(`${label}:`, marginLeft, yPos);
+      doc.setFont("sans", "normal");
+      let wrappedValue = doc.splitTextToSize(value, maxWidth);
+      doc.text(wrappedValue, marginLeft + 40, yPos);
+      yPos += 8 + wrappedValue.length * 2; // Adjust spacing dynamically
+    });
+
+    // ✅ Closing Message
+    yPos += 4;
+    doc.setFont("sans", "normal");
+    doc.setFontSize(11);
+
+    let closingMessage = `         Hoping the above proposal is of interest to you and that it meets your requirements  We look forward to working with you in the future, we remain available for further clarifications you might need to make in the future and we look forward to working with you in the future .`;
+    let splitClosingMessage = doc.splitTextToSize(closingMessage, maxWidth);
+    doc.text(splitClosingMessage, marginLeft, yPos);
+
+    // ✅ Best Regards & Signature
+    yPos += splitClosingMessage.length * 4 + 10;
+    doc.setFont("sans", "bold");
+    doc.text("Best regards.", marginLeft, yPos);
+    doc.text("Socrate Alexiadis", marginLeft, (yPos += 8));
+    doc.text("CEO", marginLeft, (yPos += 4));
+    // ✅ Define Text & Position
+    let text = "MICROTECNOLOGY SRL CO. LTD.";
+    let textX = marginLeft; // Left margin for alignment
+    let textY = (yPos += 8); // Adjust Y position
+
+    // ✅ Draw Text
+    doc.text(text, textX, textY);
+
+    // ✅ Measure Text Width & Draw Underline
+    let textWidth = doc.getTextWidth(text); // Get the width of the text
+    doc.line(textX, textY + 1.5, textX + textWidth, textY + 1.5); // (x1, y1, x2, y2)
+
+    // ✅ Save and Download the PDF
+    doc.save(`Job_Quotation_${quotation.value.id || "New"}.pdf`);
+  };
 };
 </script>
 

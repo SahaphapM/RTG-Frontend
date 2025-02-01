@@ -4,6 +4,7 @@ export type JobQuotation = {
   id?: number;
   description: string;
   customerRef: string;
+  agentName?: string;
   priceOffered?: number;
   paymentTerms: string;
   deliveryTime: string;
