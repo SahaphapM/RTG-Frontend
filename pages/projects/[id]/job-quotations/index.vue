@@ -189,6 +189,7 @@ const newQuotation = <JobQuotation>{
   payments: [],
   customerRef: "",
   agentName: "",
+  priceOffered: 0,
 };
 
 const quotation = ref<JobQuotation>(JSON.parse(JSON.stringify(newQuotation)));
@@ -197,11 +198,10 @@ const selectedQuotationId = ref<number | null>(null);
 onMounted(async () => {
   nextTick(async () => {
     if (!projectStore.project?.jobQuotations) {
-      const { data: projectData } = await useAsyncData("projectData", () =>
-        fetchProject(Number(route.params.id))
-      );
-      projectStore.project = projectData.value;
-      jobQuotations.value = projectStore.project?.jobQuotations;
+      const projectData = await fetchProject(Number(route.params.id));
+      projectStore.project = projectData;
+      jobQuotations.value = projectStore.project.jobQuotations;
+      console.log("projectDatat", jobQuotations.value);
       if (jobQuotations.value[0].id) {
         quotation.value = { ...jobQuotations.value[0] }; // Set initial values
       }
@@ -210,10 +210,11 @@ onMounted(async () => {
       quotation.value.priceOffered =
         projectStore.project.totalProjectPrice || 0;
       quotation.value = projectStore.project.jobQuotations[0];
-      selectedQuotationId.value =
-        projectStore.project.jobQuotations[0].id || null;
+
       originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
     }
+    selectedQuotationId.value =
+      projectStore.project.jobQuotations[0].id || null;
   });
 });
 
@@ -269,7 +270,10 @@ const goBack = () => {
 };
 
 const goNext = () => {
-  alert("Proceeding to the next step...");
+  console.log("selectedQuotationId.value", selectedQuotationId.value);
+  router.push(
+    `/projects/${route.params.id}/job-quotations/${selectedQuotationId.value}/payment`
+  );
 };
 
 const exportToPDF = async () => {

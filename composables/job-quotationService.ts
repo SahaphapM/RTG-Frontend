@@ -1,11 +1,12 @@
 import { useFetch } from "#app";
 import type { JobQuotation } from "~/types/job-quotation";
+import type { Payment } from "~/types/payment";
 
 export default function useJobQuotationService() {
   const config = useRuntimeConfig();
 
   // Fetch JobQuotation
-  const fetchJobQuotation = async (): Promise<JobQuotation[]> => {
+  const fetchJobQuotations = async (): Promise<JobQuotation[]> => {
     try {
       const { data } = await useFetch<JobQuotation[]>(
         `${config.public.apiBase}/job-quotations`
@@ -14,6 +15,19 @@ export default function useJobQuotationService() {
     } catch (error) {
       console.error("Error fetching jobQuotation:", error);
       return [];
+    }
+  };
+
+  // Fetch JobQuotation by id
+  const fetchJobQuotation = async (id: number): Promise<JobQuotation> => {
+    try {
+      const { data } = await useFetch<JobQuotation>(
+        `${config.public.apiBase}/job-quotations/${id}`
+      );
+      return data.value || ({} as JobQuotation);
+    } catch (error) {
+      console.error("Error fetching jobQuotation:", error);
+      return {} as JobQuotation;
     }
   };
 
@@ -87,11 +101,75 @@ export default function useJobQuotationService() {
     }
   };
 
+  //////////// Payment ///////////////
+
+  const fetchPayments = async (jobQuotationId: number): Promise<Payment[]> => {
+    try {
+      const { data } = await useFetch<Payment[]>(
+        `${config.public.apiBase}/job-quotations/${jobQuotationId}/payments`
+      );
+      return data.value || [];
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      return [];
+    }
+  };
+
+  const createPayment = async (
+    jobQuotationId: number,
+    payment: Partial<Payment>
+  ) => {
+    try {
+      const { data } = await useFetch<Payment>(
+        `${config.public.apiBase}/job-quotations/${jobQuotationId}/payments`,
+        {
+          method: "POST",
+          body: payment,
+        }
+      );
+      return data.value;
+    } catch (error) {
+      console.error("Error creating payment:", error);
+    }
+  };
+
+  const updatePayment = async (payment: Partial<Payment>) => {
+    try {
+      const { data } = await useFetch<Payment>(
+        `${config.public.apiBase}/job-quotations/payments/${payment.id}`,
+        {
+          method: "PUT",
+          body: payment,
+        }
+      );
+      return data.value;
+    } catch (error) {
+      console.error("Error updating payment:", error);
+    }
+  };
+  const deletePayment = async (paymentId: number) => {
+    try {
+      await useFetch(
+        `${config.public.apiBase}/job-quotations/payments/${paymentId}`,
+        {
+          method: "DELETE",
+        }
+      );
+    } catch (error) {
+      console.error("Error deleting payment:", error);
+    }
+  };
+
   return {
     fetchJobQuotation,
+    fetchJobQuotations,
     createJobQuotation,
     updateJobQuotation,
     deleteJobQuotation,
     fetchByProjectId,
+    createPayment,
+    updatePayment,
+    deletePayment,
+    fetchPayments,
   };
 }

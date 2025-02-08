@@ -119,7 +119,7 @@ const goBack = () => router.push("/projects");
 
 const goNext = () => {
   projectStore.project = projectStore.project;
-  router.push(`/projects/${route.params.id}/job-quotation`);
+  router.push(`/projects/${route.params.id}/job-quotations`);
 };
 
 ////////// item ////////////

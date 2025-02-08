@@ -5,7 +5,8 @@ export type JobQuotation = {
   description: string;
   customerRef: string;
   agentName?: string;
-  priceOffered?: number;
+  priceOffered: number;
+  paymentMethod?: string;
   paymentTerms: string;
   deliveryTime: string;
   deliveryPlace: string;
