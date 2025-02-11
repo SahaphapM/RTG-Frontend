@@ -319,16 +319,8 @@ const refresh = async () => {
     payment.value = newPayment();
     isEditing.value = !isEditing.value;
   }
+  console.log("payments", payment.value.paymentDetails);
 };
-
-// if payment date is null, set it to current date
-// const formattedDate = computed(() => {
-//   const date = payment.value.date;
-//   if (!date) {
-//     return new Date().toISOString().split("T")[0];
-//   }
-//   return date.toISOString().split("T")[0];
-// });
 
 // **Compute Total in Real-Time**
 const totalPaymentAmount = computed(() => {
@@ -336,12 +328,8 @@ const totalPaymentAmount = computed(() => {
     (sum, detail) => sum + (detail.qty || 0) * (detail.unitPrice || 0),
     0
   );
-
-  console.log("detailsTotalotal", detailsTotal);
-
   const total = Math.max(detailsTotal - (payment.value.discount || 0), 0);
   payment.value.total = total;
-  console.log("payment total", payment.value.total);
   return detailsTotal;
 });
 
@@ -356,15 +344,14 @@ const remainingBalance = computed(() => {
 
   const totalPaid = payments.value.reduce((sum, pay) => {
     // Exclude the payment with the current selectedPaymentId
-    return pay.id !== selectedPaymentId.value
-      ? sum + (pay.total || 0) - (pay.discount || 0)
+    return pay.id !== payment.value.id
+      ? sum + (pay.total || 0) + (pay.discount || 0)
       : sum;
   }, 0);
 
-  // Add the total of the current payment being edited
-  const currentPaymentTotal = payment.value?.total || 0;
-
-  return jobQuotation.value.priceOffered - (totalPaid + currentPaymentTotal);
+  return (
+    jobQuotation.value.priceOffered - (totalPaid + totalPaymentAmount.value)
+  );
 });
 
 // **Select Payment**
@@ -419,7 +406,6 @@ const goBack = () => {
 const exportPDF = () => {};
 
 const save = async (payment: Payment) => {
-  console.log("payment", payment.paymentDetails);
   if (payment.id) {
     const data = await updatePayment(payment);
     console.log("data", data);

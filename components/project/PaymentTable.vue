@@ -79,12 +79,14 @@ import { defineProps, defineEmits } from "vue";
 
 // Props to receive details
 const props = defineProps(["details", "isEditing"]);
+console.log("props", props.details);
 
 // Emit event for updating details in parent
 const emit = defineEmits(["update:details"]);
 
 // Emit updates whenever a field changes
 const updateDetails = () => {
+  console.log("details", props.details);
   emit("update:details", props.details);
 };
 
