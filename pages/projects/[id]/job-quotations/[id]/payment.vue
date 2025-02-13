@@ -260,6 +260,7 @@ const {
 } = useJobQuotationService();
 
 const { fetchProject } = useProjectService();
+const projectStore = useProjectStore();
 
 // **Route**
 const route = useRoute();
@@ -407,8 +408,6 @@ const goBack = () => {
   router.push(`/projects/${projectId}/job-quotations`);
 };
 
-const exportPDF = () => {};
-
 const save = async (payment: Payment) => {
   if (payment.id) {
     const data = await updatePayment(payment);
@@ -446,10 +445,7 @@ const formattedDate = computed({
   },
 });
 
-const exportInvoicePDF = async (
-  payment: Payment,
-  jobQuotation: JobQuotation
-) => {
+const exportInvoicePDF = async (payment: Payment) => {
   const pathParts = route.fullPath.split("/");
   console.log("pathParts", pathParts);
   const project = await fetchProject(Number(pathParts[2]));
@@ -461,6 +457,20 @@ const exportInvoicePDF = async (
     format: "a4",
     orientation: "portrait",
   });
+
+  var callAddFont = function (this: any) {
+    this.addFileToVFS(
+      "NotoSansThai-Regular-normal.ttf",
+      projectStore.notoThaiSanNormal
+    );
+    this.addFont("NotoSansThai-Regular-normal.ttf", "NotoSansThai", "normal");
+    this.addFileToVFS(
+      "NotoSansThai-Bold-normal.ttf",
+      projectStore.notoThaiSanBold
+    );
+    this.addFont("NotoSansThai-Bold-normal.ttf", "NotoSansThai", "bold");
+  };
+  jsPDF.API.events.push(["addFonts", callAddFont]);
 
   let yPos = 8;
   const marginLeft = 14;
@@ -478,7 +488,7 @@ const exportInvoicePDF = async (
     // Head Office
     yPos += 10;
 
-    doc.setFont("helvetica");
+    doc.setFont("NotoSansThai");
     doc.setFontSize(10);
     //red text color
     doc.setTextColor(255, 0, 0);
@@ -510,7 +520,7 @@ const exportInvoicePDF = async (
     yPos += 10;
 
     // Invoice Header
-    doc.setFont("helvetica", "bold");
+    doc.setFont("NotoSansThai", "bold");
     doc.setFontSize(18);
     doc.text("TAX INVOICE / RECEIPT", marginLeft, (yPos += 10));
     doc.setFontSize(15);
@@ -572,12 +582,17 @@ const exportInvoicePDF = async (
       head: [["Customer Details"]], // Header row
       body: [
         [project.customer?.name || ""],
-        [project.customer?.address || ""],
-        [project.customer?.contact || ""],
         [project.customer?.email || ""],
+        [project.customer?.contact || ""],
+        [project.customer?.address || ""],
       ],
       theme: "grid",
-      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+        font: "NotoSansThai",
+      },
       headStyles: {
         fillColor: [r, g, b],
       },
@@ -627,7 +642,12 @@ const exportInvoicePDF = async (
       ]),
       theme: "grid",
 
-      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+        font: "NotoSansThai",
+      },
       headStyles: {
         fillColor: [r, g, b], // Light blue color for the header background
         textColor: [0, 0, 0], // White text color
@@ -648,8 +668,15 @@ const exportInvoicePDF = async (
     autoTable(doc, {
       startY: yPos,
       body: [
-        ["", "Sub Total:", `${payment.total.toLocaleString()}   baht`],
-        ["", "V.A.T. 7%:", `${(payment.total * 0.07).toLocaleString()}   baht`],
+        ["", "Sub Total", `${payment.total.toLocaleString()}   baht`],
+        [
+          "",
+          `V.A.T.  ${jobQuotation.value?.vatPercentage} %`,
+          `${(
+            (payment.total * (jobQuotation.value?.vatPercentage || 7)) /
+            100
+          ).toLocaleString()}   baht`,
+        ],
       ],
       // foot: [],
       theme: "grid",
@@ -675,7 +702,7 @@ const exportInvoicePDF = async (
     autoTable(doc, {
       startY: yPos,
       body: [
-        ["", "Grand Total:", `${(payment.total * 1.07).toLocaleString()} baht`],
+        ["", "Grand Total", `${(payment.total * 1.07).toLocaleString()} baht`],
       ],
       theme: "grid",
       styles: { fontSize: 10, cellPadding: 4 }, // Increase cell padding for all rows
@@ -726,7 +753,12 @@ const exportInvoicePDF = async (
         [payment.swift || ""],
       ],
       theme: "grid",
-      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+        font: "NotoSansThai",
+      },
       headStyles: { fillColor: [r, g, b] },
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
     });
@@ -740,7 +772,12 @@ const exportInvoicePDF = async (
         ["Date :", payment.receivedDate?.toLocaleDateString("en-GB") || ""],
       ],
       theme: "grid",
-      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+        font: "NotoSansThai",
+      },
       columnStyles: {
         0: {
           cellWidth: 30,

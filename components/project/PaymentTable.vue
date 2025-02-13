@@ -36,12 +36,12 @@
             />
           </td> -->
           <td class="p-2 border">
-            <input
+            <textarea
               v-model="detail.description"
-              type="text"
-              class="input input-bordered w-full"
+              class="textarea textarea-bordered w-full resize-none h-4"
               :disabled="!isEditing"
-            />
+              @input="autoResize($event)"
+            ></textarea>
           </td>
           <td class="p-2 border">
             <input
@@ -103,6 +103,12 @@ const addItem = () => {
     unitPrice: 0,
   });
   updateDetails();
+};
+
+const autoResize = (event: any) => {
+  const textarea = event.target;
+  textarea.style.height = "auto"; // Reset height to auto
+  textarea.style.height = `${textarea.scrollHeight}px`; // Set height to scrollHeight
 };
 
 // Remove a row and emit update
