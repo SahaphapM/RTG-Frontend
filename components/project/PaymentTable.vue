@@ -11,8 +11,8 @@
     <table class="table-auto w-full border border-gray-300">
       <thead>
         <tr class="bg-gray-200 text-center font-bold">
-          <th class="p-2 border w-12">No.</th>
-          <th class="p-2 border w-1/5">Name</th>
+          <th class="p-2 border w-12">Item</th>
+          <!-- <th class="p-2 border w-1/5">Name</th> -->
           <th class="p-2 border w-2/5">Description</th>
           <th class="p-2 border w-16">QTY</th>
           <th class="p-2 border w-24">Unit Price</th>
@@ -27,14 +27,14 @@
           class="border text-center"
         >
           <td class="p-2 border">{{ index + 1 }}</td>
-          <td class="p-2 border">
+          <!-- <td class="p-2 border">
             <input
               v-model="detail.name"
               type="text"
               class="input input-bordered w-full"
               :disabled="!isEditing"
             />
-          </td>
+          </td> -->
           <td class="p-2 border">
             <input
               v-model="detail.description"
@@ -46,7 +46,7 @@
           <td class="p-2 border">
             <input
               v-model.number="detail.qty"
-              class="input input-bordered text-center w-[70px]"
+              class="input input-bordered text-center w-full"
               min="1"
               :disabled="!isEditing"
             />
@@ -54,13 +54,17 @@
           <td class="p-2 border">
             <input
               v-model.number="detail.unitPrice"
-              class="input input-bordered text-right"
+              class="input input-bordered text-right w-full"
               min="0"
               :disabled="!isEditing"
             />
           </td>
           <td class="p-2 border text-right">
-            {{ (detail.unitPrice || 0) * (detail.qty || 0).toLocaleString() }}
+            {{
+              (
+                (detail.unitPrice || 0) * (detail.qty || 0) || ""
+              ).toLocaleString()
+            }}
           </td>
           <td class="p-2 border">
             <button class="btn btn-error btn-sm" @click="removeRow(index)">

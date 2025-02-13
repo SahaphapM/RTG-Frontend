@@ -12,7 +12,7 @@
           Edit
         </button>
         <button
-          @click="exportPDF()"
+          @click="exportInvoicePDF(payment)"
           v-if="!isEditing"
           class="btn btn-primary w-32"
         >
@@ -244,9 +244,11 @@
 import { ref, computed, onMounted, nextTick } from "vue";
 import PaymentTable from "~/components/project/PaymentTable.vue";
 import useJobQuotationService from "~/composables/job-quotationService";
+import useProjectService from "~/composables/projectService";
 import type { JobQuotation } from "~/types/job-quotation";
 import type { Payment } from "~/types/payment";
 import type { PaymentDetail } from "~/types/paymentDetail";
+import type { Project } from "~/types/project";
 
 // **Composables**
 const {
@@ -256,6 +258,8 @@ const {
   updatePayment,
   deletePayment,
 } = useJobQuotationService();
+
+const { fetchProject } = useProjectService();
 
 // **Route**
 const route = useRoute();
@@ -348,9 +352,9 @@ const remainingBalance = computed(() => {
       ? sum + (pay.total || 0) + (pay.discount || 0)
       : sum;
   }, 0);
-
-  return (
-    jobQuotation.value.priceOffered - (totalPaid + totalPaymentAmount.value)
+  return Math.max(
+    jobQuotation.value.priceOffered - (totalPaid + totalPaymentAmount.value),
+    0
   );
 });
 
@@ -441,4 +445,322 @@ const formattedDate = computed({
     payment.value.date = new Date(value);
   },
 });
+
+const exportInvoicePDF = async (
+  payment: Payment,
+  jobQuotation: JobQuotation
+) => {
+  const pathParts = route.fullPath.split("/");
+  console.log("pathParts", pathParts);
+  const project = await fetchProject(Number(pathParts[2]));
+
+  const { default: jsPDF } = await import("jspdf");
+  const autoTable = (await import("jspdf-autotable")).default;
+  const doc = new jsPDF({
+    unit: "mm",
+    format: "a4",
+    orientation: "portrait",
+  });
+
+  let yPos = 8;
+  const marginLeft = 14;
+  const marginRight = 192;
+
+  // Load and add the logo
+  const logoPath = "/image/microtecnology-red-logo.jpg"; // Ensure this path is correct
+  const img = new Image();
+  img.src = logoPath;
+
+  img.onload = function () {
+    // Logo
+    doc.addImage(img, "PNG", marginLeft - 2, yPos, 100, 24);
+
+    // Head Office
+    yPos += 10;
+
+    doc.setFont("helvetica");
+    doc.setFontSize(10);
+    //red text color
+    doc.setTextColor(255, 0, 0);
+    doc.text("HEAD OFFICE", marginRight, yPos, { align: "right" });
+    doc.text("MICROTECNOLOGY SRL CO.,LTD", marginRight, (yPos += 5), {
+      align: "right",
+    });
+    doc.text("Tax ID 0105554041131", marginRight, (yPos += 5), {
+      align: "right",
+    });
+    doc.text("T: +66 (0)80 050 5462", marginRight, (yPos += 5), {
+      align: "right",
+    });
+    doc.text("E: Socrate@microtecnologysrl.com", marginRight, (yPos += 5), {
+      align: "right",
+    });
+    doc.text(
+      "44/47 Muu Baan Harmony view Sukhaphiban 5",
+      marginRight,
+      (yPos += 5),
+      { align: "right" }
+    );
+    doc.text(
+      "Soi 80, Saimai, Or-ingoen, Bangkok 10220 Thailand",
+      marginRight,
+      (yPos += 5),
+      { align: "right" }
+    );
+    yPos += 10;
+
+    // Invoice Header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("TAX INVOICE / RECEIPT", marginLeft, (yPos += 10));
+    doc.setFontSize(15);
+    doc.setTextColor(0, 153, 0);
+    doc.text("ORIGINAL", marginRight, yPos, { align: "right" });
+    doc.setTextColor(0);
+    yPos += 6;
+
+    // light blue color
+    const lightBlue = [204, 228, 243];
+
+    const r = lightBlue[0];
+    const g = lightBlue[1];
+    const b = lightBlue[2];
+
+    // Header Details
+    const paymentDate = payment.date ? new Date(payment.date) : new Date();
+    autoTable(doc, {
+      startY: yPos,
+      // head: [["Field", "Value"]], // Header row
+      body: [
+        [
+          "Date :",
+          paymentDate.toLocaleDateString("en-GB"),
+          "Our Ref :",
+          payment.ourRef || "",
+        ],
+        [
+          "Tax Invoice :",
+          payment.taxInvoice || "",
+          "Our Tax ID :",
+          payment.ourTax || "",
+        ],
+      ],
+      theme: "grid",
+      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+
+      columnStyles: {
+        0: {
+          cellWidth: 30,
+          halign: "left",
+          fillColor: [r, g, b],
+          fontStyle: "bold",
+        }, // Field column
+        1: { cellWidth: 60, halign: "left" }, // Value column
+        2: {
+          cellWidth: 30,
+          halign: "left",
+          fillColor: [r, g, b],
+          fontStyle: "bold",
+        }, // Value column
+        3: { cellWidth: 60, halign: "left" }, // Value column
+      },
+    });
+    yPos = (doc as any).lastAutoTable.finalY + 5;
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [["Customer Details"]], // Header row
+      body: [
+        [project.customer?.name || ""],
+        [project.customer?.address || ""],
+        [project.customer?.contact || ""],
+        [project.customer?.email || ""],
+      ],
+      theme: "grid",
+      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      headStyles: {
+        fillColor: [r, g, b],
+      },
+      columnStyles: {
+        0: { cellWidth: 180, halign: "left" }, // Field column
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY;
+
+    autoTable(doc, {
+      startY: yPos,
+      body: [["Tax ID: ", payment.cusTax || ""]],
+      theme: "grid",
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+      },
+
+      columnStyles: {
+        0: {
+          cellWidth: 120,
+          halign: "right",
+          fontStyle: "bold",
+          fillColor: [r, g, b],
+        }, // Field column
+        1: { cellWidth: 60, halign: "left", fontStyle: "bold" }, // Value column
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY + 10;
+
+    // Add your main table first
+    autoTable(doc, {
+      startY: yPos,
+      head: [["Item", "Description", "QTY", "Unit Price", "Amount"]],
+      body: payment.paymentDetails.map((detail, index) => [
+        index + 1,
+        doc.splitTextToSize(detail.description || "", 80),
+        detail.qty ? detail.qty : "",
+        (detail.unitPrice || "").toLocaleString(),
+        (detail.qty && (detail.unitPrice || 0)
+          ? (detail.qty || 1) * (detail.unitPrice || 0)
+          : ""
+        ).toLocaleString(),
+      ]),
+      theme: "grid",
+
+      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      headStyles: {
+        fillColor: [r, g, b], // Light blue color for the header background
+        textColor: [0, 0, 0], // White text color
+        fontStyle: "bold",
+      },
+      columnStyles: {
+        0: { cellWidth: 15, halign: "center" }, // Item #
+        1: { cellWidth: 90 }, // Description
+        2: { cellWidth: 15, halign: "center" }, // QTY
+        3: { cellWidth: 30, halign: "center" }, // Unit Price
+        4: { cellWidth: 30, halign: "center" }, // Total Amount
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY;
+
+    // Add Total and VAT in a new table
+    autoTable(doc, {
+      startY: yPos,
+      body: [
+        ["", "Sub Total:", `${payment.total.toLocaleString()}   baht`],
+        ["", "V.A.T. 7%:", `${(payment.total * 0.07).toLocaleString()}   baht`],
+      ],
+      // foot: [],
+      theme: "grid",
+      styles: { fontSize: 10 }, // Light gray background
+      columnStyles: {
+        0: { cellWidth: 15 }, // Empty space for alignment
+        1: {
+          cellWidth: 105,
+          halign: "right",
+          textColor: [0, 0, 0],
+        }, // Labels
+        2: {
+          cellWidth: 60,
+          halign: "right",
+          textColor: [0, 0, 0],
+        }, // Values
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY;
+
+    // Add Grand Total in a new table
+    autoTable(doc, {
+      startY: yPos,
+      body: [
+        ["", "Grand Total:", `${(payment.total * 1.07).toLocaleString()} baht`],
+      ],
+      theme: "grid",
+      styles: { fontSize: 10, cellPadding: 4 }, // Increase cell padding for all rows
+      columnStyles: {
+        0: { cellWidth: 15, fillColor: [r, g, b] }, // Empty space for alignment
+        1: {
+          cellWidth: 105,
+          halign: "right",
+          fontStyle: "bold",
+          textColor: [0, 0, 0],
+          // fill light gray
+          fillColor: [r, g, b],
+        }, // Labels
+        2: {
+          cellWidth: 60,
+          halign: "right",
+          fontStyle: "bold",
+          textColor: [0, 0, 0],
+          fillColor: [r, g, b],
+        }, // Values
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY + 15;
+    console.log("yPos", yPos);
+
+    // Example: Adding Payment Terms
+    autoTable(doc, {
+      startY: yPos,
+      head: [["Payment Terms"]],
+      body: [[payment.paymentTerms || ""]],
+      theme: "grid",
+      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      headStyles: { fillColor: [r, g, b] },
+      columnStyles: { 0: { cellWidth: 180, halign: "left" } },
+    });
+    yPos = (doc as any).lastAutoTable.finalY + 5;
+
+    // Example: Adding Bank Details
+    autoTable(doc, {
+      startY: yPos,
+      head: [["Bank Details"]],
+      body: [
+        [payment.bank || ""],
+        [payment.accountName || ""],
+        [payment.accountNumber || ""],
+        [payment.branch || ""],
+        [payment.swift || ""],
+      ],
+      theme: "grid",
+      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      headStyles: { fillColor: [r, g, b] },
+      columnStyles: { 0: { cellWidth: 180, halign: "left" } },
+    });
+    yPos = (doc as any).lastAutoTable.finalY + 10;
+
+    // Example: Adding Receiving Details
+    autoTable(doc, {
+      startY: yPos,
+      body: [
+        ["Received by :", payment.receivedBy || ""],
+        ["Date :", payment.receivedDate?.toLocaleDateString("en-GB") || ""],
+      ],
+      theme: "grid",
+      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      columnStyles: {
+        0: {
+          cellWidth: 30,
+          halign: "left",
+          fillColor: [r, g, b],
+          fontStyle: "bold",
+        },
+        1: { cellWidth: 150, halign: "left" },
+        2: {
+          cellWidth: 30,
+          halign: "left",
+          fillColor: [r, g, b],
+          fontStyle: "bold",
+        },
+        3: { cellWidth: 150, halign: "left" },
+      },
+    });
+
+    // Save and download the PDF
+    doc.save(`Invoice_${payment.id || "New"}.pdf`);
+  };
+};
 </script>
