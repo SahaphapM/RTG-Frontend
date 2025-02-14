@@ -45,7 +45,7 @@
         </button>
       </div>
       <div class="text-right w-[40%]">
-        <p class="text-xl font-semibold">
+        <p class="text-lg font-semibold">
           {{ projectStore.project?.customer?.name }}
         </p>
         <p class="text-lg">{{ projectStore.project?.customer?.email }}</p>
@@ -54,7 +54,7 @@
 
     <!-- Description -->
     <div class="mt-6">
-      <h2 class="text-2xl font-semibold mb-4">Description</h2>
+      <h2 class="text-lg font-semibold mb-4">Description</h2>
       <textarea
         v-model="quotation.description"
         class="w-full textarea textarea-bordered p-3 rounded-lg h-[150px] text-lg"
@@ -64,9 +64,9 @@
 
     <!-- Project Item Total -->
     <div class="mt-6 flex justify-end">
-      <h2 class="text-2xl mt-2 mx-10">Price Offered</h2>
+      <h2 class="text-lg font-semibold mt-2 mx-10">Price Offered</h2>
       <div
-        class="p-3 px-8 text-xl border font-medium bg-gray-100 text-black rounded-lg"
+        class="p-3 px-8 text-lg border font-medium bg-gray-100 text-black rounded-lg"
       >
         {{
           quotation.priceOffered?.toLocaleString() ||
@@ -79,7 +79,7 @@
     <!-- Commercial Conditions -->
     <div class="grid grid-cols-2 gap-4 mt-2">
       <div>
-        <h3 class="text-xl font-medium">Payment</h3>
+        <h3 class="text-lg font-medium">Payment</h3>
         <input
           v-model="quotation.paymentTerms"
           type="text"
@@ -88,7 +88,7 @@
         />
       </div>
       <div>
-        <h3 class="text-xl font-medium">Delivery</h3>
+        <h3 class="text-lg font-medium">Delivery</h3>
         <input
           v-model="quotation.deliveryTime"
           type="text"
@@ -97,7 +97,7 @@
         />
       </div>
       <div>
-        <h3 class="text-xl font-medium">Delivery Place</h3>
+        <h3 class="text-lg font-medium">Delivery Place</h3>
         <input
           v-model="quotation.deliveryPlace"
           type="text"
@@ -106,7 +106,7 @@
         />
       </div>
       <div>
-        <h3 class="text-xl font-medium">Vat %</h3>
+        <h3 class="text-lg font-medium">Vat %</h3>
         <input
           v-model="quotation.vatPercentage"
           type="text"
@@ -118,7 +118,7 @@
 
     <!-- Message -->
     <div class="mt-4">
-      <h2 class="text-xl font-medium mb-4">Message</h2>
+      <h2 class="text-lg font-medium mb-4">Message</h2>
       <textarea
         v-model="quotation.message"
         class="textarea textarea-bordered w-full h-[150px] border p-3 text-lg"
@@ -128,7 +128,7 @@
 
     <!-- Best Regards -->
     <div class="mt-4">
-      <h2 class="text-xl font-medium mb-4">Best Regards</h2>
+      <h2 class="text-lg font-medium mb-4">Best Regards</h2>
       <textarea
         v-model="quotation.bestRegards"
         class="textarea textarea-bordered w-full border p-3 h-24 text-lg"

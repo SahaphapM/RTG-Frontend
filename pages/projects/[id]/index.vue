@@ -64,12 +64,19 @@ const projectStore = useProjectStore();
 const isNewProject = ref(false);
 const isEditing = ref(false);
 
+const formatDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const form = ref<Project>({
   name: "",
   description: "",
   customer: null as Customer | null,
-  startDate: new Date(),
-  endDate: new Date(),
+  startDate: formatDate(new Date()), // Format to "YYYY-MM-DD"
+  endDate: formatDate(new Date()), // Format to "YYYY-MM-DD"
   projectItems: [] as ProjectItem[],
   totalProjectPrice: 0,
   number: "",

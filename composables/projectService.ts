@@ -32,6 +32,7 @@ export default function useProjectService() {
 
   // Create Project
   const createProject = async (project: Partial<Project>) => {
+    console.log("project", project);
     try {
       const { data } = await useFetch<Project>(
         `${config.public.apiBase}/projects`,

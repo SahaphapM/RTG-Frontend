@@ -13,7 +13,7 @@
     @create-item="addNewItem"
   />
   <div class="mt-6">
-    <h2 class="text-xl font-bold">Project Order</h2>
+    <h2 class="text-lg font-semibold">Project Order</h2>
     <div class="flex justify-between mb-2">
       <button
         v-if="isEditing"
@@ -92,11 +92,11 @@
       </tbody>
     </table>
 
-    <div class="flex justify-between mt-4">
-      <span><strong>Item Amount:</strong> {{ totalAmount }}</span>
-      <span
-        ><strong>Total:</strong> {{ totalValue.toLocaleString() }} Bath</span
-      >
+    <div class="flex justify-end mt-4 font-semibold text-lg">
+      <!-- <span>{{ `Item Qty :    ${totalAmount} ` }}</span> -->
+      <span>{{
+        `Total Value :    ${totalValue.toLocaleString()}   Baht`
+      }}</span>
     </div>
   </div>
 </template>

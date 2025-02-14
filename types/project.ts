@@ -7,8 +7,8 @@ export type Project = {
   name: string;
   description: string;
   number: string;
-  startDate: Date | null;
-  endDate: Date | null;
+  startDate: string | null;
+  endDate: string | null;
   discount: number | null;
   totalProjectPrice: number | null;
   customer?: Customer | null;

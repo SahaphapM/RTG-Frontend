@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 gap-4 text-lg">
       <div>
-        <label class="block font-bold">Name</label>
+        <label class="block font-semibold">Name</label>
         <input
           v-model="form.name"
           type="text"
@@ -20,7 +20,7 @@
     </div>
 
     <div class="mt-4">
-      <label class="block font-bold">Description</label>
+      <label class="block font-semibold">Description</label>
       <textarea
         v-model="form.description"
         class="textarea textarea-bordered w-full"
@@ -30,7 +30,7 @@
 
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
-        <label class="block font-bold">Start Date</label>
+        <label class="block font-semibold">Start Date</label>
         <input
           v-model="form.startDate"
           type="date"
@@ -39,7 +39,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">End Date</label>
+        <label class="block font-semibold">End Date</label>
         <input
           v-model="form.endDate"
           type="date"
