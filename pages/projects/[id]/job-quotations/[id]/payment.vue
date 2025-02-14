@@ -124,22 +124,31 @@
     />
 
     <!-- Discount & Total -->
-    <div class="flex justify-between text-xl mt-4">
+    <div class="flex justify-between text-md mt-2">
       <div>
-        <label>Discount:</label>
+        <label class="block font-bold">Discount:</label>
         <input
           :disabled="!isEditing"
           v-model="payment.discount"
           type="number"
-          class="input input-bordered w-24 ml-2 font-bold"
+          class="input input-bordered w-60 font-bold"
         />
       </div>
-      <div>
-        <div class="font-bold">
-          Sub Total: {{ totalPaymentAmount.toLocaleString() }} Baht
+      <div class="text-right flex col">
+        <div class="mx-10">
+          <div>Sub Total</div>
+          <div>Discount</div>
+          <div>Total</div>
         </div>
         <div class="font-bold">
-          Total: {{ payment.total.toLocaleString() }} Baht
+          <div>{{ totalPaymentAmount.toLocaleString() }}</div>
+          <div>{{ payment.discount.toLocaleString() }}</div>
+          <div>{{ payment.total.toLocaleString() }}</div>
+        </div>
+        <div class="mx-5">
+          <div>Baht</div>
+          <div>Baht</div>
+          <div>Baht</div>
         </div>
       </div>
     </div>
@@ -277,11 +286,10 @@ const newPayment = (): Payment => ({
   paidDate: null,
   paymentTerms: "",
   paymentDetails: [
-    // {
-    //   description: "",
-    //   qty: 0,
-    //   unitPrice: 0,
-    // },
+    {
+      name: "",
+      description: "",
+    },
   ],
   total: 0,
   bank: "",

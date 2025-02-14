@@ -64,16 +64,16 @@
 
     <!-- Project Item Total -->
     <div class="mt-6 flex justify-end">
-      <h2 class="text-2xl mt-2 mx-10">Price offered</h2>
+      <h2 class="text-2xl mt-2 mx-10">Price Offered</h2>
       <div
-        class="p-3 px-5 text-xl border font-medium bg-gray-100 text-black rounded-lg"
+        class="p-3 px-8 text-xl border font-medium bg-gray-100 text-black rounded-lg"
       >
         {{
           quotation.priceOffered?.toLocaleString() ||
           projectStore.project?.totalProjectPrice?.toLocaleString()
         }}
+        Baht
       </div>
-      <div class="mx-4 mt-3 text-lg">Baht</div>
     </div>
 
     <!-- Commercial Conditions -->
@@ -197,6 +197,7 @@ const selectedQuotationId = ref<number | null>(null);
 
 onMounted(async () => {
   nextTick(async () => {
+    console.log(selectedQuotationId);
     if (!projectStore.project?.jobQuotations) {
       const projectData = await fetchProject(Number(route.params.id));
       projectStore.project = projectData;
@@ -211,6 +212,9 @@ onMounted(async () => {
       quotation.value.priceOffered =
         projectStore.project.totalProjectPrice || 0;
       quotation.value = projectStore.project.jobQuotations[0];
+      selectedQuotationId.value = jobQuotations.value[0].id
+        ? jobQuotations.value[0].id
+        : null;
 
       originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
     }
