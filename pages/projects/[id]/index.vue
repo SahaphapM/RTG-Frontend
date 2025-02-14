@@ -54,6 +54,7 @@ import type { ProjectItem } from "~/types/projectItem";
 import type { Customer } from "~/types/customer";
 import ProjectOrder from "~/components/project/ProjectOrder.vue";
 import type { Item } from "~/types/item";
+import type { Project } from "~/types/project";
 
 const route = useRoute();
 const router = useRouter();
@@ -63,7 +64,7 @@ const projectStore = useProjectStore();
 const isNewProject = ref(false);
 const isEditing = ref(false);
 
-const form = ref({
+const form = ref<Project>({
   name: "",
   description: "",
   customer: null as Customer | null,
@@ -71,6 +72,8 @@ const form = ref({
   endDate: new Date(),
   projectItems: [] as ProjectItem[],
   totalProjectPrice: 0,
+  number: "",
+  discount: null,
 });
 
 // Load project data

@@ -13,7 +13,10 @@
       </div>
 
       <!-- Customer Search Component -->
-      <CustomerSearch v-model="form.customer" :isEditing="isEditing" />
+      <CustomerSearch
+        v-model="form.customer as Customer"
+        :isEditing="isEditing"
+      />
     </div>
 
     <div class="mt-4">
@@ -52,6 +55,11 @@
 import { defineProps } from "vue";
 import type { Customer } from "~/types/customer";
 import CustomerSearch from "./customerSearch.vue";
+import type { Project } from "~/types/project";
 
-defineProps<{ form: any; isEditing: boolean }>();
+const props = defineProps<{ form: Project; isEditing: boolean }>();
+
+onMounted(() => {
+  console.log("form", props.form);
+});
 </script>

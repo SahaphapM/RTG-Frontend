@@ -10,6 +10,7 @@ export default function useCustomerService() {
       const { data } = await useFetch<Customer[]>(
         `${config.public.apiBase}/customers`
       );
+      console.log("customers", data);
       return data.value || [];
     } catch (error) {
       console.error("Error fetching customers:", error);

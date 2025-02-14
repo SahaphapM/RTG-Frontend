@@ -48,7 +48,7 @@
         <p class="text-xl font-semibold">
           {{ projectStore.project?.customer?.name }}
         </p>
-        <p class="text-lg">{{ projectStore.project?.customer?.address }}</p>
+        <p class="text-lg">{{ projectStore.project?.customer?.email }}</p>
       </div>
     </div>
 
@@ -57,7 +57,7 @@
       <h2 class="text-2xl font-semibold mb-4">Description</h2>
       <textarea
         v-model="quotation.description"
-        class="w-full textarea textarea-bordered p-3 rounded-lg"
+        class="w-full textarea textarea-bordered p-3 rounded-lg h-[150px] text-lg"
         :disabled="!isEditing"
       />
     </div>
@@ -121,7 +121,7 @@
       <h2 class="text-xl font-medium mb-4">Message</h2>
       <textarea
         v-model="quotation.message"
-        class="textarea textarea-bordered w-full h-[200px] border p-3"
+        class="textarea textarea-bordered w-full h-[150px] border p-3 text-lg"
         :disabled="!isEditing"
       />
     </div>
@@ -131,7 +131,7 @@
       <h2 class="text-xl font-medium mb-4">Best Regards</h2>
       <textarea
         v-model="quotation.bestRegards"
-        class="textarea textarea-bordered w-full border p-3 h-24"
+        class="textarea textarea-bordered w-full border p-3 h-24 text-lg"
         :disabled="!isEditing"
       />
     </div>
@@ -183,7 +183,7 @@ const newQuotation = <JobQuotation>{
   paymentTerms: "",
   deliveryTime: "",
   deliveryPlace: "",
-  vatPercentage: 0,
+  vatPercentage: 7,
   bestRegards: "",
   message: "",
   payments: [],
@@ -200,9 +200,11 @@ onMounted(async () => {
     if (!projectStore.project?.jobQuotations) {
       const projectData = await fetchProject(Number(route.params.id));
       projectStore.project = projectData;
-      jobQuotations.value = projectStore.project.jobQuotations;
+      jobQuotations.value = projectStore.project.jobQuotations || [];
       if (jobQuotations.value[0].id) {
         quotation.value = { ...jobQuotations.value[0] }; // Set initial values
+        selectedQuotationId.value = jobQuotations.value[0].id;
+        originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
       }
     } else {
       jobQuotations.value = projectStore.project?.jobQuotations;
@@ -212,8 +214,6 @@ onMounted(async () => {
 
       originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
     }
-    selectedQuotationId.value =
-      projectStore.project.jobQuotations[0].id || null;
   });
 });
 
@@ -241,6 +241,7 @@ const saveQuotation = async (selectedQuotation: JobQuotation) => {
 const addQuotation = () => {
   selectedQuotationId.value = null;
   quotation.value = newQuotation;
+  quotation.value.priceOffered = projectStore.project?.totalProjectPrice || 0;
   isEditing.value = true;
 };
 
@@ -253,14 +254,17 @@ const selectQuotation = () => {
   if (selected) {
     console.log("selected", selected);
     quotation.value = JSON.parse(JSON.stringify(selected)); // Deep copy
+    originalQuotation.value = JSON.parse(JSON.stringify(quotation.value));
   }
 };
 
 // Cancel Edit and Reset
 const cancelEdit = () => {
+  console.log("originalQuotation.value", originalQuotation.value);
   quotation.value = JSON.parse(JSON.stringify(originalQuotation.value)); // Restore original
+  console.log("quotation.value", quotation.value);
 
-  selectedQuotationId.value = quotation.value.id || null;
+  selectedQuotationId.value = quotation.value.id ? quotation.value.id : null;
   isEditing.value = !isEditing.value;
 };
 
