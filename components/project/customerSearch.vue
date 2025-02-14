@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <label class="block font-bold">Customer</label>
+    <label class="block font-semibold">Customer</label>
     <div class="flex">
       <input
         v-model="searchQuery"
@@ -85,4 +85,10 @@ const saveCustomer = async (customerData: Omit<Customer, "id">) => {
 const closeCustomerModal = () => {
   isCustomerModalOpen.value = false;
 };
+
+onMounted(async () => {
+  nextTick(async () => {
+    await customerStore.getCustomers();
+  });
+});
 </script>
