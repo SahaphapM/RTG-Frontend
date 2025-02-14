@@ -12,7 +12,7 @@
           Edit
         </button>
 
-        <button class="btn btn-outline w-32" @click="exportToPDF">
+        <button class="btn btn-primary w-32" @click="exportToPDF">
           Export
         </button>
       </div>
