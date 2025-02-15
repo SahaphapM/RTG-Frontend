@@ -32,19 +32,22 @@ export default function useProjectService() {
 
   // Create Project
   const createProject = async (project: Partial<Project>) => {
-    console.log("project", project);
+    console.log("Sending project data:", project);
     try {
-      const { data } = await useFetch<Project>(
-        `${config.public.apiBase}/projects`,
-        {
-          method: "POST",
-          body: project,
-        }
-      );
+      const data = await $fetch<Project>(`${config.public.apiBase}/projects`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: project,
+      });
 
-      return data.value;
+      return data;
     } catch (error) {
       console.error("Error creating project:", error);
+      if (error.data) {
+        console.error("Error details:", error.data); // เพิ่ม log นี้
+      }
     }
   };
 
@@ -60,7 +63,6 @@ export default function useProjectService() {
         })) || [];
 
       // Create the final payload
-      console.log("project", project);
       const projectData = {
         name: project.name,
         description: project.description,
@@ -70,8 +72,6 @@ export default function useProjectService() {
         customerId: project.customer?.id, // Ensure only `customerId` is sent
         projectItems: formattedProjectItems, // Use transformed items
       };
-
-      console.log("project data", projectData);
 
       // Send the request
       await useFetch(`${config.public.apiBase}/projects/${id}`, {

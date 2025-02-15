@@ -80,7 +80,7 @@ const form = ref<Project>({
   projectItems: [] as ProjectItem[],
   totalProjectPrice: 0,
   number: "",
-  discount: null,
+  jobQuotations: [],
 });
 
 // Load project data
@@ -100,9 +100,16 @@ onMounted(async () => {
 const saveProject = async () => {
   if (isNewProject.value) {
     const updatedProject = await createProject(form.value);
-    if (updatedProject) projectStore.project = updatedProject;
+    if (updatedProject) {
+      projectStore.project = updatedProject;
+      resetForm();
+      isNewProject.value = false;
+
+      // เปลี่ยนเส้นทางไปยังหน้าใหม่พร้อมกับ ID ของ project
+      router.push(`/projects/${updatedProject.id}`);
+    }
   } else {
-    await updateProject(projectStore.project!.id, form.value);
+    await updateProject(projectStore.project.id, form.value);
   }
   isEditing.value = false;
 };
