@@ -12,23 +12,25 @@
     @close="isNewItemModalOpen = false"
     @create-item="addNewItem"
   />
-  <div class="mt-6">
-    <h2 class="text-lg font-semibold">Project Order</h2>
-    <div class="flex justify-between mb-2">
-      <button
-        v-if="isEditing"
-        @click="openSearchModal"
-        class="btn btn-secondary"
-      >
-        Search
-      </button>
-      <button
-        v-if="isEditing"
-        @click="openNewItemModal"
-        class="btn btn-primary"
-      >
-        New Item
-      </button>
+  <div class="mt-10">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-semibold">Project Order</h2>
+      <div class="flex justify-end gap-2 mb-2">
+        <button
+          v-if="isEditing"
+          @click="openSearchModal"
+          class="btn btn-primary w-32"
+        >
+          Search
+        </button>
+        <button
+          v-if="isEditing"
+          @click="openNewItemModal"
+          class="btn btn-primary w-32"
+        >
+          New Item
+        </button>
+      </div>
     </div>
 
     <table class="table w-full border border-gray-200">

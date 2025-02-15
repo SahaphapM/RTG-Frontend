@@ -11,7 +11,7 @@
         required
       />
       <button
-        class="btn btn-primary ml-2"
+        class="btn btn-primary w-32 ml-2"
         v-if="isEditing"
         @click="isCustomerModalOpen = true"
       >
@@ -55,7 +55,7 @@ const emit = defineEmits(["update:modelValue"]);
 const customerStore = useCustomerStore();
 const searchQuery = ref("");
 const showDropdown = ref(false);
-const selectedCustomer = ref<Customer | null>(props.modelValue);
+const selectedCustomer = ref<Customer | null>();
 const isCustomerModalOpen = ref(false);
 
 const filteredCustomers = computed(() =>
@@ -86,9 +86,17 @@ const closeCustomerModal = () => {
   isCustomerModalOpen.value = false;
 };
 
+// Watch for changes in modelValue
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    selectedCustomer.value = newValue;
+    searchQuery.value = newValue ? newValue.name : "";
+  },
+  { immediate: true }
+);
+
 onMounted(async () => {
-  nextTick(async () => {
-    await customerStore.getCustomers();
-  });
+  await customerStore.getCustomers();
 });
 </script>

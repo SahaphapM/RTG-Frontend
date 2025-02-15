@@ -3,8 +3,8 @@
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-4xl font-bold">User Management</h1>
-      <button @click="openAddUserModal" class="btn btn-primary">
-        + Add User
+      <button @click="openAddUserModal" class="btn btn-primary w-32">
+        Add User
       </button>
     </div>
 

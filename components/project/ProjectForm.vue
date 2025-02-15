@@ -4,7 +4,7 @@
       <div>
         <label class="block font-semibold">Name</label>
         <input
-          v-model="form.name"
+          v-model="localForm.name"
           type="text"
           class="input input-bordered w-full"
           :disabled="!isEditing"
@@ -13,16 +13,13 @@
       </div>
 
       <!-- Customer Search Component -->
-      <CustomerSearch
-        v-model="form.customer as Customer"
-        :isEditing="isEditing"
-      />
+      <CustomerSearch :modelValue="localForm.customer" :isEditing="isEditing" />
     </div>
 
     <div class="mt-4">
       <label class="block font-semibold">Description</label>
       <textarea
-        v-model="form.description"
+        v-model="localForm.description"
         class="textarea textarea-bordered w-full"
         :disabled="!isEditing"
       ></textarea>
@@ -32,7 +29,7 @@
       <div>
         <label class="block font-semibold">Start Date</label>
         <input
-          v-model="form.startDate"
+          v-model="localForm.startDate"
           type="date"
           class="input input-bordered w-full"
           :disabled="!isEditing"
@@ -41,7 +38,7 @@
       <div>
         <label class="block font-semibold">End Date</label>
         <input
-          v-model="form.endDate"
+          v-model="localForm.endDate"
           type="date"
           class="input input-bordered w-full"
           :disabled="!isEditing"
@@ -59,7 +56,13 @@ import type { Project } from "~/types/project";
 
 const props = defineProps<{ form: Project; isEditing: boolean }>();
 
-onMounted(() => {
-  console.log("form", props.form);
-});
+const localForm = ref<Project>(props.form);
+
+watch(
+  () => props.form,
+  (newForm) => {
+    localForm.value = newForm;
+  },
+  { deep: true, immediate: true }
+);
 </script>

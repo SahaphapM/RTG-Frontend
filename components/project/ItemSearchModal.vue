@@ -3,7 +3,7 @@
     v-if="isOpen"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50"
   >
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
       <h2 class="text-xl font-bold mb-4">Search Item</h2>
 
       <input
@@ -38,10 +38,7 @@
       </ul>
 
       <div class="flex justify-between mt-6">
-        <button
-          @click="$emit('close')"
-          class="btn btn-secondary text-md font-bold"
-        >
+        <button @click="$emit('close')" class="btn btn-error text-md font-bold">
           Cancel
         </button>
         <button

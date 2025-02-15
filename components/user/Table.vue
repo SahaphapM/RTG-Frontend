@@ -40,22 +40,25 @@
               {{ user.role }}
             </span>
           </td>
-          <td class="px-6 text-center flex justify-center gap-4">
-            <button @click="$emit('edit', user)" class="btn btn-sm btn-outline">
-              <EditIcon class="w-5 h-5" />
+          <td class="px-6 text-center flex justify-center gap-2">
+            <button
+              @click="$emit('edit', user)"
+              class="btn btn-sm btn-warning w-16"
+            >
+              Edit
             </button>
             <button
               @click="$emit('delete', user.id)"
-              class="btn btn-sm btn-outline"
+              class="btn btn-error btn-sm w-16"
             >
-              <TrashIcon class="w-5 h-5" />
+              Delete
             </button>
           </td>
         </tr>
       </tbody>
 
       <!-- Table Footer pagination -->
-      <tfoot>
+      <!-- <tfoot>
         <tr>
           <th colspan="6" class="py-4 px-6 text-center">
             <div class="btn-group">
@@ -64,7 +67,7 @@
             </div>
           </th>
         </tr>
-      </tfoot>
+      </tfoot> -->
     </table>
   </div>
 </template>

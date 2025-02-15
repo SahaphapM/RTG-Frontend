@@ -3,7 +3,7 @@
     <!-- Left Section: Menu Toggle (Mobile) & Logo -->
     <div class="flex-1 gap-6">
       <button @click="$emit('toggle-sidebar')" class="btn btn-ghost">☰</button>
-      <NuxtLink to="/" class="text-xl font-bold">MyApp</NuxtLink>
+      <NuxtLink to="/" class="text-xl font-bold"></NuxtLink>
     </div>
 
     <!-- Middle Section: Nav Links (Desktop) -->

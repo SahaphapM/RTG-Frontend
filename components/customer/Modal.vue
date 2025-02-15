@@ -4,7 +4,7 @@
   >
     <!-- Modal Content -->
     <div
-      class="bg-white p-6 rounded-lg w-96 shadow-lg scale-95 transition-transform duration-300 ease-in-out"
+      class="bg-white p-6 rounded-lg w-3/7 shadow-lg scale-95 transition-transform duration-300 ease-in-out"
     >
       <h2 class="text-xl font-bold mb-4">
         {{ customer ? "Edit Customer" : "Add Customer" }}

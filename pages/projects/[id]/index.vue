@@ -27,11 +27,11 @@
     />
 
     <!-- Buttons -->
-    <div class="flex justify-end items-center" v-if="isEditing">
+    <div class="flex justify-end items-center mt-4 gap-2" v-if="isEditing">
       <button
         type="button"
         @click="resetForm(), (isEditing = false)"
-        class="btn btn-secondary w-32"
+        class="btn btn-error w-32"
       >
         Cancel
       </button>
@@ -40,7 +40,7 @@
 
     <div class="h-5"></div>
     <div class="flex justify-end gap-2" v-if="!isEditing">
-      <button @click="goBack" class="btn btn-secondary w-32">Back</button>
+      <button @click="goBack" class="btn btn-error w-32">Back</button>
       <button @click="goNext" class="btn btn-primary w-32">Next</button>
     </div>
   </div>
@@ -89,10 +89,9 @@ onMounted(async () => {
     isNewProject.value = true;
     isEditing.value = true;
   } else {
-    nextTick(async () => {
-      projectStore.project = await fetchProject(Number(route.params.id));
-      resetForm();
-    });
+    await nextTick(); // รอให้ DOM อัปเดต
+    projectStore.project = await fetchProject(Number(route.params.id));
+    resetForm();
   }
 });
 
@@ -127,8 +126,6 @@ const resetForm = () => {
         : [], // Ensure it's always an array
       totalProjectPrice: projectStore.project.totalProjectPrice || 0,
     };
-
-    console.log("form", form.value);
   }
 };
 

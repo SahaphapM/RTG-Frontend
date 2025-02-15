@@ -9,13 +9,17 @@
         isOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
     >
-      <img src="/image/logo.webp" class="w-32 mx-auto mb-4" alt="image" />
+      <img
+        src="/image/Sidebar-logo.png"
+        class="w-32 mx-auto mb-4"
+        alt="image"
+      />
 
       <ul class="menu w-full">
         <li v-for="item in menuItems" :key="item.to">
           <NuxtLink
             :to="item.to"
-            class="flex items-center gap-2 p-3 rounded-lg transition duration-300"
+            class="flex items-center gap-2 p-3 rounded-lg transition duration-300 text-xl gap-4 mt-2"
             :class="{
               'bg-base-300 ': $route.path === item.to,
             }"

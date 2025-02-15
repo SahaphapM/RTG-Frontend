@@ -34,13 +34,13 @@
           <td class="py-4 px-6 text-center">
             <button
               @click="$emit('edit', customer)"
-              class="btn btn-warning btn-sm mr-2"
+              class="btn btn-warning btn-sm w-16 mr-2"
             >
               Edit
             </button>
             <button
               @click="$emit('delete', customer.id), console.log(customer.id)"
-              class="btn btn-error btn-sm"
+              class="btn btn-error btn-sm w-16"
             >
               Delete
             </button>

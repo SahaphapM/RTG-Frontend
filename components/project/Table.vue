@@ -28,16 +28,16 @@
           <td class="py-4 px-6 text-center">
             <button
               @click.stop="$emit('edit', project)"
-              class="btn btn-warning btn-sm mr-2"
+              class="btn btn-warning btn-sm w-16 mr-2"
             >
               Edit
             </button>
-            <button
+            <!-- <button
               @click.stop="$emit('delete', project.id)"
-              class="btn btn-info btn-sm"
+              class="btn btn-info btn-sm w-16"
             >
               Print
-            </button>
+            </button> -->
           </td>
         </tr>
       </tbody>

@@ -2,7 +2,7 @@
   <div class="p-6">
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">Project Management</h1>
-      <NuxtLink to="/projects/new" class="btn btn-primary btn-lg"
+      <NuxtLink to="/projects/new" class="btn btn-primary w-32"
         >+ Add Project</NuxtLink
       >
     </div>
