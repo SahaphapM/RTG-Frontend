@@ -90,7 +90,6 @@ const emit = defineEmits(["update:details"]);
 
 // Emit updates whenever a field changes
 const updateDetails = () => {
-  console.log("details", props.details);
   emit("update:details", props.details);
 };
 
@@ -116,4 +115,13 @@ const removeRow = (index: number) => {
   props.details.splice(index, 1);
   updateDetails();
 };
+
+// Watch for changes in details and emit update
+watch(
+  () => props.details,
+  () => {
+    updateDetails();
+  },
+  { deep: true }
+);
 </script>

@@ -2,7 +2,7 @@
   <div class="p-6">
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
-      <h1 class="text-2xl font-bold mb-4">Repair Gear Box Gantry RTG No 8</h1>
+      <h1 class="text-2xl font-bold mb-4">{{ projectStore.project?.name }}</h1>
       <div class="flex gap-2">
         <button
           v-if="!isEditing && selectedPaymentId"

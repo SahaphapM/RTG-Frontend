@@ -1,9 +1,9 @@
 <template>
   <div class="p-6">
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Customer Management</h1>
       <button @click="openAddCustomerModal" class="btn btn-primary btn-md w-32">
-        Add Customer
+        Add New
       </button>
     </div>
 

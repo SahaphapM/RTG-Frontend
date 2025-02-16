@@ -1,10 +1,10 @@
 <template>
   <div class="p-6">
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-4xl font-bold">User Management</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">User Management</h1>
       <button @click="openAddUserModal" class="btn btn-primary w-32">
-        Add User
+        Add New
       </button>
     </div>
 

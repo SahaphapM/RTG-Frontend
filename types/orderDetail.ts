@@ -1,4 +1,4 @@
-export type PaymentDetail = {
+export type OrderDetail = {
   id?: number;
   description: string;
   qty?: number;

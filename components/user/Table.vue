@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="overflow-x-auto bg-base-100 border border-gray-200 rounded-lg p-4"
-  >
+  <div class="overflow-x-auto bg-base-100 border border-gray-200 rounded-lg">
     <table class="table w-full table-fixed">
       <!-- Table Header -->
       <thead>
