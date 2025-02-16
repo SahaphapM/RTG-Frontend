@@ -96,7 +96,6 @@ const updateDetails = () => {
 // Add a new row
 const addItem = () => {
   props.details.push({
-    name: "",
     description: "",
     qty: 1,
     unitPrice: 0,

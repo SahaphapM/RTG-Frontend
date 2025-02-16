@@ -30,12 +30,13 @@
         class="p-2 hover:bg-gray-100 cursor-pointer"
       >
         {{ subcontractor.name }}
+        <div class="text-xs text-gray-500">{{ subcontractor.address }}</div>
       </li>
     </ul>
 
     <SubcontractorModal
       v-if="isSubcontractorModalOpen"
-      :subcontractor="selectedSubcontractor"
+      :subcontractor="newSubcontractor"
       @save="saveSubcontractor"
       @close="closeSubcontractorModal"
     />
@@ -56,6 +57,12 @@ const emit = defineEmits(["update:modelValue"]);
 const { fetchSubcontractors, createSubcontractor } = useSubcontractorService();
 const searchQuery = ref("");
 const showDropdown = ref(false);
+const newSubcontractor: Subcontractor = {
+  name: "",
+  address: "",
+  email: "",
+  contact: "",
+};
 const selectedSubcontractor = ref<Subcontractor | null>(null);
 const isSubcontractorModalOpen = ref(false);
 const subcontractors = ref<Subcontractor[]>([]);
@@ -82,13 +89,12 @@ const selectSubcontractor = (subcontractor: Subcontractor) => {
 };
 
 // Save a new subcontractor
-const saveSubcontractor = async (
-  subcontractorData: Omit<Subcontractor, "id">
-) => {
+const saveSubcontractor = async (subcontractorData: Subcontractor) => {
   const newSubcontractor = await createSubcontractor(subcontractorData);
   if (newSubcontractor) {
     selectedSubcontractor.value = newSubcontractor;
     emit("update:modelValue", newSubcontractor);
+    subcontractors.value = await fetchSubcontractors();
   }
   isSubcontractorModalOpen.value = false;
 };
@@ -111,9 +117,7 @@ watch(
 // Fetch subcontractors on mount
 onMounted(async () => {
   nextTick(async () => {
-    console.log("fetching subcontractors", props.modelValue);
     subcontractors.value = await fetchSubcontractors();
-    console.log("subcontractors", subcontractors.value);
   });
 });
 </script>

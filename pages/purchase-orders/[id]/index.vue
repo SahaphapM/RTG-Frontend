@@ -42,6 +42,19 @@
         />
       </div>
       <div>
+        <SubContractorSearch
+          :modelValue="purchaseOrder.subcontractor"
+          :isEditing="isEditing"
+          @update:model-value="updateSubcontractor"
+        />
+      </div>
+      <div>
+        <CustomerSearch
+          :modelValue="purchaseOrder.customer"
+          :isEditing="isEditing"
+        />
+      </div>
+      <div>
         <label class="block font-bold">Date:</label>
         <input
           :disabled="!isEditing"
@@ -66,19 +79,6 @@
           v-model="purchaseOrder.ourRef"
           type="text"
           class="input input-bordered w-full"
-        />
-      </div>
-      <div>
-        <SubContractorSearch
-          :modelValue="purchaseOrder.subcontractor"
-          :isEditing="isEditing"
-          @update:model-value="updateSubcontractor"
-        />
-      </div>
-      <div>
-        <CustomerSearch
-          :modelValue="purchaseOrder.customer"
-          :isEditing="isEditing"
         />
       </div>
       <div>
@@ -116,20 +116,23 @@
           <div>Sub Total</div>
           <div>Discount</div>
           <div>Vat {{ purchaseOrder.vat }}%</div>
-          <div>Total</div>
+          <div class="font-bold text-lg">Total</div>
         </div>
-        <div class="font-bold">
+        <div>
           <div>{{ subTotal.toLocaleString() }}</div>
           <div>{{ purchaseOrder.discount.toLocaleString() }}</div>
           <div>
             {{ vat.toLocaleString() }}
           </div>
-          <div>{{ totalAmount.toLocaleString() }}</div>
+          <div class="font-bold text-lg">
+            {{ totalAmount.toLocaleString() }}
+          </div>
         </div>
         <div class="mx-5">
           <div>Baht</div>
           <div>Baht</div>
           <div>Baht</div>
+          <div class="font-bold text-lg">Baht</div>
         </div>
       </div>
     </div>
@@ -292,6 +295,7 @@ const refresh = async () => {
 // **Update Order Details**
 const updateOrderDetails = (details: OrderDetail[]) => {
   purchaseOrder.value.orderDetails = details;
+  console.log("Updating order details:", purchaseOrder);
 };
 
 // **Update Subcontractor**
@@ -314,6 +318,7 @@ const savePurchaseOrder = async () => {
       console.log("Updating purchase order:", purchaseOrder.value);
       purchaseOrder.value.total =
         subTotal.value - purchaseOrder.value.discount + vat.value;
+      await updatePurchaseOrder(purchaseOrder.value.id, purchaseOrder.value);
     } else {
       await createPurchaseOrder(purchaseOrder.value);
     }

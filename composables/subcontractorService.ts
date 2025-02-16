@@ -31,21 +31,41 @@ export default function useSubcontractorService() {
     }
   };
 
-  // Create Subcontractor
   const createSubcontractor = async (subcontractor: Partial<Subcontractor>) => {
     try {
       console.log("subcontractor", subcontractor);
-      const { data } = await useFetch<Subcontractor>(
+      const response = await useFetch<Subcontractor>(
         `${config.public.apiBase}/subcontractors`,
         {
           method: "POST",
           body: subcontractor,
         }
       );
-      console.log("Subcontractor data", data);
-      return data.value;
-    } catch (error) {
-      console.error("Error creating subcontractor:", error);
+
+      if (!response.error.value) {
+        console.log("Subcontractor data", response.data.value);
+        return response.data.value;
+      } else {
+        // แสดง error message ที่ละเอียดขึ้น
+        console.error("Error response:", response.error.value);
+        alert(
+          `Failed to create subcontractor: ${
+            response.error.value.data?.message || response.error.value
+          }`
+        );
+      }
+    } catch (error: any) {
+      // ตรวจสอบและแสดงรายละเอียดของ error
+      if (error.response) {
+        console.error("Response error:", error.response.data);
+        alert(`Error: ${error.response.data.message || "Unknown error"}`);
+      } else if (error.request) {
+        console.error("Request error:", error.request);
+        alert("Request failed. Please check your network.");
+      } else {
+        console.error("Error:", error.message);
+        alert(`Unexpected error: ${error.message}`);
+      }
     }
   };
 

@@ -302,7 +302,7 @@ export default function usePurchaseOrderService() {
         startY: yPos,
         body: [
           ["", "*** รายละเอียดตามใบเสนอราคาแนบ", "", "", ""],
-          ["", `${"       " + purchaseOrder.qtNumber || ""}`, "", "", ""],
+          ["", `${"       " + (purchaseOrder.qtNumber || "")}`, "", "", ""],
         ],
         theme: "grid",
         styles: {

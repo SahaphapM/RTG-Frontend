@@ -30,6 +30,7 @@
         class="p-2 hover:bg-gray-100 cursor-pointer"
       >
         {{ customer.name }}
+        <div class="text-xs text-gray-500">{{ customer.address }}</div>
       </li>
     </ul>
 
@@ -78,6 +79,7 @@ const saveCustomer = async (customerData: Omit<Customer, "id">) => {
   if (newCustomer) {
     selectedCustomer.value = newCustomer;
     emit("update:modelValue", newCustomer);
+    await customerStore.getCustomers();
   }
   isCustomerModalOpen.value = false;
 };
@@ -90,6 +92,8 @@ const closeCustomerModal = () => {
 watch(
   () => props.modelValue,
   (newValue) => {
+    emit("update:modelValue", newValue);
+
     selectedCustomer.value = newValue;
     searchQuery.value = newValue ? newValue.name : "";
   },
@@ -97,6 +101,8 @@ watch(
 );
 
 onMounted(async () => {
-  await customerStore.getCustomers();
+  nextTick(async () => {
+    await customerStore.getCustomers();
+  });
 });
 </script>
