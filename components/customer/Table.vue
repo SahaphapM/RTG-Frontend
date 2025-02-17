@@ -45,17 +45,6 @@
           </td>
         </tr>
       </tbody>
-      <!-- Table Footer pagination -->
-      <!-- <tfoot>
-        <tr>
-          <th colspan="6" class="py-4 px-6 text-center">
-            <div class="btn-group">
-              <button class="btn btn-primary mr-2">Previous</button>
-              <button class="btn btn-primary mr-2">Next</button>
-            </div>
-          </th>
-        </tr>
-      </tfoot> -->
     </table>
   </div>
 </template>
