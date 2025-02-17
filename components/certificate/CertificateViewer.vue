@@ -18,7 +18,7 @@
     <embed
       :src="pdfUrl"
       type="application/pdf"
-      class="w-full min-h-[600px] border rounded-lg"
+      class="w-full min-h-[650px] border rounded-lg"
     />
   </div>
 </template>

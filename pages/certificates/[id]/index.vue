@@ -25,12 +25,12 @@
       <!-- Right: Form Fields (Expands to Fill Remaining Space) -->
       <div class="flex-grow space-y-4">
         <!-- File Upload -->
-        <div class="flex gap-10 mt-6">
+        <div class="flex gap-10 mt-10 items-center">
           <div><h2 class="font-semibold text-lg">Upload PDF</h2></div>
 
           <div>
-            <label
-              class="border-dashed border-2 border-gray-500 rounded-lg p-6 text-center text-gray-600"
+            <div
+              class="flex row border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 items-center h-16"
               :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
             >
               <input
@@ -42,7 +42,8 @@
               />
               <span v-if="!certificate.file">Click to upload PDF</span>
               <span v-else>{{ file?.name || certificate.file }}</span>
-            </label>
+              <HardDriveUpload class="w-7 h-7 ml-5" />
+            </div>
           </div>
         </div>
 
@@ -71,7 +72,7 @@
         <!-- Subcontractor -->
         <div>
           <SubContractorSearch
-            :modelValue="certificate.subcontractor"
+            :modelValue="certificate.subcontractor!"
             :isEditing="isEditing"
             @update:model-value="updateSubcontractor"
           />
@@ -79,40 +80,42 @@
 
         <!-- Project -->
         <div>
-          <label class="block font-semibold">Project</label>
-          <ProjectSearch v-model="certificate.project" :disabled="!isEditing" />
+          <ProjectSearch
+            :modelValue="certificate.project!"
+            :isEditing="isEditing"
+            @update:model-value="updateProject"
+          />
         </div>
 
         <!-- Date -->
         <div>
           <label class="block font-semibold">Date</label>
           <input
-            v-model="certificate.date"
+            v-model="formattedDate"
             type="date"
             class="input input-bordered w-full"
             :disabled="!isEditing"
           />
         </div>
+        <!-- Buttons -->
+        <div class="h-5"></div>
+        <div class="flex justify-end items-end mt-4 gap-2" v-if="isEditing">
+          <button
+            type="button"
+            @click="resetForm(), (isEditing = false)"
+            class="btn btn-error w-32"
+          >
+            Cancel
+          </button>
+          <button @click="saveCertificate" class="btn btn-success w-32">
+            Save
+          </button>
+        </div>
+
+        <div class="flex justify-end mt-4 gap-2" v-if="!isEditing">
+          <button @click="goBack" class="btn btn-error w-32">Back</button>
+        </div>
       </div>
-    </div>
-
-    <!-- Buttons -->
-    <div class="flex justify-end items-center mt-4 gap-2" v-if="isEditing">
-      <button
-        type="button"
-        @click="resetForm(), (isEditing = false)"
-        class="btn btn-error w-32"
-      >
-        Cancel
-      </button>
-      <button @click="saveCertificate" class="btn btn-success w-32">
-        Save
-      </button>
-    </div>
-
-    <div class="h-5"></div>
-    <div class="flex justify-end mt-4 gap-2" v-if="!isEditing">
-      <button @click="goBack" class="btn btn-error w-32">Back</button>
     </div>
   </div>
 </template>
@@ -124,6 +127,9 @@ import { useCertificateService } from "~/composables/certificatesService";
 import type { Certificate } from "~/types/certificate";
 import SubContractorSearch from "~/components/subcontractor/SubContractorSearch.vue";
 import CertificateViewer from "~/components/certificate/CertificateViewer.vue";
+import { HardDriveUpload } from "lucide-vue-next";
+import ProjectSearch from "~/components/certificate/ProjectSearch.vue";
+import type { Project } from "~/types/project";
 
 const route = useRoute();
 const router = useRouter();
@@ -143,6 +149,8 @@ const certificate = ref<Certificate>({
   file: "",
   // iso date string YYYY-MM-DD
   date: new Date().toISOString().split("T")[0],
+  subcontractor: null,
+  project: null,
 });
 
 const file = ref<File | null>(null); // Store uploaded file
@@ -161,8 +169,14 @@ onMounted(async () => {
   });
 });
 
+const formattedDate = computed({
+  get: () => certificate.value.date,
+  set: (value) => (certificate.value.date = value),
+});
+
 // Handle File Upload
 const handleFileUpload = (event: Event) => {
+  console.log("event", event);
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
 
@@ -205,8 +219,7 @@ const saveCertificate = async () => {
 async function resetForm() {
   const data = await fetchCertificate(Number(route.params.id));
   if (data) {
-    Object.assign(certificate.value, data);
-    console.log("certificate.value", certificate.value);
+    certificate.value = data;
   }
 
   if (certificate.value.file) {
@@ -223,5 +236,10 @@ const goBack = () => router.push("/certificates");
 // Update subcontractor
 const updateSubcontractor = (subcontractor: any) => {
   certificate.value.subcontractor = subcontractor;
+};
+
+// Update project
+const updateProject = (project: Project) => {
+  certificate.value.project = project;
 };
 </script>

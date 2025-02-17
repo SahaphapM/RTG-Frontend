@@ -5,7 +5,10 @@
 
       <!-- Action Buttons -->
       <div class="flex justify-end">
-        <button class="btn btn-primary w-32" @click="openModal(null)">
+        <button
+          class="btn btn-primary w-32"
+          @click="router.push('/certificates/new')"
+        >
           Add New
         </button>
       </div>
@@ -28,18 +31,11 @@ import Table from "@/components/certificate/Table.vue"; // Certificate Table Com
 import { useCertificateService } from "@/composables/certificatesService";
 import type { Certificate } from "@/types/certificate";
 
-const {
-  fetchCertificates,
-  createCertificate,
-  downloadCertificate,
-  updateCertificate,
-  deleteCertificate,
-} = useCertificateService();
+const { fetchCertificates, downloadCertificate } = useCertificateService();
 
+const router = useRouter();
 const certificates = ref<Certificate[]>([]);
 const isEditing = ref(false);
-const showModal = ref(false);
-const selectedCertificate = ref<Certificate | null>(null);
 
 // Fetch all certificates on mount
 onMounted(async () => {
@@ -65,30 +61,6 @@ const download = async (name: string) => {
     await downloadCertificate(name);
   }
 };
-
-// Open Modal for New or Edit Certificate
-const openModal = (certificate: Certificate | null) => {
-  selectedCertificate.value = certificate
-    ? { ...certificate }
-    : { name: "", description: "", file: "" };
-  showModal.value = true;
-};
-
-// Handle Saving a Certificate
-const handleSave = async (certificate: Certificate) => {
-  try {
-    if (certificate.id) {
-      await updateCertificate(certificate.id, certificate);
-    } else {
-      await createCertificate(certificate);
-    }
-    await loadCertificates();
-    showModal.value = false;
-  } catch (error) {
-    console.error("Error saving certificate:", error);
-  }
-};
-
 // Update Certificates
 const updateCertificates = (updatedCertificates: Certificate[]) => {
   certificates.value = updatedCertificates;

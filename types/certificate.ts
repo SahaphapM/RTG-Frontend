@@ -7,6 +7,6 @@ export type Certificate = {
   description: string;
   date: string; // Date of the purchase order (ISO format: "YYYY-MM-DD")
   file: string;
-  subcontractor?: Subcontractor;
-  project?: Project;
+  subcontractor?: Subcontractor | null;
+  project?: Project | null;
 };

@@ -1,15 +1,25 @@
 <template>
   <div class="relative">
     <label class="block font-semibold">Subcontractor</label>
-    <div class="flex">
-      <input
-        v-model="searchQuery"
-        @focus="showDropdown = true"
-        type="text"
-        class="input input-bordered w-full"
-        :disabled="!isEditing"
-        required
-      />
+
+    <div class="flex items-center">
+      <div class="relative w-full">
+        <!-- Input Field with Right Padding -->
+        <input
+          v-model="searchQuery"
+          @focus="showDropdown = true"
+          type="text"
+          class="input input-bordered w-full pr-10"
+          :disabled="!isEditing"
+          required
+        />
+        <!-- Search Icon -->
+        <Search
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500"
+        />
+      </div>
+
+      <!-- "New Subcontractor" Button -->
       <button
         class="btn btn-primary w-32 ml-2"
         v-if="isEditing"
@@ -19,6 +29,7 @@
       </button>
     </div>
 
+    <!-- Dropdown List -->
     <ul
       v-if="showDropdown && filteredSubcontractors.length"
       class="absolute w-full bg-white shadow-lg border rounded-lg z-10 mt-1"
@@ -34,6 +45,7 @@
       </li>
     </ul>
 
+    <!-- Subcontractor Modal -->
     <SubcontractorModal
       v-if="isSubcontractorModalOpen"
       :subcontractor="newSubcontractor"
@@ -44,6 +56,7 @@
 </template>
 
 <script setup lang="ts">
+import { Search } from "lucide-vue-next";
 import { ref, computed, defineProps, defineEmits, watch, onMounted } from "vue";
 import useSubcontractorService from "~/composables/subcontractorService";
 import type { Subcontractor } from "~/types/subcontractor";

@@ -3,7 +3,7 @@
     <table class="table w-full">
       <thead>
         <tr class="bg-base-300 text-base-content text-lg rounded-lg">
-          <th class="py-4 px-6">ID</th>
+          <th class="py-4 px-4">ID</th>
           <th class="py-4 px-6">Name</th>
           <th class="py-4 px-6">Description</th>
           <th class="py-4 px-6">File</th>
@@ -23,9 +23,10 @@
         <tr
           v-for="(certificate, index) in certificates"
           :key="certificate.id"
-          class="hover border-b border-gray-300"
+          class="hover border-b border-gray-300 cursor-pointer"
+          @click="certificate.id ? navigateToCertificate(certificate.id) : ''"
         >
-          <td class="py-4 px-6 text-center">{{ index + 1 }}</td>
+          <td class="py-4 px-6">{{ index + 1 }}</td>
           <td class="py-4 px-6">{{ certificate.name }}</td>
           <td class="py-4 px-6">{{ certificate.description }}</td>
           <td class="py-4 px-6">
@@ -48,18 +49,18 @@
             >
               Edit
             </button>
-            <button
+            <!-- <button
               @click="$emit('delete', certificate.id)"
               class="btn btn-error btn-sm w-16"
             >
               Delete
-            </button>
+            </button> -->
             <button
               v-if="certificate.file"
-              @click="$emit('download', certificate.file)"
-              class="btn btn-info btn-sm w-16 ml-2"
+              @click.stop="$emit('download', certificate.file)"
+              class="btn btn-success btn-sm w-16 ml-2"
             >
-              Download
+              PDF
             </button>
           </td>
         </tr>
