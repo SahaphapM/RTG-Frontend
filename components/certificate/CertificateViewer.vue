@@ -1,6 +1,6 @@
 <template>
   <div v-if="pdfUrl" class="w-full">
-    <h2 class="text-xl font-semibold mb-2 text-center">Certificate Preview</h2>
+    <h2 class="text-xl font-semibold mb-2 text-center">PDF Preview</h2>
 
     <!-- Use `object` for better PDF scaling -->
     <!-- <object

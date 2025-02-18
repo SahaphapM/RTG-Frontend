@@ -13,110 +13,107 @@
       </button>
     </div>
 
-    <div class="flex gap-10">
+    <div class="flex gap-10 min-h-[500px]">
       <!-- Left: File Upload & Preview (Fixed Width) -->
-      <div
-        class="w-[40%] rounded-lg p-4 flex flex-col items-center justify-start"
-      >
-        <!-- Show PDF Preview -->
+      <div class="w-[40%] rounded-lg p-4 flex flex-col items-center">
         <CertificateViewer :previewUrl="previewUrl || examplePdf" />
       </div>
 
       <!-- Right: Form Fields (Expands to Fill Remaining Space) -->
-      <div class="flex-grow space-y-4">
-        <!-- File Upload -->
-        <div class="flex gap-10 mt-10 items-center">
-          <div><h2 class="font-semibold text-lg">Upload PDF</h2></div>
-
-          <label
-            class="flex row border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 items-center h-16"
-            :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
-          >
-            <input
-              type="file"
-              class="hidden"
-              accept="application/pdf"
-              @change="handleFileUpload"
-              :disabled="!isEditing"
-            />
-            <span v-if="!certificate.file">Click to upload PDF</span>
-            <span v-else>{{ file?.name || certificate.file }}</span>
-            <HardDriveUpload class="w-7 h-7 ml-5" />
-          </label>
-        </div>
-
-        <div class="flex mt-10 gap-2">
-          <!-- Name -->
-          <div class="flex-grow">
-            <label class="block font-semibold">Name</label>
-            <input
-              v-model="certificate.name"
-              type="text"
-              class="input input-bordered w-full"
-              :disabled="!isEditing"
-              required
-            />
+      <div class="flex-grow flex flex-col justify-between mt-10">
+        <div class="space-y-4">
+          <!-- File Upload -->
+          <div class="flex gap-10 mt-4 items-center">
+            <div><h2 class="font-semibold text-lg">Upload PDF</h2></div>
+            <label
+              class="flex items-center border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 h-16 w-full"
+              :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
+            >
+              <input
+                type="file"
+                class="hidden"
+                accept="application/pdf"
+                @change="handleFileUpload"
+                :disabled="!isEditing"
+              />
+              <span v-if="!certificate.file">Click to upload PDF</span>
+              <span v-else>{{ file?.name || certificate.file }}</span>
+              <HardDriveUpload class="w-7 h-7 ml-5" />
+            </label>
           </div>
 
-          <!-- Date -->
+          <!-- Name & Date -->
+          <div class="flex gap-4">
+            <div class="flex-grow">
+              <label class="block font-semibold">Name</label>
+              <input
+                v-model="certificate.name"
+                type="text"
+                class="input input-bordered w-full"
+                :disabled="!isEditing"
+                required
+              />
+            </div>
+            <div>
+              <label class="block font-semibold">Date</label>
+              <input
+                v-model="formattedDate"
+                type="date"
+                class="input input-bordered w-full"
+                :disabled="!isEditing"
+              />
+            </div>
+          </div>
+
+          <!-- Description -->
           <div>
-            <label class="block font-semibold">Date</label>
-            <input
-              v-model="formattedDate"
-              type="date"
-              class="input input-bordered w-full"
+            <label class="block font-semibold">Description</label>
+            <textarea
+              v-model="certificate.description"
+              class="textarea textarea-bordered text-lg w-full h-[150px]"
               :disabled="!isEditing"
-            />
+            ></textarea>
+          </div>
+
+          <!-- Project & Subcontractor -->
+          <div class="flex gap-4">
+            <div class="w-1/2">
+              <ProjectSearch
+                :modelValue="certificate.project!"
+                :isEditing="isEditing"
+                @update:model-value="updateProject"
+              />
+            </div>
+            <div class="w-1/2">
+              <SubContractorSearch
+                :modelValue="certificate.subcontractor!"
+                :isEditing="isEditing"
+                @update:model-value="updateSubcontractor"
+              />
+            </div>
           </div>
         </div>
 
-        <!-- Description -->
-        <div>
-          <label class="block font-semibold">Description</label>
-          <textarea
-            v-model="certificate.description"
-            class="textarea textarea-bordered text-lg w-full h-[150px]"
-            :disabled="!isEditing"
-          ></textarea>
-        </div>
-
-        <div class="flex mt-10 gap-2">
-          <!-- Project -->
-          <div class="w-1/2">
-            <ProjectSearch
-              :modelValue="certificate.project!"
-              :isEditing="isEditing"
-              @update:model-value="updateProject"
-            />
-          </div>
-
-          <!-- Subcontractor -->
-          <div class="w-1/2">
-            <SubContractorSearch
-              :modelValue="certificate.subcontractor!"
-              :isEditing="isEditing"
-              @update:model-value="updateSubcontractor"
-            />
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="h-5"></div>
-        <div class="flex justify-end items-end mt-4 gap-2" v-if="isEditing">
+        <!-- Buttons (Aligned to Bottom) -->
+        <div class="flex justify-end items-end mt-auto gap-2">
           <button
             type="button"
             @click="resetForm(), (isEditing = false)"
             class="btn btn-error w-32"
+            v-if="isEditing"
           >
             Cancel
           </button>
-          <button @click="saveCertificate" class="btn btn-success w-32">
+          <button
+            @click="saveCertificate"
+            class="btn btn-success w-32"
+            v-if="isEditing"
+          >
             Save
           </button>
-        </div>
-
-        <div class="flex justify-end mt-4 gap-2" v-if="!isEditing">
-          <button @click="goBack" class="btn btn-error w-32">Back</button>
+          <button @click="goBack" class="btn btn-error w-32" v-if="!isEditing">
+            Back
+          </button>
         </div>
       </div>
     </div>

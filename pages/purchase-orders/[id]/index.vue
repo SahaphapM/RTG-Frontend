@@ -108,7 +108,7 @@
           :disabled="!isEditing"
           v-model="purchaseOrder.discount"
           type="number"
-          class="input input-bordered w-60 font-bold"
+          class="input input-bordered w-60"
         />
       </div>
       <div class="text-right flex col">

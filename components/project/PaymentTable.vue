@@ -1,9 +1,9 @@
 <template>
   <div class="mt-4">
     <!-- Add New Item Button -->
-    <div class="flex justify-end mb-2">
-      <button v-if="isEditing" @click="addItem" class="btn btn-primary">
-        New Item
+    <div class="flex justify-end mb-4">
+      <button v-if="isEditing" @click="addItem" class="btn btn-primary w-32">
+        Add Item
       </button>
     </div>
 

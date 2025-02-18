@@ -2,7 +2,7 @@
   <div class="relative">
     <label class="block font-semibold">Subcontractor</label>
 
-    <div class="flex items-center">
+    <div class="flex items-center gap-4">
       <div class="relative w-full">
         <!-- Input Field with Right Padding -->
         <input
@@ -22,7 +22,7 @@
 
       <!-- "New Subcontractor" Button -->
       <button
-        class="btn btn-primary w-32 ml-2"
+        class="btn btn-primary w-32"
         v-if="isEditing"
         @click="isSubcontractorModalOpen = true"
       >
@@ -74,6 +74,7 @@ const showDropdown = ref(false);
 const newSubcontractor: Subcontractor = {
   name: "",
   address: "",
+  type: "Contractor",
   email: "",
   contact: "",
 };

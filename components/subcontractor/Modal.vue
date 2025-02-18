@@ -77,7 +77,7 @@ const emit = defineEmits(["save", "close"]);
 
 const form = ref<Subcontractor>({
   name: "",
-  type: "",
+  type: "Contractor",
   email: "",
   contact: "",
   address: "",
@@ -88,7 +88,7 @@ watch(
   (subcontractor) => {
     form.value = subcontractor
       ? { ...subcontractor }
-      : { name: "", type: "", email: "", contact: "", address: "" };
+      : { name: "", type: "Contractor", email: "", contact: "", address: "" };
   },
   { immediate: true }
 );
