@@ -8,6 +8,7 @@
         <input
           v-model="searchQuery"
           @focus="showDropdown = true"
+          @blur="closeDropdownWithDelay"
           type="text"
           class="input input-bordered w-full pr-10"
           :disabled="!isEditing"
@@ -35,10 +36,10 @@
       class="absolute w-full bg-white shadow-lg border rounded-lg z-10 mt-1"
     >
       <li
-        v-for="subcontractor in filteredSubcontractors"
+        v-for="subcontractor in filteredSubcontractors.slice(0, 5)"
         :key="subcontractor.id"
         @click="selectSubcontractor(subcontractor)"
-        class="p-2 hover:bg-gray-100 cursor-pointer"
+        class="p-2 hover:bg-gray-100 cursor-pointer border border-collapse"
       >
         {{ subcontractor.name }}
         <div class="text-xs text-gray-500">{{ subcontractor.address }}</div>
@@ -115,6 +116,12 @@ const saveSubcontractor = async (subcontractorData: Subcontractor) => {
 // Close the subcontractor modal
 const closeSubcontractorModal = () => {
   isSubcontractorModalOpen.value = false;
+};
+
+const closeDropdownWithDelay = () => {
+  setTimeout(() => {
+    showDropdown.value = false;
+  }, 100); // ✅ Small delay to allow selection click
 };
 
 // Watch for changes in modelValue

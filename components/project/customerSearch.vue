@@ -24,13 +24,15 @@
       class="absolute w-full bg-white shadow-lg border rounded-lg z-10 mt-1"
     >
       <li
-        v-for="customer in filteredCustomers"
+        v-for="customer in filteredCustomers.slice(0, 5)"
         :key="customer.id"
         @click="selectCustomer(customer)"
-        class="p-2 hover:bg-gray-100 cursor-pointer"
+        class="p-2 hover:bg-gray-100 cursor-pointer border border-collapse"
       >
         {{ customer.name }}
-        <div class="text-xs text-gray-500">{{ customer.address }}</div>
+        <div class="text-xs text-gray-500">
+          {{ truncateAddress(customer.address, 100) }}
+        </div>
       </li>
     </ul>
 
@@ -87,6 +89,13 @@ const saveCustomer = async (customerData: Omit<Customer, "id">) => {
 const closeCustomerModal = () => {
   isCustomerModalOpen.value = false;
 };
+
+function truncateAddress(address: string, maxLength: number = 30): string {
+  if (!address) return "";
+  return address.length > maxLength
+    ? address.substring(0, maxLength) + "..."
+    : address;
+}
 
 // Watch for changes in modelValue
 watch(

@@ -19,7 +19,7 @@
         class="w-[40%] rounded-lg p-4 flex flex-col items-center justify-start"
       >
         <!-- Show PDF Preview -->
-        <CertificateViewer v-if="previewUrl" :previewUrl="previewUrl" />
+        <CertificateViewer :previewUrl="previewUrl || examplePdf" />
       </div>
 
       <!-- Right: Form Fields (Expands to Fill Remaining Space) -->
@@ -28,35 +28,46 @@
         <div class="flex gap-10 mt-10 items-center">
           <div><h2 class="font-semibold text-lg">Upload PDF</h2></div>
 
-          <div>
-            <div
-              class="flex row border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 items-center h-16"
-              :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
-            >
-              <input
-                type="file"
-                class="hidden"
-                accept="application/pdf"
-                @change="handleFileUpload"
-                :disabled="!isEditing"
-              />
-              <span v-if="!certificate.file">Click to upload PDF</span>
-              <span v-else>{{ file?.name || certificate.file }}</span>
-              <HardDriveUpload class="w-7 h-7 ml-5" />
-            </div>
-          </div>
+          <label
+            class="flex row border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 items-center h-16"
+            :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
+          >
+            <input
+              type="file"
+              class="hidden"
+              accept="application/pdf"
+              @change="handleFileUpload"
+              :disabled="!isEditing"
+            />
+            <span v-if="!certificate.file">Click to upload PDF</span>
+            <span v-else>{{ file?.name || certificate.file }}</span>
+            <HardDriveUpload class="w-7 h-7 ml-5" />
+          </label>
         </div>
 
-        <!-- Name -->
-        <div>
-          <label class="block font-semibold mt-10">Name</label>
-          <input
-            v-model="certificate.name"
-            type="text"
-            class="input input-bordered w-full"
-            :disabled="!isEditing"
-            required
-          />
+        <div class="flex mt-10 gap-2">
+          <!-- Name -->
+          <div class="flex-grow">
+            <label class="block font-semibold">Name</label>
+            <input
+              v-model="certificate.name"
+              type="text"
+              class="input input-bordered w-full"
+              :disabled="!isEditing"
+              required
+            />
+          </div>
+
+          <!-- Date -->
+          <div>
+            <label class="block font-semibold">Date</label>
+            <input
+              v-model="formattedDate"
+              type="date"
+              class="input input-bordered w-full"
+              :disabled="!isEditing"
+            />
+          </div>
         </div>
 
         <!-- Description -->
@@ -64,39 +75,31 @@
           <label class="block font-semibold">Description</label>
           <textarea
             v-model="certificate.description"
-            class="textarea textarea-bordered w-full"
+            class="textarea textarea-bordered text-lg w-full h-[150px]"
             :disabled="!isEditing"
           ></textarea>
         </div>
 
-        <!-- Subcontractor -->
-        <div>
-          <SubContractorSearch
-            :modelValue="certificate.subcontractor!"
-            :isEditing="isEditing"
-            @update:model-value="updateSubcontractor"
-          />
+        <div class="flex mt-10 gap-2">
+          <!-- Project -->
+          <div class="w-1/2">
+            <ProjectSearch
+              :modelValue="certificate.project!"
+              :isEditing="isEditing"
+              @update:model-value="updateProject"
+            />
+          </div>
+
+          <!-- Subcontractor -->
+          <div class="w-1/2">
+            <SubContractorSearch
+              :modelValue="certificate.subcontractor!"
+              :isEditing="isEditing"
+              @update:model-value="updateSubcontractor"
+            />
+          </div>
         </div>
 
-        <!-- Project -->
-        <div>
-          <ProjectSearch
-            :modelValue="certificate.project!"
-            :isEditing="isEditing"
-            @update:model-value="updateProject"
-          />
-        </div>
-
-        <!-- Date -->
-        <div>
-          <label class="block font-semibold">Date</label>
-          <input
-            v-model="formattedDate"
-            type="date"
-            class="input input-bordered w-full"
-            :disabled="!isEditing"
-          />
-        </div>
         <!-- Buttons -->
         <div class="h-5"></div>
         <div class="flex justify-end items-end mt-4 gap-2" v-if="isEditing">
@@ -156,6 +159,8 @@ const certificate = ref<Certificate>({
 const file = ref<File | null>(null); // Store uploaded file
 const previewUrl = ref<string | null>(null); // Store preview URL
 const isUploading = ref(false);
+const examplePdf = "/pdf/sample.pdf"; // ✅ Correct Path
+const fileInput = ref<HTMLInputElement | null>(null);
 
 // Load Certificate Data
 onMounted(async () => {
@@ -176,7 +181,7 @@ const formattedDate = computed({
 
 // Handle File Upload
 const handleFileUpload = (event: Event) => {
-  console.log("event", event);
+  console.log("handleFileUpload");
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
 

@@ -5,6 +5,7 @@
       <input
         v-model="searchQuery"
         @focus="showDropdown = true"
+        @blur="closeDropdownWithDelay"
         type="text"
         class="input input-bordered w-full pr-10"
         :disabled="!isEditing"
@@ -21,10 +22,10 @@
       class="absolute w-full bg-white shadow-lg border rounded-lg z-10 mt-1"
     >
       <li
-        v-for="project in filteredProjects"
+        v-for="project in filteredProjects.slice(0, 5)"
         :key="project.id"
         @click="selectProject(project)"
-        class="p-2 hover:bg-gray-100 cursor-pointer"
+        class="p-2 hover:bg-gray-100 cursor-pointer border border-collapse"
       >
         {{ project.name }}
         <div class="text-xs text-gray-500">{{ project.number }}</div>
@@ -48,7 +49,6 @@ const emit = defineEmits(["update:modelValue"]);
 const { fetchProjects } = useProjectService();
 const searchQuery = ref("");
 const showDropdown = ref(false);
-
 const selectedProject = ref<Project | null>(null);
 const projects = ref<Project[]>([]);
 
@@ -67,6 +67,12 @@ const selectProject = (project: Project) => {
   selectedProject.value = project;
   emit("update:modelValue", project);
   showDropdown.value = false;
+};
+
+const closeDropdownWithDelay = () => {
+  setTimeout(() => {
+    showDropdown.value = false;
+  }, 100); // ✅ Small delay to allow selection click
 };
 
 // Watch for changes in modelValue
