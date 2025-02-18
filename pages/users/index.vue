@@ -9,13 +9,7 @@
     </div>
 
     <!-- User Table -->
-    <Table
-      :users="userStore.users"
-      :isLoading="userStore.isloading"
-      @edit="editUser"
-      @delete="confirmDeleteUser"
-      @save="saveUser"
-    />
+    <Table @edit="editUser" @delete="confirmDeleteUser" @save="saveUser" />
 
     <!-- User Modal (Add/Edit) -->
     <UserModal

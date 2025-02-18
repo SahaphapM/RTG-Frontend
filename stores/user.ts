@@ -1,24 +1,35 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import useServiceUsers from "~/composables/usersService";
+import type { PaginationQuery } from "~/types/pagination";
 import type { User } from "~/types/user";
 
 export const useUserStore = defineStore("user", () => {
-  const { fetchUsers, deleteUser } = useServiceUsers();
+  const { users, totalPages, totalUsers, isLoading, fetchUsers, deleteUser } =
+    useServiceUsers();
 
-  const users = ref<User[] | null>([]);
-  const isloading = ref(false);
+  // Default pagination params
+  const query = ref<PaginationQuery>({
+    page: 1,
+    limit: 10,
+    search: "",
+    sortBy: "name",
+    order: "ASC",
+  });
 
+  // **Wrapper function to fetch users (calls fetchUsers from composable)**
   const getUsers = async () => {
-    isloading.value = true;
-    try {
-      users.value = await fetchUsers();
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      isloading.value = false;
-    }
+    console.log("query", query.value);
+    await fetchUsers(query.value); // This will update the `users` state automatically
   };
 
-  return { users, isloading, getUsers, deleteUser };
+  return {
+    users,
+    totalUsers,
+    totalPages,
+    isLoading,
+    getUsers,
+    deleteUser,
+    query,
+  };
 });

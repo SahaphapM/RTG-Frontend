@@ -1,20 +1,30 @@
 <template>
-  <div class="overflow-x-auto bg-base-100 border border-gray-200 rounded-lg">
-    <table class="table w-full table-fixed">
-      <!-- Table Header -->
+  <div
+    class="overflow-x-auto bg-base-100 border border-gray-200 rounded-lg p-4"
+  >
+    <!-- Search Input -->
+    <div class="flex justify-between mb-4">
+      <input
+        v-model="userStore.query.search"
+        placeholder="Search Users..."
+        class="input input-bordered w-64"
+      />
+    </div>
+
+    <!-- Table -->
+    <table class="table w-full">
       <thead>
-        <tr class="bg-base-300 text-base-content border-b text-lg text-left">
-          <th class="py-4 px-6 w-16">ID</th>
-          <th class="py-4 px-6 w-40">Name</th>
-          <th class="py-4 px-6 w-40">Email</th>
-          <th class="py-4 px-6 w-32">Position</th>
-          <th class="py-4 px-6 w-24">Role</th>
-          <th class="py-4 px-6 w-32 text-center">Actions</th>
+        <tr class="bg-base-300 text-base-content text-lg">
+          <th @click="setSorting('id')" class="cursor-pointer">ID</th>
+          <th @click="setSorting('name')" class="cursor-pointer">Name</th>
+          <th @click="setSorting('email')" class="cursor-pointer">Email</th>
+          <th>Position</th>
+          <th>Role</th>
+          <th class="text-center">Actions</th>
         </tr>
       </thead>
 
-      <!-- Table Body (Loading Placeholder) -->
-      <tbody v-if="isLoading">
+      <tbody v-if="userStore.isLoading">
         <tr v-for="n in 5" :key="n">
           <td v-for="i in 6" :key="i" class="py-4 px-6">
             <div class="h-4 bg-gray-200 rounded w-full"></div>
@@ -22,59 +32,96 @@
         </tr>
       </tbody>
 
-      <!-- Table Body (Users Loaded) -->
       <tbody v-else>
         <tr
-          v-for="user in users"
+          v-for="user in userStore.users"
           :key="user.id"
           class="hover border-b border-gray-200"
         >
-          <td class="py-4 px-6">{{ user.id }}</td>
-          <td class="py-4 px-6">{{ user.name }}</td>
-          <td class="py-4 px-6">{{ user.email }}</td>
-          <td class="py-4 px-6">{{ user.position }}</td>
-          <td class="py-4 px-6">
-            <span :class="['badge px-3 py-2 bg-gray-200 text-gray-800 ']">
-              {{ user.role }}
-            </span>
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.position }}</td>
+          <td>
+            <span class="badge bg-gray-200 text-gray-800 px-3 py-2">{{
+              user.role
+            }}</span>
           </td>
-          <td class="px-6 text-center flex justify-center gap-2">
-            <button
-              @click="$emit('edit', user)"
-              class="btn btn-sm btn-warning w-16"
-            >
+          <td class="text-center">
+            <button @click="$emit('edit', user)" class="btn btn-warning btn-sm">
               Edit
             </button>
             <button
               @click="$emit('delete', user.id)"
-              class="btn btn-error btn-sm w-16"
+              class="btn btn-error btn-sm ml-2"
             >
               Delete
             </button>
           </td>
         </tr>
       </tbody>
-
-      <!-- Table Footer pagination -->
-      <!-- <tfoot>
-        <tr>
-          <th colspan="6" class="py-4 px-6 text-center">
-            <div class="btn-group">
-              <button class="btn btn-primary mr-2">Previous</button>
-              <button class="btn btn-primary mr-2">Next</button>
-            </div>
-          </th>
-        </tr>
-      </tfoot> -->
     </table>
+
+    <!-- Pagination Controls -->
+    <div class="flex justify-between items-center mt-4">
+      <button
+        @click="prevPage"
+        :disabled="userStore.query.page === 1"
+        class="btn btn-primary"
+      >
+        Previous
+      </button>
+      <span>Page {{ userStore.query.page }} of {{ userStore.totalPages }}</span>
+      <button
+        @click="nextPage"
+        :disabled="userStore.query.page === userStore.totalPages"
+        class="btn btn-primary"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DeleteIcon, EditIcon, TrashIcon } from "lucide-vue-next";
 import { defineProps, defineEmits } from "vue";
-import type { User } from "~/types/user";
-
-defineProps<{ users: User[]; isLoading: boolean }>();
+import useServiceUsers from "~/composables/usersService";
 defineEmits(["edit", "delete"]);
+
+const userStore = useUserStore();
+
+// Store the timeout ID
+let debounceTimeout = ref<NodeJS.Timeout | null>(null);
+
+watch(
+  () => userStore.query.search, // Watch only the search input
+  (newValue) => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
+
+    debounceTimeout.value = setTimeout(() => {
+      userStore.getUsers(); // Fetch users after 2s delay
+    }, 500);
+  }
+);
+
+// Sorting function
+const setSorting = (field: string) => {
+  userStore.query.sortBy = field;
+  userStore.query.order = userStore.query.order === "ASC" ? "DESC" : "ASC";
+};
+
+// Pagination functions
+const prevPage = () => {
+  if (userStore.query.page > 1) userStore.query.page--;
+};
+
+const nextPage = () => {
+  if (userStore.query.page < userStore.totalPages) userStore.query.page++;
+};
+
+onMounted(async () => {
+  nextTick(async () => {
+    await userStore.getUsers();
+  });
+});
 </script>
