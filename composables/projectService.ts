@@ -1,8 +1,41 @@
 import { useFetch } from "#app";
+import type { PaginationQuery, PaginationResponse } from "~/types/pagination";
 import type { Project } from "~/types/project";
 
 export default function useProjectService() {
   const config = useRuntimeConfig();
+
+  // Reactive state
+  const projects = ref<Project[]>([]);
+  const totalPages = ref(1);
+  const totalProjects = ref(0);
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+  const API_URL = `${config.public.apiBase}/projects`;
+
+  // Fetch users function
+  const fetchProjects = async (query: PaginationQuery) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const { data, error: fetchError } = await useFetch<
+        PaginationResponse<Project>
+      >(API_URL, {
+        query: query,
+      });
+      if (fetchError.value) throw new Error(fetchError.value.message);
+
+      projects.value = data.value?.data || [];
+      totalProjects.value = data.value?.total || 0;
+      totalPages.value = data.value?.totalPages || 1;
+    } catch (err: any) {
+      error.value = err.message || "Failed to fetch projects.";
+      console.error("Error fetching projects:", error.value);
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
   // Fetch Project
   const fetchProject = async (id: number): Promise<Project> => {
@@ -14,19 +47,6 @@ export default function useProjectService() {
     } catch (error) {
       console.error("Error fetching project:", error);
       return {} as Project;
-    }
-  };
-
-  // Fetch Projects
-  const fetchProjects = async (): Promise<Project[]> => {
-    try {
-      const { data } = await useFetch<Project[]>(
-        `${config.public.apiBase}/projects`
-      );
-      return data.value || [];
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-      return [];
     }
   };
 
@@ -43,7 +63,7 @@ export default function useProjectService() {
       });
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating project:", error);
       if (error.data) {
         console.error("Error details:", error.data); // เพิ่ม log นี้
@@ -100,5 +120,10 @@ export default function useProjectService() {
     createProject,
     updateProject,
     deleteProject,
+    projects,
+    totalProjects,
+    totalPages,
+    isLoading,
+    error,
   };
 }
