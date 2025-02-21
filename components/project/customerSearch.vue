@@ -4,7 +4,7 @@
     <div class="flex gap-4">
       <div class="relative w-full">
         <input
-          v-model="searchQuery"
+          v-model="customerStore.query.search"
           @focus="showDropdown = true"
           @blur="closeDropdownWithDelay"
           type="text"
@@ -27,11 +27,11 @@
     </div>
 
     <ul
-      v-if="showDropdown && filteredCustomers.length"
+      v-if="showDropdown && customerStore.customers.length"
       class="absolute w-full bg-white shadow-lg border rounded-lg z-10 mt-1"
     >
       <li
-        v-for="customer in filteredCustomers.slice(0, 5)"
+        v-for="customer in customerStore.customers.slice(0, 5)"
         :key="customer.id"
         @click="selectCustomer(customer)"
         class="p-2 hover:bg-gray-100 cursor-pointer border border-collapse"
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { Search } from "lucide-vue-next";
 import { ref, computed, defineProps, defineEmits } from "vue";
+import useCustomerService from "~/composables/customersService";
 import type { Customer } from "~/types/customer";
 
 const props = defineProps<{
@@ -63,18 +64,24 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["update:modelValue"]);
 
+const { createCustomer } = useCustomerService();
 const customerStore = useCustomerStore();
 const searchQuery = ref("");
 const showDropdown = ref(false);
 const selectedCustomer = ref<Customer | null>();
 const isCustomerModalOpen = ref(false);
 
-const filteredCustomers = computed(() =>
-  searchQuery.value
-    ? customerStore.customers.filter((customer: Customer) =>
-        customer.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-    : []
+let debounceTimeout = ref<NodeJS.Timeout | null>(null);
+
+watch(
+  () => customerStore.query.search,
+  (newValue) => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
+    debounceTimeout.value = setTimeout(async () => {
+      await customerStore.getCustomers();
+    }, 150);
+  },
+  { deep: true }
 );
 
 const selectCustomer = (customer: Customer) => {
@@ -85,7 +92,7 @@ const selectCustomer = (customer: Customer) => {
 };
 
 const saveCustomer = async (customerData: Omit<Customer, "id">) => {
-  const newCustomer = await customerStore.createCustomer(customerData);
+  const newCustomer = await createCustomer(customerData);
   if (newCustomer) {
     selectedCustomer.value = newCustomer;
     emit("update:modelValue", newCustomer);
