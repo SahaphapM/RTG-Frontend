@@ -1,73 +1,237 @@
 <template>
-  <div class="overflow-x-auto bg-base-100 border border-gray-200 rounded-lg">
-    <table class="table w-full">
+  <div class="table-container">
+    <!-- Table -->
+    <table class="custom-table">
       <thead>
-        <tr class="bg-base-300 text-base-content text-lg">
-          <th class="py-4 px-6">ID</th>
-          <th class="py-4 px-6">Name</th>
-          <th class="py-4 px-6">Type</th>
-          <!-- <th class="py-4 px-6">Address</th> -->
-          <th class="py-4 px-6">Email</th>
-          <th class="py-4 px-6">Contact</th>
-          <th class="py-4 px-6 text-center">Actions</th>
+        <tr>
+          <th @click="setSorting('id')" class="cursor-pointer">
+            <div class="flex items-center">
+              ID <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('name')" class="cursor-pointer">
+            <div class="flex items-center">
+              Name <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('type')" class="cursor-pointer">
+            <div class="flex items-center">
+              Type <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('email')" class="cursor-pointer">
+            <div class="flex items-center">
+              Email <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('contact')" class="cursor-pointer">
+            <div class="flex items-center">
+              Contact <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th class="text-center">Actions</th>
         </tr>
       </thead>
 
-      <tbody v-if="isLoading">
+      <tbody v-if="subcontractorStore.isLoading">
         <tr v-for="n in 5" :key="n">
-          <td v-for="i in 7" :key="i" class="py-4 px-6">
+          <td v-for="i in 6" :key="i" class="py-4 px-6">
             <div class="h-4 bg-gray-200 rounded w-full"></div>
           </td>
         </tr>
       </tbody>
 
-      <tbody>
+      <tbody v-else>
         <tr
-          v-for="subcontractor in subcontractors"
+          v-for="subcontractor in subcontractorStore.subcontractors"
           :key="subcontractor.id"
-          class="hover border-b border-gray-300"
+          class="hover border-b border-gray-200"
         >
-          <td class="py-4 px-6">{{ subcontractor.id }}</td>
-          <td class="py-4 px-6">{{ subcontractor.name }}</td>
-          <td class="py-4 px-6">{{ subcontractor.type }}</td>
-          <!-- <td class="py-4 px-6">{{ subcontractor.address }}</td> -->
-          <td class="py-4 px-6">{{ subcontractor.email }}</td>
-          <td class="py-4 px-6">{{ subcontractor.contact }}</td>
-          <td class="py-4 px-6 text-center">
+          <td>{{ subcontractor.id }}</td>
+          <td>{{ subcontractor.name }}</td>
+          <td>{{ subcontractor.type }}</td>
+          <td>{{ subcontractor.email }}</td>
+          <td>{{ subcontractor.contact }}</td>
+          <td class="text-center">
             <button
               @click="$emit('edit', subcontractor)"
-              class="btn btn-warning btn-sm w-16 mr-2"
+              class="btn btn-warning btn-sm w-16"
             >
               Edit
             </button>
             <button
               @click="$emit('delete', subcontractor.id)"
-              class="btn btn-error btn-sm w-16"
+              class="btn btn-error btn-sm ml-2 w-16"
             >
               Delete
             </button>
           </td>
         </tr>
       </tbody>
-      <!-- Table Footer pagination -->
-      <!-- <tfoot>
-        <tr>
-          <th colspan="7" class="py-4 px-6 text-center gap-2">
-            <div class="btn-group">
-              <button class="btn btn-primary">Previous</button>
-              <button class="btn btn-primary">Next</button>
-            </div>
-          </th>
-        </tr>
-      </tfoot> -->
     </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <button @click="prevPage" :disabled="subcontractorStore.query.page === 1">
+        <ChevronLeft />
+      </button>
+
+      <span>
+        {{ subcontractorStore.query.page }} /
+        {{ subcontractorStore.totalPages }}
+      </span>
+
+      <button
+        @click="nextPage"
+        :disabled="
+          subcontractorStore.query.page === subcontractorStore.totalPages
+        "
+      >
+        <ChevronRight />
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-import type { Subcontractor } from "~/types/subcontractor";
+import { ChevronLeft, ChevronRight, SortDescIcon } from "lucide-vue-next";
+import { ref, watch, onMounted, nextTick } from "vue";
+import { useSubcontractorStore } from "~/stores/subcontractor";
 
-defineProps<{ subcontractors: Subcontractor[]; isLoading: boolean }>();
-defineEmits(["edit", "delete"]);
+const subcontractorStore = useSubcontractorStore();
+
+// Store the timeout ID
+let debounceTimeout = ref<NodeJS.Timeout | null>(null);
+
+// Watch for search or sorting changes and fetch data with a delay
+watch(
+  () => subcontractorStore.query,
+  () => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
+
+    debounceTimeout.value = setTimeout(() => {
+      subcontractorStore.getSubcontractors(); // Fetch subcontractors after delay
+    }, 500);
+  },
+  { deep: true }
+);
+
+watch(
+  () => subcontractorStore.query.order,
+  () => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
+
+    debounceTimeout.value = setTimeout(() => {
+      subcontractorStore.getSubcontractors(); // Fetch subcontractors after delay
+    }, 500);
+  },
+  { deep: true }
+);
+
+// Sorting function
+const setSorting = (field: string) => {
+  subcontractorStore.query.sortBy = field;
+  subcontractorStore.query.order =
+    subcontractorStore.query.order === "ASC" ? "DESC" : "ASC";
+  console.log("userStore.query", subcontractorStore.query.sortBy);
+  console.log("userStore.query", subcontractorStore.query.order);
+};
+
+// Pagination functions
+const prevPage = () => {
+  if (subcontractorStore.query.page > 1) subcontractorStore.query.page--;
+};
+const nextPage = () => {
+  if (subcontractorStore.query.page < subcontractorStore.totalPages)
+    subcontractorStore.query.page++;
+};
+
+onMounted(async () => {
+  nextTick(async () => {
+    await subcontractorStore.getSubcontractors();
+  });
+});
 </script>
+
+<style scoped>
+/* Container */
+.table-container {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+/* Table Header */
+.custom-table thead tr {
+  background: rgb(231, 231, 231);
+  text-align: left;
+  font-size: 15px;
+  color: #1d1d1d;
+}
+
+.custom-table th {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+  cursor: pointer;
+}
+
+/* Table Body */
+.custom-table td {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Alignments */
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+
+/* Row Hover Effect */
+.custom-table tbody tr:hover {
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+}
+
+.pagination button {
+  padding: 6px 10px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+  background: rgb(207, 207, 207);
+  color: #7c7c7c;
+  border-radius: 4px;
+}
+.pagination button:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Sorting Icon */
+.sort-icon {
+  color: #5a5a5a;
+  width: 15px;
+  height: 15px;
+  margin-left: 6px;
+}
+</style>

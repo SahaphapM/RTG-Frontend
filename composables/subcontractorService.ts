@@ -1,15 +1,46 @@
 import { useFetch } from "#app";
+import type { PaginationQuery, PaginationResponse } from "~/types/pagination";
 import type { Subcontractor } from "~/types/subcontractor";
 
 export default function useSubcontractorService() {
   const config = useRuntimeConfig();
 
-  // Fetch Subcontractor
+  // Reactive state
+  const subcontractors = ref<Subcontractor[]>([]);
+  const totalPages = ref(1);
+  const totalSubcontractors = ref(0);
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+  const API_URL = `${config.public.apiBase}/subcontractors`;
+
+  // Fetch subcontractors with pagination
+  const fetchSubcontractors = async (query: PaginationQuery) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const { data, error: fetchError } = await useFetch<
+        PaginationResponse<Subcontractor>
+      >(API_URL, {
+        query: query,
+      });
+      if (fetchError.value) throw new Error(fetchError.value.message);
+
+      subcontractors.value = data.value?.data || [];
+      totalSubcontractors.value = data.value?.total || 0;
+      totalPages.value = data.value?.totalPages || 1;
+    } catch (err: any) {
+      error.value = err.message || "Failed to fetch subcontractors.";
+      console.error("Error fetching subcontractors:", error.value);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // Fetch single subcontractor by ID
   const fetchSubcontractor = async (id: number): Promise<Subcontractor> => {
     try {
-      const { data } = await useFetch<Subcontractor>(
-        `${config.public.apiBase}/subcontractors/${id}`
-      );
+      const { data } = await useFetch<Subcontractor>(`${API_URL}/${id}`);
       return data.value || ({} as Subcontractor);
     } catch (error) {
       console.error("Error fetching subcontractor:", error);
@@ -17,36 +48,20 @@ export default function useSubcontractorService() {
     }
   };
 
-  // Fetch Subcontractors
-  const fetchSubcontractors = async (): Promise<Subcontractor[]> => {
+  // Create a new subcontractor
+  const createSubcontractor = async (
+    newSubcontractor: Partial<Subcontractor>
+  ) => {
     try {
-      const { data } = await useFetch<Subcontractor[]>(
-        `${config.public.apiBase}/subcontractors`
-      );
-      console.log("subcontractors", data);
-      return data.value || [];
-    } catch (error) {
-      console.error("Error fetching subcontractors:", error);
-      return [];
-    }
-  };
-
-  const createSubcontractor = async (subcontractor: Partial<Subcontractor>) => {
-    try {
-      console.log("subcontractor", subcontractor);
-      const response = await useFetch<Subcontractor>(
-        `${config.public.apiBase}/subcontractors`,
-        {
-          method: "POST",
-          body: subcontractor,
-        }
-      );
+      const response = await useFetch<Subcontractor>(API_URL, {
+        method: "POST",
+        body: newSubcontractor,
+      });
 
       if (!response.error.value) {
-        console.log("Subcontractor data", response.data.value);
+        console.log("Subcontractor created:", response.data.value);
         return response.data.value;
       } else {
-        // แสดง error message ที่ละเอียดขึ้น
         console.error("Error response:", response.error.value);
         alert(
           `Failed to create subcontractor: ${
@@ -55,43 +70,31 @@ export default function useSubcontractorService() {
         );
       }
     } catch (error: any) {
-      // ตรวจสอบและแสดงรายละเอียดของ error
-      if (error.response) {
-        console.error("Response error:", error.response.data);
-        alert(`Error: ${error.response.data.message || "Unknown error"}`);
-      } else if (error.request) {
-        console.error("Request error:", error.request);
-        alert("Request failed. Please check your network.");
-      } else {
-        console.error("Error:", error.message);
-        alert(`Unexpected error: ${error.message}`);
-      }
+      console.error("Unexpected error:", error.message);
+      alert(`Unexpected error: ${error.message}`);
     }
   };
 
-  // Update Subcontractor
+  // Update an existing subcontractor
   const updateSubcontractor = async (
     id: number,
-    subcontractor: Partial<Subcontractor>
+    updatedSubcontractor: Partial<Subcontractor>
   ) => {
     try {
-      const { data } = await useFetch<Subcontractor>(
-        `${config.public.apiBase}/subcontractors/${id}`,
-        {
-          method: "PATCH",
-          body: subcontractor,
-        }
-      );
+      const { data } = await useFetch<Subcontractor>(`${API_URL}/${id}`, {
+        method: "PATCH",
+        body: updatedSubcontractor,
+      });
       return data.value;
     } catch (error) {
       console.error("Error updating subcontractor:", error);
     }
   };
 
-  // Delete Subcontractor
+  // Delete a subcontractor
   const deleteSubcontractor = async (id: number) => {
     try {
-      await useFetch(`${config.public.apiBase}/subcontractors/${id}`, {
+      await useFetch(`${API_URL}/${id}`, {
         method: "DELETE",
       });
     } catch (error) {
@@ -100,8 +103,13 @@ export default function useSubcontractorService() {
   };
 
   return {
-    fetchSubcontractor,
+    subcontractors,
+    totalSubcontractors,
+    totalPages,
+    isLoading,
+    error,
     fetchSubcontractors,
+    fetchSubcontractor,
     createSubcontractor,
     updateSubcontractor,
     deleteSubcontractor,
