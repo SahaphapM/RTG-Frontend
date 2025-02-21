@@ -10,7 +10,19 @@
     <Table
       :purchaseOrders="purchaseOrderStore.purchaseOrders"
       :isLoading="purchaseOrderStore.isLoading"
-      @edit="editPurchaseOrder"
+      v-on:delete="confirmDeletePurchaseOrder"
+    />
+
+    <!-- Reusable Delete Confirmation Modal -->
+    <ConfirmDelete
+      v-if="isDeleteModalOpen"
+      :isOpen="isDeleteModalOpen"
+      title="Confirm Delete"
+      message="Are you sure you want to delete this purchase order?"
+      confirmText="Yes, Delete"
+      cancelText="Cancel"
+      @confirm="toDeletePurchaseOrder"
+      @cancel="isDeleteModalOpen = false"
     />
   </div>
 </template>
@@ -21,7 +33,12 @@ import type { PurchaseOrder } from "~/types/purchase-order";
 import Table from "~/components/purchase-order/Table.vue";
 
 const purchaseOrderStore = usePurchaseOrderStore();
+const { deletePurchaseOrder } = purchaseOrderService();
+
+const purchaseOrders = ref<PurchaseOrder[]>([]);
 const isDeleteModalOpen = ref(false);
+const selectedPurchaseOrder = ref<PurchaseOrder | null>(null);
+const isModalOpen = ref(false);
 const purchaseOrderToDelete = ref<number | null>(null);
 
 onMounted(async () => {
@@ -30,13 +47,19 @@ onMounted(async () => {
   });
 });
 
-const editPurchaseOrder = (purchaseOrder: PurchaseOrder) => {
-  navigateTo(`/purchase-orders/${purchaseOrder.id}`);
-  purchaseOrderStore.isEditing = true;
-};
-
-const confirmDeletePurchaseOrder = (id: number) => {
+// Handle delete action
+const confirmDeletePurchaseOrder = async (id: number) => {
   purchaseOrderToDelete.value = id;
   isDeleteModalOpen.value = true;
+};
+
+const toDeletePurchaseOrder = async () => {
+  console.log("purchaseOrderToDelete.value", purchaseOrderToDelete.value);
+  if (purchaseOrderToDelete.value) {
+    await deletePurchaseOrder(purchaseOrderToDelete.value);
+    isDeleteModalOpen.value = false;
+    purchaseOrderToDelete.value = null;
+    await purchaseOrderStore.getPurchaseOrders();
+  }
 };
 </script>

@@ -1,16 +1,45 @@
 import { useFetch } from "#app";
+import type { PaginationQuery, PaginationResponse } from "~/types/pagination";
 import type { PurchaseOrder } from "~/types/purchase-order";
 
 export default function usePurchaseOrderService() {
   const config = useRuntimeConfig();
 
-  // Fetch Purchase Order
+  // Reactive state
+  const purchaseOrders = ref<PurchaseOrder[]>([]);
+  const totalPages = ref(1);
+  const totalPurchaseOrders = ref(0);
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+  const API_URL = `${config.public.apiBase}/purchase-orders`;
+
+  // Fetch Purchase Orders
+  const fetchPurchaseOrders = async (query: PaginationQuery) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const { data, error: fetchError } = await useFetch<
+        PaginationResponse<PurchaseOrder>
+      >(API_URL, {
+        query: query,
+      });
+      if (fetchError.value) throw new Error(fetchError.value.message);
+
+      purchaseOrders.value = data.value?.data || [];
+      totalPages.value = data.value?.totalPages || 1;
+      totalPurchaseOrders.value = data.value?.total || 0;
+    } catch (error) {
+      console.error("Error fetching purchase orders:", error);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // Fetch Single Purchase Order
   const fetchPurchaseOrder = async (id: number): Promise<PurchaseOrder> => {
     try {
-      const { data } = await useFetch<PurchaseOrder>(
-        `${config.public.apiBase}/purchase-orders/${id}`
-      );
-      console.log("purchase order", data);
+      const { data } = await useFetch<PurchaseOrder>(`${API_URL}/${id}`);
       return data.value || ({} as PurchaseOrder);
     } catch (error) {
       console.error("Error fetching purchase order:", error);
@@ -18,38 +47,15 @@ export default function usePurchaseOrderService() {
     }
   };
 
-  // Fetch Purchase Orders
-  const fetchPurchaseOrders = async (): Promise<PurchaseOrder[]> => {
-    try {
-      const { data } = await useFetch<PurchaseOrder[]>(
-        `${config.public.apiBase}/purchase-orders`
-      );
-      console.log("purchase orders", data);
-
-      if (data.value) {
-        return data.value;
-      } else {
-        throw new Error("Failed to fetch purchase orders");
-      }
-    } catch (error) {
-      console.error("Error fetching purchase orders:", error);
-      return [];
-    }
-  };
-
   // Create Purchase Order
   const createPurchaseOrder = async (
-    purchaseOrder: Omit<PurchaseOrder, "id">
+    purchaseOrder: Omit<PurchaseOrder, "id" | "createdAt" | "updatedAt">
   ) => {
-    console.log("purchaseOrder", purchaseOrder);
     try {
-      const { data } = await useFetch<PurchaseOrder>(
-        `${config.public.apiBase}/purchase-orders`,
-        {
-          method: "POST",
-          body: purchaseOrder,
-        }
-      );
+      const { data } = await useFetch<PurchaseOrder>(API_URL, {
+        method: "POST",
+        body: purchaseOrder,
+      });
       return data.value;
     } catch (error) {
       console.error("Error creating purchase order:", error);
@@ -61,9 +67,8 @@ export default function usePurchaseOrderService() {
     id: number,
     purchaseOrder: Partial<PurchaseOrder>
   ) => {
-    console.log("purchaseOrder", purchaseOrder);
     try {
-      await useFetch(`${config.public.apiBase}/purchase-orders/${id}`, {
+      await useFetch(`${API_URL}/${id}`, {
         method: "PATCH",
         body: purchaseOrder,
       });
@@ -75,9 +80,7 @@ export default function usePurchaseOrderService() {
   // Delete Purchase Order
   const deletePurchaseOrder = async (id: number) => {
     try {
-      await useFetch(`${config.public.apiBase}/purchase-orders/${id}`, {
-        method: "DELETE",
-      });
+      await useFetch(`${API_URL}/${id}`, { method: "DELETE" });
     } catch (error) {
       console.error("Error deleting purchase order:", error);
     }
@@ -463,5 +466,10 @@ export default function usePurchaseOrderService() {
     updatePurchaseOrder,
     deletePurchaseOrder,
     exportPOToPDF,
+    purchaseOrders,
+    totalPurchaseOrders,
+    totalPages,
+    isLoading,
+    error,
   };
 }

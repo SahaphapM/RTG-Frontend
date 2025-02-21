@@ -1,11 +1,21 @@
 <template>
   <div class="p-6">
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">User Management</h1>
-      <button @click="openAddUserModal" class="btn btn-primary w-32">
-        Add New
-      </button>
+    <div class="flex items-center mb-6">
+      <h1 class="text-2xl font-bold w-[50%]">User Management</h1>
+      <div class="flex gap-4 w-[50%] justify-end">
+        <!-- Search Input -->
+        <div class="w-[70%] min-w-[150px]">
+          <input
+            v-model="userStore.query.search"
+            placeholder="Search Users"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <button @click="openAddUserModal" class="btn btn-primary w-32">
+          Add New
+        </button>
+      </div>
     </div>
 
     <!-- User Table -->

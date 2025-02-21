@@ -1,20 +1,45 @@
 <template>
   <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Subcontractor Management</h1>
-      <button @click="openModal()" class="btn btn-primary w-32">Add New</button>
+    <!-- Header Section -->
+    <div class="flex items-center mb-6">
+      <h1 class="text-2xl font-bold w-[50%]">Subcontractor Management</h1>
+      <div class="flex gap-4 w-[50%] justify-end">
+        <!-- Search Input -->
+        <div class="w-[70%] min-w-[150px]">
+          <input
+            v-model="subcontractorStore.query.search"
+            placeholder="Search Subcontractors"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <button @click="openModal()" class="btn btn-primary w-32">
+          Add New
+        </button>
+      </div>
     </div>
+
     <SubcontractorTable
       :subcontractors="subcontractors"
       :isLoading="isLoading"
       @edit="handleEdit"
-      @delete="handleDelete"
+      @delete="confirmDeleteProject"
     />
     <SubcontractorModal
       v-if="isModalOpen"
       :subcontractor="selectedSubcontractor"
       @save="handleSave"
       @close="closeModal"
+    />
+    <!-- Reusable Delete Confirmation Modal -->
+    <ConfirmDelete
+      v-if="isDeleteModalOpen"
+      :isOpen="isDeleteModalOpen"
+      title="Confirm Delete"
+      message="Are you sure you want to delete this user?"
+      confirmText="Yes, Delete"
+      cancelText="Cancel"
+      @confirm="toDeleteSubcontractor"
+      @cancel="isDeleteModalOpen = false"
     />
   </div>
 </template>
@@ -31,23 +56,13 @@ const {
   deleteSubcontractor,
 } = useSubcontractorService();
 
+const subcontractorStore = useSubcontractorStore();
 const subcontractors = ref<Subcontractor[]>([]);
 const selectedSubcontractor = ref<Subcontractor | null>(null);
 const isModalOpen = ref(false);
 const isLoading = ref(true);
-
-// Fetch subcontractors on mount
-onMounted(async () => {
-  nextTick(async () => {
-    try {
-      subcontractors.value = await fetchSubcontractors();
-    } catch (error) {
-      console.error("Failed to fetch subcontractors:", error);
-    } finally {
-      isLoading.value = false;
-    }
-  });
-});
+const isDeleteModalOpen = ref(false);
+const subcontractorToDelete = ref<number | null>(null);
 
 // Open modal for adding or editing
 const openModal = (subcontractor: Subcontractor | null = null) => {
@@ -64,7 +79,7 @@ const closeModal = () => {
 // Handle save action (create or update)
 const handleSave = async (subcontractorData: Partial<Subcontractor>) => {
   try {
-    if (selectedSubcontractor.value) {
+    if (selectedSubcontractor.value?.id) {
       // Update existing subcontractor
       const updatedSubcontractor = await updateSubcontractor(
         selectedSubcontractor.value.id,
@@ -92,13 +107,19 @@ const handleEdit = (subcontractor: Subcontractor) => {
 };
 
 // Handle delete action
-const handleDelete = async (id: number) => {
-  try {
-    await deleteSubcontractor(id);
-    subcontractors.value = subcontractors.value.filter((sub) => sub.id !== id);
-    console.log("Subcontractor deleted successfully");
-  } catch (error) {
-    console.error("Failed to delete subcontractor:", error);
+
+const confirmDeleteProject = async (id: number) => {
+  subcontractorToDelete.value = id;
+  isDeleteModalOpen.value = true;
+};
+
+const toDeleteSubcontractor = async () => {
+  console.log("subcontractorToDelete.value", subcontractorToDelete.value);
+  if (subcontractorToDelete.value) {
+    await deleteSubcontractor(subcontractorToDelete.value);
+    isDeleteModalOpen.value = false;
+    subcontractorToDelete.value = null;
+    await subcontractorStore.getSubcontractors();
   }
 };
 </script>

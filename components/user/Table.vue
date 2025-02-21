@@ -89,25 +89,15 @@ const userStore = useUserStore();
 let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 watch(
-  () => userStore.query.search || userStore.query.sortBy, // Watch only the search input
+  () => userStore.query, // Watch only the search input
   (newValue) => {
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
 
     debounceTimeout.value = setTimeout(() => {
       userStore.getUsers(); // Fetch users after 2s delay
-    }, 500);
-  }
-);
-
-watch(
-  () => userStore.query.order, // Watch only the search input
-  (newValue) => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
-
-    debounceTimeout.value = setTimeout(() => {
-      userStore.getUsers(); // Fetch users after 2s delay
-    }, 500);
-  }
+    }, 200);
+  },
+  { deep: true }
 );
 
 // Sorting function

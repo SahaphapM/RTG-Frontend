@@ -178,10 +178,12 @@ onMounted(async () => {
 }
 
 .custom-table th {
-  padding: 0.75rem 1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   font-weight: 600;
   border-bottom: 2px solid #ddd;
-  cursor: pointer;
 }
 
 /* Table Body */
