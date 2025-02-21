@@ -92,14 +92,15 @@ export default function useProjectService() {
         customerId: project.customer?.id, // Ensure only `customerId` is sent
         projectItems: formattedProjectItems, // Use transformed items
       };
+      console.log("Sending project data:", projectData);
 
       // Send the request
       await useFetch(`${config.public.apiBase}/projects/${id}`, {
         method: "PUT",
         body: projectData,
       });
-    } catch (error) {
-      console.error("Error updating project:", error);
+    } catch (error: any) {
+      console.error("Error updating project:", error.message);
     }
   };
 

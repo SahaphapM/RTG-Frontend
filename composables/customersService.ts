@@ -25,11 +25,9 @@ export default function useCustomerService() {
         query: query,
       });
 
-      console.log("data", data.value);
       if (fetchError.value) throw new Error(fetchError.value.message);
 
       customers.value = data.value?.data || [];
-      console.log("Customers:", customers.value);
       totalCustomers.value = data.value?.total || 0;
       totalPages.value = data.value?.totalPages || 1;
     } catch (err: any) {
@@ -60,7 +58,6 @@ export default function useCustomerService() {
       });
 
       if (!response.error.value) {
-        console.log("Customer created:", response.data.value);
         return response.data.value;
       } else {
         console.error("Error response:", response.error.value);

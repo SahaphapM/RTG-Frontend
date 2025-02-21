@@ -13,7 +13,11 @@
       </div>
 
       <!-- Customer Search Component -->
-      <CustomerSearch :modelValue="localForm.customer" :isEditing="isEditing" />
+      <CustomerSearch
+        :modelValue="localForm.customer"
+        @update:modelValue="updateCustomer"
+        :isEditing="isEditing"
+      />
     </div>
 
     <div class="mt-4">
@@ -58,6 +62,9 @@ const props = defineProps<{ form: Project; isEditing: boolean }>();
 
 const localForm = ref<Project>(props.form);
 
+const updateCustomer = (customer: Customer | null) => {
+  localForm.value.customer = customer;
+};
 watch(
   () => props.form,
   (newForm) => {

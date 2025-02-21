@@ -63,7 +63,6 @@ export default function useJobQuotationService() {
           body: jobQuotation,
         }
       );
-      console.log("data", data);
       return data.value;
     } catch (error) {
       console.error("Error creating jobQuotation:", error);
@@ -75,8 +74,8 @@ export default function useJobQuotationService() {
     id: number,
     jobQuotation: Partial<JobQuotation>
   ) => {
-    console.log("jobQuotation updated", jobQuotation);
     try {
+      console.log("updateJobQuotation", jobQuotation);
       const { data } = await useFetch<JobQuotation>(
         `${config.public.apiBase}/job-quotations/${id}`,
         {

@@ -4,7 +4,7 @@
     <div class="flex gap-4">
       <div class="relative w-full">
         <input
-          v-model="customerStore.query.search"
+          v-model="searchQuery"
           @focus="showDropdown = true"
           @blur="closeDropdownWithDelay"
           type="text"
@@ -45,7 +45,6 @@
 
     <CustomerModal
       v-if="isCustomerModalOpen"
-      :customer="selectedCustomer"
       @save="saveCustomer"
       @close="closeCustomerModal"
     />
@@ -74,12 +73,13 @@ const isCustomerModalOpen = ref(false);
 let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 watch(
-  () => customerStore.query.search,
+  () => searchQuery.value,
   (newValue) => {
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(async () => {
+      customerStore.query.search = searchQuery.value;
       await customerStore.getCustomers();
-    }, 150);
+    }, 100);
   },
   { deep: true }
 );
@@ -94,9 +94,9 @@ const selectCustomer = (customer: Customer) => {
 const saveCustomer = async (customerData: Omit<Customer, "id">) => {
   const newCustomer = await createCustomer(customerData);
   if (newCustomer) {
-    selectedCustomer.value = newCustomer;
+    console.log("Customer created:", newCustomer);
+    searchQuery.value = newCustomer.name;
     emit("update:modelValue", newCustomer);
-    await customerStore.getCustomers();
   }
   isCustomerModalOpen.value = false;
 };

@@ -108,6 +108,7 @@ const saveProject = async () => {
       router.push(`/projects/${updatedProject.id}`);
     }
   } else {
+    console.log("Updating project:", form.value.customer?.id);
     await updateProject(projectStore.project.id, form.value);
   }
   isEditing.value = false;
