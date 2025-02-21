@@ -5,14 +5,14 @@
       <h1 class="text-2xl font-bold mb-4">{{ projectStore.project?.name }}</h1>
       <div class="flex gap-2">
         <button
-          v-if="!isEditing && selectedPaymentId"
+          v-if="!isEditing && selectedInvoiceId"
           @click="isEditing = true"
           class="btn btn-warning w-32"
         >
           Edit
         </button>
         <button
-          @click="exportInvoicePDF(payment)"
+          @click="exportInvoicePDF(invoice)"
           v-if="!isEditing"
           class="btn btn-primary w-32"
         >
@@ -30,35 +30,35 @@
       <span>Remaining: {{ remainingBalance.toLocaleString() }} Baht</span>
     </div>
 
-    <!-- Payment Selection -->
+    <!-- Invoice Selection -->
     <div class="flex gap-2">
       <select
-        :disabled="!selectedPaymentId || isEditing"
-        v-model="selectedPaymentId"
-        @change="selectPayment"
+        :disabled="!selectedInvoiceId || isEditing"
+        v-model="selectedInvoiceId"
+        @change="selectInvoice"
         class="select select-bordered px-4 py-2 rounded-lg w-48"
       >
-        <option :value="null" hidden :selected="selectedPaymentId === null">
-          New Payment
+        <option :value="null" hidden :selected="selectedInvoiceId === null">
+          New Invoice
         </option>
         <option
-          v-for="payment in payments"
-          :key="payment.id"
-          :value="payment.id"
+          v-for="invoice in invoices"
+          :key="invoice.id!"
+          :value="invoice.id"
         >
-          Payment {{ payment.id }}
+          Invoice {{ invoice.id }}
         </option>
       </select>
       <button
         class="btn btn-primary w-32"
         v-if="!isEditing"
-        @click="addPayment"
+        @click="addInvoice"
       >
         Add
       </button>
     </div>
 
-    <!-- Payment Information -->
+    <!-- Invoice Information -->
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
         <label class="block font-bold">Date:</label>
@@ -73,7 +73,7 @@
         <label class="block font-bold">Our Ref:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.ourRef"
+          v-model="invoice.ourRef"
           type="text"
           class="input input-bordered w-full"
         />
@@ -82,7 +82,7 @@
         <label class="block font-bold">Tax Invoice:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.taxInvoice"
+          v-model="invoice.taxInvoice"
           type="text"
           class="input input-bordered w-full"
         />
@@ -91,7 +91,7 @@
         <label class="block font-bold">Our Tax ID:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.ourTax"
+          v-model="invoice.ourTax"
           type="text"
           class="input input-bordered w-full"
         />
@@ -100,27 +100,27 @@
         <label class="block font-bold">Customer Tax ID:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.cusTax"
+          v-model="invoice.cusTax"
           type="text"
           class="input input-bordered w-full"
         />
       </div>
       <div>
-        <label class="block font-bold">Payment Terms:</label>
+        <label class="block font-bold">Invoice Terms:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.paymentTerms"
+          v-model="invoice.invoiceTerms"
           type="text"
           class="input input-bordered w-full"
         />
       </div>
     </div>
 
-    <!-- Payment Table -->
-    <PaymentTable
+    <!-- Invoice Table -->
+    <InvoiceTable
       :isEditing="isEditing"
-      :details="payment.paymentDetails"
-      @update:details="updatePaymentDetails"
+      :details="invoice.invoiceDetails"
+      @update:details="updateInvoiceDetails"
     />
 
     <!-- Discount & Total -->
@@ -129,7 +129,7 @@
         <label class="block font-bold">Discount:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.discount"
+          v-model="invoice.discount"
           type="number"
           class="input input-bordered w-60 font-bold"
         />
@@ -141,9 +141,9 @@
           <div>Total</div>
         </div>
         <div class="font-bold">
-          <div>{{ totalPaymentAmount.toLocaleString() }}</div>
-          <div>{{ payment.discount.toLocaleString() }}</div>
-          <div>{{ payment.total.toLocaleString() }}</div>
+          <div>{{ totalInvoiceAmount.toLocaleString() }}</div>
+          <div>{{ invoice.discount.toLocaleString() }}</div>
+          <div>{{ invoice.total.toLocaleString() }}</div>
         </div>
         <div class="mx-5">
           <div>Baht</div>
@@ -158,7 +158,7 @@
         <label class="block font-bold">Bank:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.bank"
+          v-model="invoice.bank"
           type="text"
           class="input input-bordered w-full"
         />
@@ -167,7 +167,7 @@
         <label class="block font-bold">Account Name:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.accountName"
+          v-model="invoice.accountName"
           type="text"
           class="input input-bordered w-full"
         />
@@ -176,7 +176,7 @@
         <label class="block font-bold">Account Number:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.accountNumber"
+          v-model="invoice.accountNumber"
           type="text"
           class="input input-bordered w-full"
         />
@@ -185,7 +185,7 @@
         <label class="block font-bold">Branch:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.branch"
+          v-model="invoice.branch"
           type="text"
           class="input input-bordered w-full"
         />
@@ -194,7 +194,7 @@
         <label class="block font-bold">SWIFT:</label>
         <input
           :disabled="!isEditing"
-          v-model="payment.swift"
+          v-model="invoice.swift"
           type="text"
           class="input input-bordered w-full"
         />
@@ -204,7 +204,7 @@
     <!-- Action Buttons -->
     <div class="mt-6 flex gap-2">
       <button
-        v-if="!isEditing && payment.id"
+        v-if="!isEditing && invoice.id"
         @click="isDeleteModalOpen = true"
         class="btn btn-error w-32"
       >
@@ -217,7 +217,7 @@
         message="Are you sure you want to delete this user?"
         confirmText="Yes, Delete"
         cancelText="Cancel"
-        @confirm="confirmDeletePayment"
+        @confirm="confirmDeleteInvoice"
         @cancel="isDeleteModalOpen = false"
       />
       <div class="ml-auto">
@@ -238,7 +238,7 @@
           </button>
           <button
             v-if="isEditing"
-            @click="save(payment)"
+            @click="save(invoice)"
             class="btn btn-success w-32"
           >
             Save
@@ -251,32 +251,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from "vue";
-import PaymentTable from "~/components/project/PaymentTable.vue";
 import useJobQuotationService from "~/composables/job-quotationService";
 import useProjectService from "~/composables/projectService";
 import type { JobQuotation } from "~/types/job-quotation";
-import type { Payment } from "~/types/payment";
-import type { PaymentDetail } from "~/types/paymentDetail";
-import type { Project } from "~/types/project";
+import type { Invoice } from "~/types/invoice";
+import type { InvoiceDetail } from "~/types/invoiceDetail";
+import InvoiceTable from "@/components/project/InvoiceTable.vue";
 
 // **Composables**
 const {
   fetchJobQuotation,
-  fetchPayments,
-  createPayment,
-  updatePayment,
-  deletePayment,
+  fetchInvoices,
+  createInvoice,
+  updateInvoice,
+  deleteInvoice,
 } = useJobQuotationService();
 
 const { fetchProject } = useProjectService();
 const projectStore = useProjectStore();
+const stateStore = useStateStore();
 
 // **Route**
 const route = useRoute();
 const router = useRouter();
 
-// **Default Payment Object**
-const newPayment = (): Payment => ({
+// **Default Invoice Object**
+const newInvoice = (): Invoice => ({
   id: null,
   date: new Date(),
   ourRef: "",
@@ -284,10 +284,9 @@ const newPayment = (): Payment => ({
   ourTax: "",
   cusTax: "",
   paidDate: null,
-  paymentTerms: "",
-  paymentDetails: [
+  invoiceTerms: "",
+  invoiceDetails: [
     {
-      name: "",
       description: "",
     },
   ],
@@ -304,9 +303,9 @@ const newPayment = (): Payment => ({
 
 // **State Variables**
 const jobQuotation = ref<JobQuotation>();
-const payments = ref<Payment[]>([]);
-const payment = ref<Payment>(newPayment());
-const selectedPaymentId = ref<number | null>(null);
+const invoices = ref<Invoice[]>([]);
+const invoice = ref<Invoice>(newInvoice());
+const selectedInvoiceId = ref<number | null>(null);
 const isEditing = ref(false);
 const isDeleteModalOpen = ref(false);
 
@@ -320,85 +319,85 @@ onMounted(async () => {
 const refresh = async () => {
   jobQuotation.value = await fetchJobQuotation(Number(route.params.id));
 
-  const data = await fetchPayments(Number(route.params.id));
+  const data = await fetchInvoices(Number(route.params.id));
   if (data.length > 0) {
-    payments.value = data;
-    selectedPaymentId.value = payments.value[0].id;
-    payment.value = payments.value[0];
+    invoices.value = data;
+    selectedInvoiceId.value = invoices.value[0].id;
+    invoice.value = invoices.value[0];
     isEditing.value = isEditing.value;
   } else {
-    payments.value = [];
-    selectedPaymentId.value = null;
-    payment.value = newPayment();
+    invoices.value = [];
+    selectedInvoiceId.value = null;
+    invoice.value = newInvoice();
     isEditing.value = !isEditing.value;
   }
-  console.log("payments", payment.value.paymentDetails);
+  console.log("invoices", invoice.value.invoiceDetails);
 };
 
 // **Compute Total in Real-Time**
-const totalPaymentAmount = computed(() => {
-  const detailsTotal = payment.value.paymentDetails.reduce(
+const totalInvoiceAmount = computed(() => {
+  const detailsTotal = invoice.value.invoiceDetails.reduce(
     (sum, detail) => sum + (detail.qty || 0) * (detail.unitPrice || 0),
     0
   );
-  const total = Math.max(detailsTotal - (payment.value.discount || 0), 0);
-  payment.value.total = total;
+  const total = Math.max(detailsTotal - (invoice.value.discount || 0), 0);
+  invoice.value.total = total;
   return detailsTotal;
 });
 
 // **Handle Details Update**
-const updatePaymentDetails = (details: PaymentDetail[]) => {
-  payment.value.paymentDetails = details;
+const updateInvoiceDetails = (details: InvoiceDetail[]) => {
+  invoice.value.invoiceDetails = details;
 };
 
 // **Compute Remaining Balance**
 const remainingBalance = computed(() => {
   if (!jobQuotation.value) return 0;
 
-  const totalPaid = payments.value.reduce((sum, pay) => {
-    // Exclude the payment with the current selectedPaymentId
-    return pay.id !== payment.value.id
+  const totalPaid = invoices.value.reduce((sum, pay) => {
+    // Exclude the invoice with the current selectedInvoiceId
+    return pay.id !== invoice.value.id
       ? sum + (pay.total || 0) + (pay.discount || 0)
       : sum;
   }, 0);
   return Math.max(
-    jobQuotation.value.priceOffered - (totalPaid + totalPaymentAmount.value),
+    jobQuotation.value.priceOffered - (totalPaid + totalInvoiceAmount.value),
     0
   );
 });
 
-// **Select Payment**
-const selectPayment = () => {
-  payment.value =
-    payments.value.find((p) => p.id === selectedPaymentId.value) ||
-    newPayment();
+// **Select Invoice**
+const selectInvoice = () => {
+  invoice.value =
+    invoices.value.find((p) => p.id === selectedInvoiceId.value) ||
+    newInvoice();
 };
 
-// **Add New Payment**
-const addPayment = () => {
-  selectedPaymentId.value = null;
+// **Add New Invoice**
+const addInvoice = () => {
+  selectedInvoiceId.value = null;
   isEditing.value = !isEditing.value;
-  const paymentsLength = payments.value.length;
-  payment.value = newPayment();
-  payment.value.accountName = payments.value[paymentsLength]?.accountName;
-  payment.value.accountNumber = payments.value[paymentsLength]?.accountNumber;
-  payment.value.branch = payments.value[paymentsLength]?.branch;
-  payment.value.swift = payments.value[paymentsLength]?.swift;
-  payment.value.paymentTerms =
-    payments.value[paymentsLength]?.paymentTerms || "";
-  payment.value.taxInvoice = payments.value[paymentsLength]?.taxInvoice || "";
-  payment.value.ourRef = payments.value[paymentsLength]?.ourRef || "";
-  payment.value.ourTax = payments.value[paymentsLength]?.ourTax || "";
-  payment.value.cusTax = payments.value[paymentsLength]?.cusTax || "";
-  payment.value.bank = payments.value[paymentsLength]?.bank || "";
-  payment.value.receivedBy = payments.value[paymentsLength]?.receivedBy || "";
+  const invoicesLength = invoices.value.length;
+  invoice.value = newInvoice();
+  invoice.value.accountName = invoices.value[invoicesLength]?.accountName;
+  invoice.value.accountNumber = invoices.value[invoicesLength]?.accountNumber;
+  invoice.value.branch = invoices.value[invoicesLength]?.branch;
+  invoice.value.swift = invoices.value[invoicesLength]?.swift;
+  invoice.value.invoiceTerms =
+    invoices.value[invoicesLength]?.invoiceTerms || "";
+  invoice.value.taxInvoice = invoices.value[invoicesLength]?.taxInvoice || "";
+  invoice.value.ourRef = invoices.value[invoicesLength]?.ourRef || "";
+  invoice.value.ourTax = invoices.value[invoicesLength]?.ourTax || "";
+  invoice.value.cusTax = invoices.value[invoicesLength]?.cusTax || "";
+  invoice.value.bank = invoices.value[invoicesLength]?.bank || "";
+  invoice.value.receivedBy = invoices.value[invoicesLength]?.receivedBy || "";
 };
 
 const cancelEdit = () => {
-  if (payments.value[0]) {
-    payment.value = JSON.parse(JSON.stringify(payments.value[0])); // Restore original
+  if (invoices.value[0]) {
+    invoice.value = JSON.parse(JSON.stringify(invoices.value[0])); // Restore original
 
-    selectedPaymentId.value = payment.value.id || null;
+    selectedInvoiceId.value = invoice.value.id || null;
     isEditing.value = !isEditing.value;
   } else {
     isEditing.value = !isEditing.value;
@@ -416,26 +415,26 @@ const goBack = () => {
   router.push(`/projects/${projectId}/job-quotations`);
 };
 
-const save = async (payment: Payment) => {
-  if (payment.id) {
-    const data = await updatePayment(payment);
+const save = async (invoice: Invoice) => {
+  if (invoice.id) {
+    const data = await updateInvoice(invoice);
     console.log("data", data);
   } else {
     if (jobQuotation.value?.id) {
-      const data = await createPayment(jobQuotation.value.id, payment);
+      const data = await createInvoice(jobQuotation.value.id, invoice);
       if (data) {
-        payment.id = data.id;
-        selectedPaymentId.value = data.id;
-        payments.value.push(data);
+        invoice.id = data.id;
+        selectedInvoiceId.value = data.id;
+        invoices.value.push(data);
       }
     }
   }
   isEditing.value = !isEditing.value;
 };
 
-const confirmDeletePayment = async () => {
-  if (selectedPaymentId.value) {
-    await deletePayment(selectedPaymentId.value);
+const confirmDeleteInvoice = async () => {
+  if (selectedInvoiceId.value) {
+    await deleteInvoice(selectedInvoiceId.value);
   }
 
   isDeleteModalOpen.value = false;
@@ -444,16 +443,16 @@ const confirmDeletePayment = async () => {
 
 const formattedDate = computed({
   get() {
-    if (!payment.value.date) return "";
-    const date = new Date(payment.value.date);
+    if (!invoice.value.date) return "";
+    const date = new Date(invoice.value.date);
     return date.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
   },
   set(value: string) {
-    payment.value.date = new Date(value);
+    invoice.value.date = new Date(value);
   },
 });
 
-const exportInvoicePDF = async (payment: Payment) => {
+const exportInvoicePDF = async (invoice: Invoice) => {
   const pathParts = route.fullPath.split("/");
   console.log("pathParts", pathParts);
   const project = await fetchProject(Number(pathParts[2]));
@@ -469,12 +468,12 @@ const exportInvoicePDF = async (payment: Payment) => {
   var callAddFont = function (this: any) {
     this.addFileToVFS(
       "NotoSansThai-Regular-normal.ttf",
-      projectStore.notoThaiSanNormal
+      stateStore.notoThaiSanNormal
     );
     this.addFont("NotoSansThai-Regular-normal.ttf", "NotoSansThai", "normal");
     this.addFileToVFS(
       "NotoSansThai-Bold-normal.ttf",
-      projectStore.notoThaiSanBold
+      stateStore.notoThaiSanBold
     );
     this.addFont("NotoSansThai-Bold-normal.ttf", "NotoSansThai", "bold");
   };
@@ -545,22 +544,22 @@ const exportInvoicePDF = async (payment: Payment) => {
     const b = lightBlue[2];
 
     // Header Details
-    const paymentDate = payment.date ? new Date(payment.date) : new Date();
+    const invoiceDate = invoice.date ? new Date(invoice.date) : new Date();
     autoTable(doc, {
       startY: yPos,
       // head: [["Field", "Value"]], // Header row
       body: [
         [
           "Date :",
-          paymentDate.toLocaleDateString("en-GB"),
+          invoiceDate.toLocaleDateString("en-GB"),
           "Our Ref :",
-          payment.ourRef || "",
+          invoice.ourRef || "",
         ],
         [
           "Tax Invoice :",
-          payment.taxInvoice || "",
+          invoice.taxInvoice || "",
           "Our Tax ID :",
-          payment.ourTax || "",
+          invoice.ourTax || "",
         ],
       ],
       theme: "grid",
@@ -613,7 +612,7 @@ const exportInvoicePDF = async (payment: Payment) => {
 
     autoTable(doc, {
       startY: yPos,
-      body: [["Tax ID: ", payment.cusTax || ""]],
+      body: [["Tax ID: ", invoice.cusTax || ""]],
       theme: "grid",
       styles: {
         fontSize: 10,
@@ -638,7 +637,7 @@ const exportInvoicePDF = async (payment: Payment) => {
     autoTable(doc, {
       startY: yPos,
       head: [["Item", "Description", "QTY", "Unit Price", "Amount"]],
-      body: payment.paymentDetails.map((detail, index) => [
+      body: invoice.invoiceDetails.map((detail, index) => [
         index + 1,
         doc.splitTextToSize(detail.description || "", 80),
         detail.qty ? detail.qty : "",
@@ -676,12 +675,12 @@ const exportInvoicePDF = async (payment: Payment) => {
     autoTable(doc, {
       startY: yPos,
       body: [
-        ["", "Sub Total", `${payment.total.toLocaleString()}   baht`],
+        ["", "Sub Total", `${invoice.total.toLocaleString()}   baht`],
         [
           "",
           `V.A.T.  ${jobQuotation.value?.vatPercentage} %`,
           `${(
-            (payment.total * (jobQuotation.value?.vatPercentage || 7)) /
+            (invoice.total * (jobQuotation.value?.vatPercentage || 7)) /
             100
           ).toLocaleString()}   baht`,
         ],
@@ -710,7 +709,7 @@ const exportInvoicePDF = async (payment: Payment) => {
     autoTable(doc, {
       startY: yPos,
       body: [
-        ["", "Grand Total", `${(payment.total * 1.07).toLocaleString()} baht`],
+        ["", "Grand Total", `${(invoice.total * 1.07).toLocaleString()} baht`],
       ],
       theme: "grid",
       styles: { fontSize: 10, cellPadding: 4 }, // Increase cell padding for all rows
@@ -737,11 +736,11 @@ const exportInvoicePDF = async (payment: Payment) => {
     yPos = (doc as any).lastAutoTable.finalY + 15;
     console.log("yPos", yPos);
 
-    // Example: Adding Payment Terms
+    // Example: Adding Invoice Terms
     autoTable(doc, {
       startY: yPos,
-      head: [["Payment Terms"]],
-      body: [[payment.paymentTerms || ""]],
+      head: [["Invoice Terms"]],
+      body: [[invoice.invoiceTerms || ""]],
       theme: "grid",
       styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
       headStyles: { fillColor: [r, g, b] },
@@ -754,11 +753,11 @@ const exportInvoicePDF = async (payment: Payment) => {
       startY: yPos,
       head: [["Bank Details"]],
       body: [
-        [payment.bank || ""],
-        [payment.accountName || ""],
-        [payment.accountNumber || ""],
-        [payment.branch || ""],
-        [payment.swift || ""],
+        [invoice.bank || ""],
+        [invoice.accountName || ""],
+        [invoice.accountNumber || ""],
+        [invoice.branch || ""],
+        [invoice.swift || ""],
       ],
       theme: "grid",
       styles: {
@@ -776,8 +775,8 @@ const exportInvoicePDF = async (payment: Payment) => {
     autoTable(doc, {
       startY: yPos,
       body: [
-        ["Received by :", payment.receivedBy || ""],
-        ["Date :", payment.receivedDate?.toLocaleDateString("en-GB") || ""],
+        ["Received by :", invoice.receivedBy || ""],
+        ["Date :", invoice.receivedDate?.toLocaleDateString("en-GB") || ""],
       ],
       theme: "grid",
       styles: {
@@ -805,7 +804,7 @@ const exportInvoicePDF = async (payment: Payment) => {
     });
 
     // Save and download the PDF
-    doc.save(`Invoice_${payment.id || "New"}.pdf`);
+    doc.save(`Invoice_${invoice.id || "New"}.pdf`);
   };
 };
 </script>

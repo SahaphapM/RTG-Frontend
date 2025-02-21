@@ -1,33 +1,40 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import useCustomerService from "~/composables/customersService";
-import type { Customer } from "~/types/customer";
+import type { PaginationQuery } from "~/types/pagination";
 
 export const useCustomerStore = defineStore("customer", () => {
-  const { fetchCustomers, createCustomer, updateCustomer, deleteCustomer } =
-    useCustomerService();
+  const {
+    customers,
+    totalPages,
+    totalCustomers,
+    isLoading,
+    fetchCustomers,
+    deleteCustomer,
+  } = useCustomerService();
 
-  const customers = ref<Customer[]>([]);
-  const isLoading = ref(false);
+  // Default pagination params
+  const query = ref<PaginationQuery>({
+    page: 1,
+    limit: 10,
+    search: "",
+    sortBy: "id",
+    order: "ASC",
+  });
 
-  // Fetch Customers
+  // **Wrapper function to fetch customers (calls fetchCustomers from composable)**
   const getCustomers = async () => {
-    isLoading.value = true;
-    try {
-      customers.value = await fetchCustomers();
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-    } finally {
-      isLoading.value = false;
-    }
+    console.log("query", query.value);
+    await fetchCustomers(query.value); // This will update the `customers` state automatically
   };
 
   return {
     customers,
+    totalCustomers,
+    totalPages,
     isLoading,
     getCustomers,
-    createCustomer,
-    updateCustomer,
     deleteCustomer,
+    query,
   };
 });

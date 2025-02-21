@@ -79,9 +79,9 @@
     <!-- Commercial Conditions -->
     <div class="grid grid-cols-2 gap-4 mt-2">
       <div>
-        <h3 class="text-lg font-medium">Payment</h3>
+        <h3 class="text-lg font-medium">Invoice</h3>
         <input
-          v-model="quotation.paymentTerms"
+          v-model="quotation.invoiceTerms"
           type="text"
           class="input input-bordered w-full"
           :disabled="!isEditing"
@@ -174,19 +174,20 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const { updateJobQuotation, createJobQuotation } = useJobQuotationService();
 const { fetchProject } = useProjectService();
+const stateStore = useStateStore();
 
 const jobQuotations = ref<JobQuotation[]>([]);
 const isEditing = ref(false);
 const originalQuotation = ref<JobQuotation | null>(null);
 const newQuotation = <JobQuotation>{
   description: "",
-  paymentTerms: "",
+  invoiceTerms: "",
   deliveryTime: "",
   deliveryPlace: "",
   vatPercentage: 7,
   bestRegards: "",
   message: "",
-  payments: [],
+  invoices: [],
   customerRef: "",
   agentName: "",
   priceOffered: 0,
@@ -231,7 +232,7 @@ const saveQuotation = async (selectedQuotation: JobQuotation) => {
     if (!projectStore.project) return;
 
     const created = await createJobQuotation(
-      projectStore.project.id,
+      projectStore.project.id!,
       selectedQuotation
     );
     if (created)
@@ -279,7 +280,7 @@ const goBack = () => {
 const goNext = () => {
   console.log("selectedQuotationId.value", selectedQuotationId.value);
   router.push(
-    `/projects/${route.params.id}/job-quotations/${selectedQuotationId.value}/payment`
+    `/projects/${route.params.id}/job-quotations/${selectedQuotationId.value}/invoice`
   );
 };
 
@@ -295,12 +296,12 @@ const exportToPDF = async () => {
   var callAddFont = function (this: any) {
     this.addFileToVFS(
       "NotoSansThai-Regular-normal.ttf",
-      projectStore.notoThaiSanNormal
+      stateStore.notoThaiSanNormal
     );
     this.addFont("NotoSansThai-Regular-normal.ttf", "NotoSansThai", "normal");
     this.addFileToVFS(
       "NotoSansThai-Bold-normal.ttf",
-      projectStore.notoThaiSanBold
+      stateStore.notoThaiSanBold
     );
     this.addFont("NotoSansThai-Bold-normal.ttf", "NotoSansThai", "bold");
   };
@@ -483,8 +484,8 @@ const exportToPDF = async () => {
 
     let conditions = [
       [
-        "Payment",
-        quotation.value.paymentTerms || "100% at 30 Days after delivery",
+        "Invoice",
+        quotation.value.invoiceTerms || "100% at 30 Days after delivery",
       ],
       [
         "Delivery",

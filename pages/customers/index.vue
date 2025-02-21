@@ -7,12 +7,7 @@
       </button>
     </div>
 
-    <CustomerTable
-      :customers="customerStore.customers"
-      :isLoading="customerStore.isLoading"
-      @edit="editCustomer"
-      @delete="confirmDeleteCustomer"
-    />
+    <CustomerTable @edit="editCustomer" @delete="confirmDeleteCustomer" />
 
     <CustomerModal
       v-if="isModalOpen"
@@ -29,7 +24,7 @@
       message="Are you sure you want to delete this customer?"
       confirmText="Yes, Delete"
       cancelText="Cancel"
-      @confirm="deleteCustomer"
+      @confirm="toDeleteCustomer"
       @cancel="isDeleteModalOpen = false"
     />
   </div>
@@ -37,9 +32,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from "vue";
+import useCustomerService from "~/composables/customersService";
 import type { Customer } from "~/types/customer";
 
 const customerStore = useCustomerStore();
+const { createCustomer, updateCustomer, deleteCustomer } = useCustomerService();
 
 const isModalOpen = ref(false);
 const selectedCustomer = ref<Customer | null>(null);
@@ -71,9 +68,9 @@ const editCustomer = (customer: Customer) => {
 // Save (Add or Edit) Customer
 const saveCustomer = async (customerData: Omit<Customer, "id">) => {
   if (selectedCustomer.value) {
-    await customerStore.updateCustomer(selectedCustomer.value.id, customerData);
+    await updateCustomer(selectedCustomer.value.id!, customerData);
   } else {
-    await customerStore.createCustomer(customerData);
+    await createCustomer(customerData);
   }
   isModalOpen.value = false;
   getCustomers();
@@ -86,7 +83,7 @@ const confirmDeleteCustomer = (id: number) => {
 };
 
 // Delete Customer
-const deleteCustomer = async () => {
+const toDeleteCustomer = async () => {
   if (customerToDelete.value !== null) {
     await customerStore.deleteCustomer(customerToDelete.value);
     isDeleteModalOpen.value = false;

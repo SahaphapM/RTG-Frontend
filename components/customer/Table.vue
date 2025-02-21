@@ -1,17 +1,34 @@
 <template>
-  <div class="overflow-x-auto bg-base-100 border border-gray-200 rounded-lg">
-    <table class="table w-full">
+  <div class="table-container">
+    <!-- Table -->
+    <table class="custom-table">
       <thead>
-        <tr class="bg-base-300 text-base-content text-lg rounded-lg">
-          <th class="py-4 px-6">ID</th>
-          <th class="py-4 px-6">Name</th>
-          <th class="py-4 px-6">Email</th>
-          <th class="py-4 px-6">Contact</th>
-          <th class="py-4 px-6 text-center">Actions</th>
+        <tr>
+          <th @click="setSorting('id')" class="cursor-pointer">
+            <div class="flex items-center">
+              ID <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('name')" class="cursor-pointer">
+            <div class="flex items-center">
+              Name <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('email')" class="cursor-pointer">
+            <div class="flex items-center">
+              Email <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('contact')" class="cursor-pointer">
+            <div class="flex items-center">
+              Contact <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th class="text-center">Actions</th>
         </tr>
       </thead>
 
-      <tbody v-if="isLoading">
+      <tbody v-if="customerStore.isLoading">
         <tr v-for="n in 5" :key="n">
           <td v-for="i in 5" :key="i" class="py-4 px-6">
             <div class="h-4 bg-gray-200 rounded w-full"></div>
@@ -19,26 +36,26 @@
         </tr>
       </tbody>
 
-      <tbody>
+      <tbody v-else>
         <tr
-          v-for="customer in customers"
+          v-for="customer in customerStore.customers"
           :key="customer.id"
-          class="hover border-b border-gray-300"
+          class="hover border-b border-gray-200"
         >
-          <td class="py-4 px-6">{{ customer.id }}</td>
-          <td class="py-4 px-6">{{ customer.name }}</td>
-          <td class="py-4 px-6">{{ customer.email }}</td>
-          <td class="py-4 px-6">{{ customer.contact }}</td>
-          <td class="py-4 px-6 text-center">
+          <td>{{ customer.id }}</td>
+          <td>{{ customer.name }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.contact }}</td>
+          <td class="text-center">
             <button
               @click="$emit('edit', customer)"
-              class="btn btn-warning btn-sm w-16 mr-2"
+              class="btn btn-warning btn-sm w-16"
             >
               Edit
             </button>
             <button
-              @click="$emit('delete', customer.id), console.log(customer.id)"
-              class="btn btn-error btn-sm w-16"
+              @click="$emit('delete', customer.id)"
+              class="btn btn-error btn-sm ml-2 w-16"
             >
               Delete
             </button>
@@ -46,13 +63,167 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <button @click="prevPage" :disabled="customerStore.query.page === 1">
+        <ChevronLeft />
+      </button>
+
+      <span>
+        {{ customerStore.query.page }} / {{ customerStore.totalPages }}
+      </span>
+
+      <button
+        @click="nextPage"
+        :disabled="customerStore.query.page === customerStore.totalPages"
+      >
+        <ChevronRight />
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-import type { Customer } from "~/types/customer";
+import { ChevronLeft, ChevronRight, SortDescIcon } from "lucide-vue-next";
+import { ref, watch, onMounted, nextTick } from "vue";
+import { useCustomerStore } from "~/stores/customer";
 
-defineProps<{ customers: Customer[]; isLoading: boolean }>();
-defineEmits(["edit", "delete"]);
+const customerStore = useCustomerStore();
+
+// Store the timeout ID
+let debounceTimeout = ref<NodeJS.Timeout | null>(null);
+
+// Watch for search or sorting changes and fetch data with a delay
+watch(
+  () => customerStore.query,
+  () => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
+
+    debounceTimeout.value = setTimeout(() => {
+      customerStore.getCustomers();
+    }, 500);
+  },
+  { deep: true }
+);
+
+watch(
+  () => customerStore.query.order,
+  () => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
+
+    debounceTimeout.value = setTimeout(() => {
+      customerStore.getCustomers();
+    }, 500);
+  },
+  { deep: true }
+);
+
+// Sorting function
+const setSorting = (field: string) => {
+  customerStore.query.sortBy = field;
+  customerStore.query.order =
+    customerStore.query.order === "ASC" ? "DESC" : "ASC";
+};
+
+// Pagination functions
+const prevPage = () => {
+  if (customerStore.query.page > 1) customerStore.query.page--;
+};
+const nextPage = () => {
+  if (customerStore.query.page < customerStore.totalPages)
+    customerStore.query.page++;
+};
+
+onMounted(async () => {
+  nextTick(async () => {
+    await customerStore.getCustomers();
+    console.log("customerStore.customers", customerStore.customers);
+  });
+});
 </script>
+
+<style scoped>
+/* Container */
+.table-container {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+/* Table Header */
+.custom-table thead tr {
+  background: rgb(231, 231, 231);
+  text-align: left;
+  font-size: 15px;
+  color: #1d1d1d;
+}
+
+.custom-table th {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Table Body */
+.custom-table td {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Alignments */
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+
+/* Row Hover Effect */
+.custom-table tbody tr:hover {
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+}
+
+.pagination button {
+  padding: 6px 10px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+  background: rgb(207, 207, 207);
+  color: #7c7c7c;
+  border-radius: 4px;
+}
+.pagination button:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Sorting Icon */
+.sort-icon {
+  color: #5a5a5a;
+  width: 15px;
+  height: 15px;
+  margin-left: 6px;
+}
+</style>

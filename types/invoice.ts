@@ -1,6 +1,6 @@
-import type { PaymentDetail } from "./paymentDetail";
+import type { InvoiceDetail } from "./invoiceDetail";
 
-export type Payment = {
+export type Invoice = {
   id: number | null;
   date: Date;
   ourRef: string;
@@ -8,8 +8,8 @@ export type Payment = {
   cusTax: string;
   paidDate: Date | null;
   taxInvoice: string;
-  paymentTerms: string;
-  paymentDetails: PaymentDetail[];
+  invoiceTerms: string;
+  invoiceDetails: InvoiceDetail[];
   discount: number;
   total: number;
   bank: string;

@@ -1,4 +1,4 @@
-import type { Payment } from "./payment";
+import type { Invoice } from "./invoice";
 
 export type JobQuotation = {
   id?: number;
@@ -8,14 +8,14 @@ export type JobQuotation = {
   agentEmail?: string;
   agentContact?: string;
   priceOffered: number;
-  paymentMethod?: string;
-  paymentTerms: string;
+  invoiceMethod?: string;
+  invoiceTerms: string;
   deliveryTime: string;
   deliveryPlace: string;
   vatPercentage: number;
   message: string;
   bestRegards: string;
-  payments?: Payment[];
+  invoices?: Invoice[];
   createdAt?: Date;
   updatedAt?: Date;
 };

@@ -188,7 +188,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from "vue";
 import CustomerSearch from "~/components/project/customerSearch.vue";
-import PaymentTable from "~/components/project/PaymentTable.vue";
+import PaymentTable from "~/components/project/InvoiceTable.vue";
 import SubContractorSearch from "~/components/subcontractor/SubContractorSearch.vue";
 import usePurchaseOrderService from "~/composables/purchase-orderService";
 import type { OrderDetail } from "~/types/orderDetail";
