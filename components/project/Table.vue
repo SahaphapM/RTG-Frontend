@@ -24,7 +24,7 @@
               <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th>Actions</th>
+          <th style="text-align: center">Actions</th>
         </tr>
       </thead>
 
@@ -45,12 +45,18 @@
           <td class="text-right w-40">
             {{ project.totalProjectPrice!.toLocaleString() }}
           </td>
-          <td class="actions">
-            <button @click.stop="$emit('edit', project)" class="">
-              <SquarePen color="orange" />
+          <td class="action-buttons">
+            <button
+              @click.stop="$emit('edit', project)"
+              class="btn btn-warning btn-sm w-16"
+            >
+              Edit
             </button>
-            <button @click.stop="$emit('delete', project.id)" class="">
-              <Trash2 color="red" />
+            <button
+              @click.stop="$emit('delete', project.id)"
+              class="btn btn-error btn-sm ml-2 w-16"
+            >
+              Delete
             </button>
           </td>
         </tr>
@@ -199,32 +205,17 @@ onMounted(async () => {
 }
 
 /* Actions Column */
-.actions {
+.action-buttons {
   text-align: center;
   display: flex;
-  justify-content: left;
+
+  justify-content: center;
   gap: 6px;
 }
 
-/* Buttons
-.btn-edit,
-.btn-delete {
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
+.action-buttons button {
+  color: #252525;
 }
-
-.btn-edit {
-  background: #facc15;
-  color: #000000;
-}
-
-.btn-delete {
-  background: #ef4444;
-  color: #000000;
-} */
 
 /* Pagination */
 .pagination {
@@ -240,8 +231,8 @@ onMounted(async () => {
   font-size: 12px;
   border: none;
   cursor: pointer;
-  background: rgb(231, 231, 231);
-  color: #afafaf;
+  background: rgb(207, 207, 207);
+  color: #7c7c7c;
   border-radius: 4px;
 }
 

@@ -106,11 +106,15 @@ export default function useProjectService() {
   // Delete Project
   const deleteProject = async (id: number) => {
     try {
-      await useFetch(`${config.public.apiBase}/projects/${id}`, {
-        method: "DELETE",
-      });
-    } catch (error) {
-      console.error("Error deleting project:", error);
+      const { error: fetchError } = await useFetch(
+        `${config.public.apiBase}/projects/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (fetchError.value) throw new Error(fetchError.value.message);
+    } catch (error: any) {
+      console.error("Error deleting project:", error.message);
     }
   };
 
