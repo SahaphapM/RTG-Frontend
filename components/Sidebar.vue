@@ -5,7 +5,7 @@
     <!-- Sidebar -->
     <div
       :class="[
-        'fixed top-0 left-0 w-64 h-screen shadow-xl p-4 transition-transform shadow duration-500 text-center flex flex-col items-center',
+        'fixed top-0 left-0 w-64 h-screen shadow-xl p-4 transition-transform  duration-500 text-center flex flex-col items-center',
         isOpen ? 'translate-x-0' : '-translate-x-full',
       ]"
     >
@@ -19,7 +19,7 @@
         <li v-for="item in menuItems" :key="item.to">
           <NuxtLink
             :to="item.to"
-            class="flex items-center gap-2 p-3 rounded-lg transition duration-300 text-xl gap-4 mt-2"
+            class="flex items-center p-3 rounded-lg transition duration-300 text-xl gap-4 mt-2"
             :class="{
               'bg-base-300 ': $route.path === item.to,
             }"

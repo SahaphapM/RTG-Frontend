@@ -18,7 +18,7 @@
 
     <!-- Content Area -->
     <div
-      class="flex-1 p-6 transition-all duration-300"
+      class="flex-1 px-6 transition-all duration-300"
       :class="isOpen ? 'ml-64' : 'ml-8'"
     >
       <slot />
@@ -33,8 +33,6 @@ import { ref } from "vue";
 const isOpen = ref(true);
 
 const toggle = () => {
-  console.log(isOpen.value);
   isOpen.value = !isOpen.value;
-  console.log(isOpen.value);
 };
 </script>
