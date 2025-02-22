@@ -17,7 +17,7 @@
           <th class="p-2 border w-16">QTY</th>
           <th class="p-2 border w-24">Unit Price</th>
           <th class="p-2 border w-24 text-right">Amount</th>
-          <th class="p-2 border w-16">Actions</th>
+          <th class="p-2 border w-16" v-if="isEditing">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -70,7 +70,7 @@
               ).toLocaleString()
             }}
           </td>
-          <td class="p-2 border">
+          <td class="p-2 border" v-if="isEditing">
             <button class="btn btn-error btn-sm" @click="removeRow(index)">
               <TrashIcon class="w-4 h-4" color="white" />
             </button>

@@ -11,19 +11,18 @@
         >
           Edit
         </button>
-
-        <div className="dropdown dropdown-bottom">
+        <div class="dropdown">
           <div
-            tabIndex="{0}"
+            tabindex="0"
             role="button"
             style="color: white"
-            className="btn btn-primary  w-32"
+            class="btn w-32 btn-primary"
           >
             Export
           </div>
           <ul
-            tabIndex="{0}"
-            className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
+            tabindex="0"
+            class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
           >
             <li @click="exportInvoicePDF(invoice, true)"><a>Original</a></li>
             <li @click="exportInvoicePDF(invoice, false)"><a>Copy</a></li>
@@ -46,12 +45,17 @@
           </option>
           <option
             v-for="(invoice, index) in invoices"
-            :key="invoice.id!"
+            :key="invoice.id"
             :value="invoice.id"
           >
             Invoice {{ index + 1 }}
+            <!-- Conditionally render the badge if the invoice is paid -->
+            <div>
+              {{ invoice.paidDate ? "Paid" : "" }}
+            </div>
           </option>
         </select>
+
         <button
           class="btn btn-primary w-32"
           v-if="!isEditing"
@@ -85,6 +89,43 @@
           type="date"
           class="input input-bordered w-full"
         />
+      </div>
+      <div>
+        <label class="block font-bold">Paid Date:</label>
+        <!-- Date Picker for Paid Date (only shown when editing) -->
+        <div class="flex gap-2">
+          <input
+            v-if="showDateInput && invoice.paidDate"
+            :disabled="!isEditing"
+            type="date"
+            v-model="invoice.paidDate"
+            class="input input-bordered w-full"
+          />
+          <div class="dropdown">
+            <div
+              tabindex="0"
+              role="button"
+              style="color: white"
+              class="btn w-32"
+              @click="isDropdownOpen = true"
+              :class="{
+                'btn-success': invoice.paidDate,
+                'btn-error': !invoice.paidDate,
+                'btn-disabled': !isEditing,
+              }"
+            >
+              {{ invoice.paidDate ? "Paid" : "Unpaid" }}
+            </div>
+            <ul
+              v-if="isDropdownOpen"
+              tabindex="0"
+              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
+            >
+              <li @click.stop="setUnpaid"><a>Unpaid</a></li>
+              <li @click.stop="setPaid"><a>Paid</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div>
         <label class="block font-bold">Our Ref:</label>
@@ -158,10 +199,10 @@
           <div>Discount</div>
           <div>Total</div>
         </div>
-        <div class="font-bold">
-          <div>{{ totalInvoiceAmount.toLocaleString() }}</div>
+        <div>
+          <div class="font-bold">{{ totalInvoiceAmount.toLocaleString() }}</div>
           <div>{{ invoice.discount.toLocaleString() }}</div>
-          <div>{{ invoice.total.toLocaleString() }}</div>
+          <div class="font-bold">{{ invoice.total.toLocaleString() }}</div>
         </div>
         <div class="mx-5">
           <div>Baht</div>
@@ -222,7 +263,7 @@
     <!-- Action Buttons -->
     <div class="mt-6 flex gap-2">
       <button
-        v-if="!isEditing && invoice.id"
+        v-if="isEditing && selectedInvoiceId"
         @click="isDeleteModalOpen = true"
         class="btn btn-error w-32"
       >
@@ -239,13 +280,15 @@
         @cancel="isDeleteModalOpen = false"
       />
       <div class="ml-auto">
-        <button
-          @click="goBack"
-          v-if="!isEditing"
-          class="btn btn-secondary w-32"
-        >
-          Back
-        </button>
+        <div class="flex gap-2">
+          <button
+            @click="goBack"
+            v-if="!isEditing"
+            class="btn btn-secondary w-32"
+          >
+            Back
+          </button>
+        </div>
         <div class="flex gap-2">
           <button
             v-if="isEditing"
@@ -322,6 +365,9 @@ const invoice = ref<Invoice>(newInvoice());
 const selectedInvoiceId = ref<number | null>(null);
 const isEditing = ref(false);
 const isDeleteModalOpen = ref(false);
+// สถานะการแสดงผลของ input และ dropdown
+const showDateInput = ref(false);
+const isDropdownOpen = ref(false);
 
 // **Fetch Data on Mount**
 onMounted(async () => {
@@ -376,9 +422,8 @@ const remainingBalance = computed(() => {
       ? sum + (pay.total || 0) + (pay.discount || 0)
       : sum;
   }, 0);
-  return Math.max(
-    jobQuotation.value.priceOffered - (totalPaid + totalInvoiceAmount.value),
-    0
+  return (
+    jobQuotation.value.priceOffered - (totalPaid + totalInvoiceAmount.value)
   );
 });
 
@@ -453,7 +498,7 @@ const confirmDeleteInvoice = async () => {
   if (selectedInvoiceId.value) {
     await deleteInvoice(selectedInvoiceId.value);
   }
-
+  isEditing.value = !isEditing.value;
   isDeleteModalOpen.value = false;
   await refresh();
 };
@@ -469,6 +514,19 @@ const formattedDate = computed({
   },
 });
 
+// ฟังก์ชันที่ใช้ตั้งค่าว่า "Paid"
+const setPaid = () => {
+  showDateInput.value = true; // แสดง input ของวันที่เมื่อเลือก Paid
+  invoice.value.paidDate = new Date().toISOString().split("T")[0]; // ตั้งค่าวันที่ปัจจุบันเป็น paidDate
+  isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Paid
+};
+
+// ฟังก์ชันที่ใช้ตั้งค่าว่า "Unpaid"
+const setUnpaid = () => {
+  invoice.value.paidDate = null; // ลบค่า paidDate เมื่อเลือก Unpaid
+  showDateInput.value = false; // ซ่อน input วันที่เมื่อเลือก Unpaid
+  isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Unpaid
+};
 const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
   const pathParts = route.fullPath.split("/");
   console.log("pathParts", pathParts);
@@ -802,6 +860,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
     });
     yPos = (doc as any).lastAutoTable.finalY + 5;
+
     autoTable(doc, {
       startY: yPos,
       head: [["Bank Details"]],
@@ -811,9 +870,9 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         [invoice.accountNumber],
         [invoice.branch],
         [invoice.swift],
-      ]
-        .filter((row) => row[0] !== "" && row[0] !== null) // Filter out empty or null rows
-        .map((row) => row), // Map to ensure we get the same format for each row
+      ],
+      // .filter((row) => row[0] !== "" && row[0] !== null) // Filter out empty or null rows
+      // .map((row) => row), // Map to ensure we get the same format for each row
       theme: "grid",
       styles: {
         fontSize: 10,
@@ -821,7 +880,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         textColor: [0, 0, 0],
         font: "NotoSansThai",
       },
-      headStyles: { fillColor: [r, g, b] },
+      headStyles: { fillColor: [r, g, b], cellWidth: 180 },
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
     });
 

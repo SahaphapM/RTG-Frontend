@@ -42,7 +42,7 @@
               user.role
             }}</span>
           </td>
-          <td class="text-center">
+          <td class="text-center justify-center flex gap-2">
             <button
               @click="$emit('edit', user)"
               class="btn btn-warning btn-sm w-16"
@@ -51,7 +51,7 @@
             </button>
             <button
               @click="$emit('delete', user.id)"
-              class="btn btn-error btn-sm ml-2 w-16"
+              class="btn btn-error btn-sm w-16"
             >
               Delete
             </button>
@@ -168,7 +168,7 @@ onMounted(async () => {
 
 /* Alignments */
 .text-center {
-  text-align: left;
+  text-align: center;
 }
 .text-right {
   text-align: right;

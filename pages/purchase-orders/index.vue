@@ -1,10 +1,24 @@
 <template>
   <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">PurchaseOrder Management</h1>
-      <NuxtLink to="/purchase-orders/new" class="btn btn-primary w-32"
-        >Add New</NuxtLink
-      >
+    <!-- Header Section -->
+    <div class="flex items-center mb-6">
+      <h1 class="text-2xl font-bold w-[50%]">PurchaseOrder Management</h1>
+      <div class="flex gap-4 w-[50%] justify-end">
+        <!-- Search Input -->
+        <div class="w-[70%] min-w-[150px]">
+          <input
+            v-model="purchaseOrderStore.query.search"
+            placeholder="Search PurchaseOrders"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <!-- Action Buttons -->
+        <div class="flex justify-end">
+          <NuxtLink to="/purchase-orders/new" class="btn btn-primary w-32">
+            Add New
+          </NuxtLink>
+        </div>
+      </div>
     </div>
 
     <Table

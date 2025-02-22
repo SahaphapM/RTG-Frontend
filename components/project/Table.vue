@@ -15,11 +15,8 @@
           <th>Customer</th>
           <th>Start Date</th>
           <!-- <th>End Date</th> -->
-          <th
-            @click="setSorting('totalProjectPrice')"
-            class="w-40 cursor-pointer"
-          >
-            <div class="flex">
+          <th @click="setSorting('totalProjectPrice')" class="cursor-pointer">
+            <div class="flex justify-end text-right">
               Total Price
               <SortDescIcon class="sort-icon" />
             </div>
@@ -42,10 +39,10 @@
           </td>
           <td class="text-center">{{ project.startDate }}</td>
           <!-- <td class="text-center">{{ project.endDate }}</td> -->
-          <td class="text-right w-40">
+          <td class="text-right">
             {{ project.totalProjectPrice!.toLocaleString() }}
           </td>
-          <td class="action-buttons">
+          <td class="action-buttons gap-2">
             <button
               @click.stop="$emit('edit', project)"
               class="btn btn-warning btn-sm w-16"
@@ -54,7 +51,7 @@
             </button>
             <button
               @click.stop="$emit('delete', project.id)"
-              class="btn btn-error btn-sm ml-2 w-16"
+              class="btn btn-error btn-sm w-16"
             >
               Delete
             </button>
@@ -210,7 +207,6 @@ onMounted(async () => {
   display: flex;
 
   justify-content: center;
-  gap: 6px;
 }
 
 .action-buttons button {

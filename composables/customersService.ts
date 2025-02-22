@@ -80,7 +80,7 @@ export default function useCustomerService() {
   ) => {
     try {
       const { data } = await useFetch<Customer>(`${API_URL}/${id}`, {
-        method: "PATCH",
+        method: "PUT",
         body: updatedCustomer,
       });
       return data.value;

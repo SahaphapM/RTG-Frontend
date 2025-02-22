@@ -1,10 +1,24 @@
 <template>
   <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Customer Management</h1>
-      <button @click="openAddCustomerModal" class="btn btn-primary btn-md w-32">
-        Add New
-      </button>
+    <!-- Header Section -->
+    <div class="flex items-center mb-6">
+      <h1 class="text-2xl font-bold w-[50%]">Customer Management</h1>
+      <div class="flex gap-4 w-[50%] justify-end">
+        <!-- Search Input -->
+        <div class="w-[70%] min-w-[150px]">
+          <input
+            v-model="customerStore.query.search"
+            placeholder="Search Customers"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <button
+          @click="openAddCustomerModal"
+          class="btn btn-primary btn-md w-32"
+        >
+          Add New
+        </button>
+      </div>
     </div>
 
     <CustomerTable @edit="editCustomer" @delete="confirmDeleteCustomer" />

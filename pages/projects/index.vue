@@ -7,7 +7,7 @@
         <div class="w-[70%] min-w-[150px]">
           <input
             v-model="projectStore.query.search"
-            placeholder="Search Project"
+            placeholder="Search Projects"
             class="input input-bordered w-full"
           />
         </div>

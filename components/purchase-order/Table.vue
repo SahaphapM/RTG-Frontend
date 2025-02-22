@@ -8,6 +8,11 @@
               No. <SortDescIcon class="sort-icon" />
             </div>
           </th>
+          <th @click="setSorting('date')" class="sortable text-center w-32">
+            <div class="flex justify-center items-center">
+              Date <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
           <th @click="setSorting('description')" class="sortable">
             <div class="flex items-center">
               Description <SortDescIcon class="sort-icon" />
@@ -21,11 +26,7 @@
               Price <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('date')" class="sortable text-center w-32">
-            <div class="flex justify-center items-center">
-              Date <SortDescIcon class="sort-icon" />
-            </div>
-          </th>
+
           <th class="text-center w-32">Actions</th>
         </tr>
       </thead>
@@ -46,11 +47,12 @@
           @click="navigateToPurchaseOrder(purchaseOrder.id!)"
         >
           <td>{{ purchaseOrder.number }}</td>
+          <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
           <td class="truncate">{{ purchaseOrder.description }}</td>
           <td>{{ purchaseOrder.subcontractor?.name || "-" }}</td>
           <td class="text-right">{{ formatPrice(purchaseOrder.total) }}</td>
-          <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
-          <td class="text-center flex">
+
+          <td class="text-center flex gap-2">
             <button
               @click.stop="navigateToPurchaseOrder(purchaseOrder.id!)"
               class="btn btn-warning btn-sm w-16"
@@ -59,7 +61,7 @@
             </button>
             <button
               @click.stop="$emit('delete', purchaseOrder.id)"
-              class="btn btn-error btn-sm w-16 ml-2"
+              class="btn btn-error btn-sm w-16"
             >
               Delete
             </button>

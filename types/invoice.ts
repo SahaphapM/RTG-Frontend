@@ -6,7 +6,7 @@ export type Invoice = {
   ourRef: string;
   ourTax: string;
   cusTax: string;
-  paidDate: Date | null;
+  paidDate: string | null;
   taxInvoice: string;
   invoiceTerms: string;
   invoiceDetails: InvoiceDetail[];

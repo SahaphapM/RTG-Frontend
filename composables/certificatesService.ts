@@ -1,34 +1,66 @@
 import { ref } from "vue";
 import { useFetch } from "#app"; // Ensure this is correct for your Nuxt setup
 import type { Certificate } from "~/types/certificate";
+import type { PaginationQuery, PaginationResponse } from "~/types/pagination";
 
 export const useCertificateService = () => {
-  const loading = ref(false);
+  const isLoading = ref(false);
+  const totalPages = ref(1);
+  const totalCertificates = ref(0);
+  const error = ref<string | null>(null);
+  const certificates = ref<Certificate[]>([]);
   const errorMessage = ref<string | null>(null);
   const config = useRuntimeConfig();
   const API_BASE = (config.public.apiBase as string) + "/certificates";
 
   // ✅ Fetch a specific certificate by ID
   const fetchCertificate = async (id: number) => {
-    loading.value = true;
-    errorMessage.value = null;
+    isLoading.value = true;
+    error.value = null;
+
     try {
-      const { data, error } = await useFetch<Certificate>(`${API_BASE}/${id}`);
-      if (error.value) {
-        throw new Error(error.value.message);
-      }
+      const { data, error: fetchError } = await useFetch<Certificate>(
+        `${API_BASE}/${id}`
+      );
+
+      if (fetchError.value) throw new Error(fetchError.value.message);
+
       return data.value;
-    } catch (error: any) {
-      errorMessage.value = error.message || "Failed to fetch certificate.";
-      console.error("Error fetching certificate:", errorMessage.value);
-      return null;
+    } catch (err: any) {
+      error.value = err.message || "Failed to fetch certificate.";
+      console.error("Error fetching certificate:", error.value);
     } finally {
-      loading.value = false;
+      isLoading.value = false;
+    }
+  };
+
+  // Fetch certificates with pagination
+  const fetchCertificates = async (query: PaginationQuery) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const { data, error: fetchError } = await useFetch<
+        PaginationResponse<Certificate>
+      >(API_BASE, {
+        query: query,
+      });
+
+      if (fetchError.value) throw new Error(fetchError.value.message);
+
+      certificates.value = data.value?.data || [];
+      totalCertificates.value = data.value?.total || 0;
+      totalPages.value = data.value?.totalPages || 1;
+    } catch (err: any) {
+      error.value = err.message || "Failed to fetch certificates.";
+      console.error("Error fetching certificates:", error.value);
+    } finally {
+      isLoading.value = false;
     }
   };
 
   const fetchCertificateFile = async (filename: string) => {
-    loading.value = true;
+    isLoading.value = true;
     errorMessage.value = null;
     try {
       const response = await fetch(
@@ -49,33 +81,13 @@ export const useCertificateService = () => {
       console.error("Error fetching certificate file:", errorMessage.value);
       return null;
     } finally {
-      loading.value = false;
-    }
-  };
-  // ✅ Fetch all certificates
-  const fetchCertificates = async () => {
-    loading.value = true;
-    errorMessage.value = null;
-
-    try {
-      const { data, error } = await useFetch<Certificate[]>(`${API_BASE}`);
-
-      if (error.value) {
-        throw new Error(error.value.message);
-      }
-
-      return data.value || [];
-    } catch (error: any) {
-      errorMessage.value = error.message || "An unexpected error occurred.";
-      console.error("Error fetching certificates:", errorMessage.value);
-    } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
   // ✅ Create a new certificate (without file)
   const createCertificate = async (certificate: Partial<Certificate>) => {
-    loading.value = true;
+    isLoading.value = true;
     errorMessage.value = null;
 
     try {
@@ -98,13 +110,13 @@ export const useCertificateService = () => {
       console.error("Error creating certificate:", errorMessage.value);
       return null;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
   // ✅ Upload file for a certificate
   const uploadCertificateFile = async (id: number, file: File) => {
-    loading.value = true;
+    isLoading.value = true;
     errorMessage.value = null;
 
     console.log("file", file);
@@ -126,17 +138,17 @@ export const useCertificateService = () => {
 
       return result;
     } catch (error: any) {
-      errorMessage.value = error.message || "Error uploading file.";
-      console.error("Error uploading certificate file:", errorMessage.value);
+      errorMessage.value = error.message || "Error upisLoading file.";
+      console.error("Error upisLoading certificate file:", errorMessage.value);
       return null;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
   // ✅ Download certificate file
   const downloadCertificate = async (filename: string) => {
-    loading.value = true;
+    isLoading.value = true;
     errorMessage.value = null;
 
     try {
@@ -155,10 +167,10 @@ export const useCertificateService = () => {
       a.click();
       document.body.removeChild(a);
     } catch (error: any) {
-      errorMessage.value = error.message || "Error downloading file.";
-      console.error("Error downloading certificate:", errorMessage.value);
+      errorMessage.value = error.message || "Error downisLoading file.";
+      console.error("Error downisLoading certificate:", errorMessage.value);
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -167,7 +179,7 @@ export const useCertificateService = () => {
     id: number,
     certificate: Partial<Certificate>
   ) => {
-    loading.value = true;
+    isLoading.value = true;
     errorMessage.value = null;
 
     try {
@@ -190,13 +202,13 @@ export const useCertificateService = () => {
       console.error("Error updating certificate:", errorMessage.value);
       return null;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
   // ✅ Delete a certificate
   const deleteCertificate = async (id: number) => {
-    loading.value = true;
+    isLoading.value = true;
     errorMessage.value = null;
 
     try {
@@ -216,12 +228,12 @@ export const useCertificateService = () => {
       console.error("Error deleting certificate:", errorMessage.value);
       return null;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
   };
 
   return {
-    loading,
+    isLoading,
     errorMessage,
     fetchCertificate,
     fetchCertificates,
@@ -231,5 +243,8 @@ export const useCertificateService = () => {
     downloadCertificate,
     updateCertificate,
     deleteCertificate,
+    certificates,
+    totalPages,
+    totalCertificates,
   };
 };

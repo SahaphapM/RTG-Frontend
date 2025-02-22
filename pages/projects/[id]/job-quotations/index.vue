@@ -59,10 +59,10 @@
       <div class="flex justify-end gap-8 items-center">
         <h2 class="text-lg font-semibold">Total Price</h2>
         <div
-          class="p-2 px-8 text-xl border font-medium bg-gray-100 rounded-lg min-w-[250px] text-right"
+          class="p-2 px-8 text-xl border font-medium bg-gray-100 rounded-lg text-right"
         >
           {{ formatPrice?.toLocaleString() }}
-          <span class="text-[16px] font-normal">Bath</span>
+          <span class="text-lg font-medium">Bath</span>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
         <h3 class="text-lg font-medium">Vat %</h3>
         <input
           v-model="quotation.vatPercentage"
-          type="text"
+          type="number"
           class="input input-bordered w-full"
           :disabled="!isEditing"
         />
@@ -139,27 +139,53 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="mt-6 flex justify-end gap-2">
-      <button @click="goBack" v-if="!isEditing" class="btn btn-secondary w-32">
-        Back
-      </button>
-      <button @click="goNext" v-if="!isEditing" class="btn btn-primary w-32">
-        Next
-      </button>
-      <button
-        v-if="isEditing"
-        @click="cancelEdit"
-        class="btn btn-secondary w-32"
-      >
-        Cancel
-      </button>
-      <button
-        v-if="isEditing"
-        @click="saveQuotation"
-        class="btn btn-success w-32"
-      >
-        Save
-      </button>
+    <div class="mt-6 flex justify-between gap-2">
+      <div>
+        <button
+          v-if="isEditing && selectedQuotationId"
+          @click="isDeleteModalOpen = true"
+          class="btn btn-error w-32"
+        >
+          Delete
+        </button>
+        <ConfirmDelete
+          v-if="isDeleteModalOpen"
+          :isOpen="isDeleteModalOpen"
+          title="Confirm Delete"
+          message="Are you sure you want to delete this user?"
+          confirmText="Yes, Delete"
+          cancelText="Cancel"
+          @confirm="confirmDeleteInvoice"
+          @cancel="isDeleteModalOpen = false"
+        />
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button
+          @click="goBack"
+          v-if="!isEditing"
+          class="btn btn-secondary w-32"
+        >
+          Back
+        </button>
+        <button @click="goNext" v-if="!isEditing" class="btn btn-primary w-32">
+          Next
+        </button>
+        <button
+          v-if="isEditing"
+          @click="cancelEdit"
+          class="btn btn-secondary w-32"
+        >
+          Cancel
+        </button>
+        <button
+          v-if="isEditing"
+          @click="saveQuotation"
+          class="btn btn-success w-32"
+        >
+          Save
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -168,6 +194,7 @@
 import { Watch } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import ConfirmDelete from "~/components/ConfirmDelete.vue";
 import useJobQuotationService from "~/composables/job-quotationService";
 import useProjectService from "~/composables/projectService";
 import type { JobQuotation } from "~/types/job-quotation";
@@ -175,14 +202,19 @@ import type { JobQuotation } from "~/types/job-quotation";
 const route = useRoute();
 const router = useRouter();
 const projectStore = useProjectStore();
-const { fetchByProjectId, updateJobQuotation, createJobQuotation } =
-  useJobQuotationService();
+const {
+  fetchByProjectId,
+  updateJobQuotation,
+  createJobQuotation,
+  deleteJobQuotation,
+} = useJobQuotationService();
 const { fetchProject } = useProjectService();
 
 const stateStore = useStateStore();
 const isEditing = ref(false);
 const selectedQuotationId = ref<number | null>(null);
 const originalQuotation = ref<JobQuotation>();
+const isDeleteModalOpen = ref(false);
 
 const newQuotationTemplate: JobQuotation = {
   description: "",
@@ -276,9 +308,7 @@ const createNewQuotation = () => {
 
 // Cancel edit
 const cancelEdit = () => {
-  selectedQuotationId.value =
-    projectStore.project?.jobQuotations.length || null;
-
+  selectedQuotationId.value = originalQuotation.value?.id || null;
   quotation.value = originalQuotation.value || { ...newQuotationTemplate };
   isEditing.value = false;
 };
@@ -289,6 +319,30 @@ const goNext = () =>
   router.push(
     `/projects/${route.params.id}/job-quotations/${selectedQuotationId.value}/invoice`
   );
+
+const confirmDeleteInvoice = async () => {
+  if (selectedQuotationId.value) {
+    await deleteJobQuotation(selectedQuotationId.value);
+  }
+
+  projectStore.project?.jobQuotations.splice(
+    projectStore.project?.jobQuotations.findIndex(
+      (q) => q.id === selectedQuotationId.value
+    ),
+    1
+  );
+  if (projectStore.project?.jobQuotations.length) {
+    const lastIndex = projectStore.project?.jobQuotations.length - 1;
+    selectedQuotationId.value =
+      projectStore.project?.jobQuotations[lastIndex].id || null;
+    quotation.value = projectStore.project?.jobQuotations[lastIndex];
+  } else {
+    selectedQuotationId.value = null;
+    quotation.value = { ...newQuotationTemplate };
+  }
+
+  isDeleteModalOpen.value = false;
+};
 
 // Export PDF (Implementation remains the same)
 const exportToPDF = async () => {

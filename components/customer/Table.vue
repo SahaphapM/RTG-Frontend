@@ -46,7 +46,7 @@
           <td>{{ customer.name }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.contact }}</td>
-          <td class="text-center">
+          <td class="text-center justify-center flex gap-2">
             <button
               @click="$emit('edit', customer)"
               class="btn btn-warning btn-sm w-16"
@@ -55,7 +55,7 @@
             </button>
             <button
               @click="$emit('delete', customer.id)"
-              class="btn btn-error btn-sm ml-2 w-16"
+              class="btn btn-error btn-sm w-16"
             >
               Delete
             </button>

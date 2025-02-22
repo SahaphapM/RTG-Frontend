@@ -1,22 +1,32 @@
 <template>
   <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Certificates</h1>
-
-      <!-- Action Buttons -->
-      <div class="flex justify-end">
-        <button
-          class="btn btn-primary w-32"
-          @click="router.push('/certificates/new')"
-        >
-          Add New
-        </button>
+    <!-- Header Section -->
+    <div class="flex items-center mb-6">
+      <h1 class="text-2xl font-bold w-[50%]">Certificate Management</h1>
+      <div class="flex gap-4 w-[50%] justify-end">
+        <!-- Search Input -->
+        <div class="w-[70%] min-w-[150px]">
+          <input
+            v-model="certificateStore.query.search"
+            placeholder="Search Certificates"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <!-- Action Buttons -->
+        <div class="flex justify-end">
+          <button
+            class="btn btn-primary w-32"
+            @click="router.push('/certificates/new')"
+          >
+            Add New
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Certificates Table -->
     <Table
-      :certificates="certificates"
+      :certificates="certificateStore.certificates"
       :isEditing="isEditing"
       @download="download"
       @update:certificates="updateCertificates"
@@ -31,30 +41,18 @@ import Table from "@/components/certificate/Table.vue"; // Certificate Table Com
 import { useCertificateService } from "@/composables/certificatesService";
 import type { Certificate } from "@/types/certificate";
 
-const { fetchCertificates, downloadCertificate } = useCertificateService();
+const { downloadCertificate } = useCertificateService();
 
+const certificateStore = useCertificateStore();
 const router = useRouter();
-const certificates = ref<Certificate[]>([]);
 const isEditing = ref(false);
 
 // Fetch all certificates on mount
 onMounted(async () => {
   nextTick(async () => {
-    await loadCertificates();
-    console.log(certificates.value);
+    await certificateStore.getCertificates();
   });
 });
-
-const loadCertificates = async () => {
-  try {
-    const data = await fetchCertificates();
-    if (data) {
-      certificates.value = data;
-    }
-  } catch (error) {
-    console.error("Error fetching certificates:", error);
-  }
-};
 
 const download = async (name: string) => {
   if (name) {
@@ -63,6 +61,6 @@ const download = async (name: string) => {
 };
 // Update Certificates
 const updateCertificates = (updatedCertificates: Certificate[]) => {
-  certificates.value = updatedCertificates;
+  certificateStore.certificates = updatedCertificates;
 };
 </script>
