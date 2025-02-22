@@ -329,6 +329,15 @@ const exportToPDF = async () => {
   const img = new Image();
   img.src = logoPath;
 
+  const pageHeight = doc.internal.pageSize.height; // ความสูงของหน้ากระดาษ A4
+
+  const checkPageBreak = (extraHeight = 10) => {
+    if (yPos + extraHeight > pageHeight - 20) {
+      doc.addPage(); // ✅ เพิ่มหน้ากระดาษใหม่
+      yPos = 18; // ✅ รีเซ็ตตำแหน่ง yPos ให้เริ่มต้นที่ขอบบนของหน้ากระดาษใหม่
+    }
+  };
+
   img.onload = function () {
     // ✅ Add the logo (align top-left)
     doc.addImage(img, "PNG", marginLeft - 2, yPos - 5, 110, 25);
@@ -459,10 +468,6 @@ const exportToPDF = async () => {
     let pageWidth = doc.internal.pageSize.getWidth();
     doc.text(priceText, pageWidth - marginLeft, yPos, { align: "right" });
 
-    doc.text(priceText, pageWidth - marginRight, yPos, {
-      align: "right",
-    });
-
     // ✅ Commercial Conditions (Formatted as Text)
     yPos += 10;
     doc.setFont("NotoSansThai", "bold");
@@ -474,6 +479,8 @@ const exportToPDF = async () => {
 
     // ✅ Draw Text
     doc.text(textCommercial, textXCommercial, textYCommercial);
+
+    checkPageBreak(12); // ✅ ตรวจสอบว่ามีที่ว่างพอไหมก่อนเพิ่มหัวข้อใหม่
 
     // ✅ Measure Text Width & Draw Underline
     let textWidthCommercial = doc.getTextWidth(textCommercial); // Get the width of the text
@@ -510,17 +517,27 @@ const exportToPDF = async () => {
 
     // ✅ Closing Message
     yPos += 5;
+
+    checkPageBreak(12); // ✅ ตรวจสอบว่ามีที่ว่างพอไหมก่อนเพิ่มหัวข้อใหม่
+
     doc.setFont("NotoSansThai", "normal");
     doc.setFontSize(12);
 
-    let closingMessage = `${quotation.value.message || ""}`;
+    // เว้นวรรค
+    const spaceText = "               " + quotation.value.message || "";
+
+    let closingMessage = `${spaceText || ""}`;
     // `         Hoping the above proposal is of interest to you and that it meets your requirements  We look forward to working with you in the future, we remain available for further clarifications you might need to make in the future and we look forward to working with you in the future .`;
 
     let splitClosingMessage = doc.splitTextToSize(closingMessage, maxWidth);
     doc.text(splitClosingMessage, marginLeft, yPos);
 
+    const addHight = splitClosingMessage.length === 1 ? 8 : 0;
+
     // ✅ Best Regards & Signature
-    yPos += splitClosingMessage.length * 6 - 5;
+    yPos += splitClosingMessage.length * 6 + addHight;
+
+    checkPageBreak(12); // ✅ ตรวจสอบว่ามีที่ว่างพอไหมก่อนเพิ่มหัวข้อใหม่
 
     doc.text("Best regards.", marginLeft, yPos);
     doc.setFont("NotoSansThai", "bold");
