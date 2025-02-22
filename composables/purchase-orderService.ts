@@ -225,7 +225,7 @@ export default function usePurchaseOrderService() {
       doc.setFont("NotoSansThai", "bold");
       doc.setFontSize(10);
       doc.text(
-        `เลขประจําตัวผู้เสียภาษี ${purchaseOrder.taxId || ""}`,
+        `เลขประจําตัวผู้เสียภาษี ${purchaseOrder.subcontractor.taxId || ""}`,
         leftX,
         currentY
       );
@@ -278,6 +278,7 @@ export default function usePurchaseOrderService() {
           fontSize: 10,
           cellPadding: 2,
           textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
         },
         headStyles: {
           fillColor: [204, 228, 243],
@@ -289,7 +290,7 @@ export default function usePurchaseOrderService() {
           0: { cellWidth: 15 },
           1: { cellWidth: 85 },
           2: { cellWidth: 20, halign: "right" },
-          3: { cellWidth: 30, halign: "right" },
+          3: { cellWidth: 32, halign: "right" },
           4: { cellWidth: 30, halign: "right" },
         },
       });
@@ -311,12 +312,13 @@ export default function usePurchaseOrderService() {
           textColor: [255, 0, 0],
           font: "NotoSansThai",
           fontStyle: "bold",
+          lineColor: [0, 0, 0],
         },
         columnStyles: {
           0: { cellWidth: 15 },
           1: { cellWidth: 85 },
           2: { cellWidth: 20, halign: "right" },
-          3: { cellWidth: 30, halign: "right" },
+          3: { cellWidth: 32, halign: "right" },
           4: { cellWidth: 30, halign: "right" },
         },
       });
@@ -347,12 +349,13 @@ export default function usePurchaseOrderService() {
         styles: {
           fontSize: 10,
           cellPadding: 2,
+          lineColor: [0, 0, 0],
         },
         columnStyles: {
           0: { cellWidth: 15 },
           1: { cellWidth: 85 },
           2: { cellWidth: 20, halign: "right" },
-          3: { cellWidth: 30, halign: "right" },
+          3: { cellWidth: 32, halign: "right" },
           4: { cellWidth: 30, halign: "right" },
         },
       });
@@ -391,11 +394,11 @@ export default function usePurchaseOrderService() {
         startY: yPos,
         body: tableBody,
         theme: "grid",
-        styles: { fontSize: 10, textColor: [0, 0, 0] },
+        styles: { fontSize: 10, textColor: [0, 0, 0], lineColor: [0, 0, 0] },
         columnStyles: {
           0: { cellWidth: 15 },
           1: { cellWidth: 105, halign: "right" },
-          2: { cellWidth: 60, halign: "right" },
+          2: { cellWidth: 62, halign: "right" },
         },
       });
 
@@ -417,6 +420,7 @@ export default function usePurchaseOrderService() {
           cellPadding: 4,
           font: "NotoSansThai",
           textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
         },
         columnStyles: {
           0: { cellWidth: 15 },
@@ -425,7 +429,7 @@ export default function usePurchaseOrderService() {
             halign: "center",
             fontStyle: "bold",
           },
-          2: { cellWidth: 60, halign: "right", fontStyle: "bold" },
+          2: { cellWidth: 62, halign: "right", fontStyle: "bold" },
         },
       });
 

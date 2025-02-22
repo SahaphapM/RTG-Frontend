@@ -2,7 +2,13 @@
   <div class="p-6">
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
-      <h1 class="text-2xl font-bold mb-4">Purchase Order Detail</h1>
+      <div class="flex flex-col">
+        <h1 class="text-2xl font-semibold">Purchase Order Detail</h1>
+        <div class="flex gap-2">
+          <h1 class="text-md">PO No.</h1>
+          <h1 class="text-md">{{ purchaseOrder.number }}</h1>
+        </div>
+      </div>
       <div class="flex gap-2">
         <button
           v-if="!isEditing"
@@ -125,7 +131,7 @@
           <div>Sub Total</div>
           <div>Discount</div>
           <div>Vat {{ purchaseOrder.vat }}%</div>
-          <div class="font-bold text-lg">Total</div>
+          <div class="font-semibold">Total</div>
         </div>
         <div>
           <div>{{ subTotal.toLocaleString() }}</div>
@@ -133,7 +139,7 @@
           <div>
             {{ vat.toLocaleString() }}
           </div>
-          <div class="font-bold text-lg">
+          <div class="font-semibold">
             {{ totalAmount.toLocaleString() }}
           </div>
         </div>
@@ -141,7 +147,7 @@
           <div>Baht</div>
           <div>Baht</div>
           <div>Baht</div>
-          <div class="font-bold text-lg">Baht</div>
+          <div class="font-semibold">Baht</div>
         </div>
       </div>
     </div>
@@ -230,6 +236,7 @@ const newPurchaseOrder = (): PurchaseOrder => ({
     address: "",
     email: "",
     contact: "",
+    taxId: "",
   }, // กำหนดค่าเริ่มต้นเป็น object ว่าง
   customer: {
     name: "",
@@ -242,7 +249,6 @@ const newPurchaseOrder = (): PurchaseOrder => ({
   discount: 0,
   vat: 0,
   qtNumber: "",
-  taxId: "",
   ourRef: "",
 });
 
@@ -262,6 +268,14 @@ const subTotal = computed(() => {
   return purchaseOrder.value.orderDetails.reduce(
     (sum, detail) => sum + (detail.qty || 0) * (detail.unitPrice || 0),
     0
+  );
+});
+
+const vat = computed(() => {
+  return (
+    (purchaseOrder.value.vat *
+      (subTotal.value - purchaseOrder.value.discount)) /
+    100
   );
 });
 
@@ -311,14 +325,6 @@ const updateOrderDetails = (details: OrderDetail[]) => {
 const updateSubcontractor = (subcontractor: Subcontractor) => {
   purchaseOrder.value.subcontractor = subcontractor;
 };
-
-const vat = computed(() => {
-  return (
-    (purchaseOrder.value.vat *
-      (subTotal.value - purchaseOrder.value.discount)) /
-    100
-  );
-});
 
 // **Save Purchase Order**
 const savePurchaseOrder = async () => {

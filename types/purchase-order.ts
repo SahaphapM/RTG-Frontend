@@ -6,7 +6,6 @@ export type PurchaseOrder = {
   id?: number | null;
   number: string;
   qtNumber: string;
-  taxId: string;
   ourRef: string;
   description: string;
   date: string; // Date of the purchase order (ISO format: "YYYY-MM-DD")

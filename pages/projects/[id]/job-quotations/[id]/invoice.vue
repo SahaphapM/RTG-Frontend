@@ -45,7 +45,7 @@
           </option>
           <option
             v-for="(invoice, index) in invoices"
-            :key="invoice.id"
+            :key="invoice.id! "
             :value="invoice.id"
           >
             Invoice {{ index + 1 }}
@@ -656,7 +656,12 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         ],
       ],
       theme: "grid",
-      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
+      },
 
       columnStyles: {
         0: {
@@ -692,6 +697,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         cellPadding: 2,
         textColor: [0, 0, 0],
         font: "NotoSansThai",
+        lineColor: [0, 0, 0],
       },
       headStyles: {
         fillColor: [r, g, b],
@@ -711,6 +717,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         fontSize: 10,
         cellPadding: 2,
         textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
       },
 
       columnStyles: {
@@ -747,6 +754,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         cellPadding: 2,
         textColor: [0, 0, 0],
         font: "NotoSansThai",
+        lineColor: [0, 0, 0],
       },
       headStyles: {
         fillColor: [r, g, b], // Light blue color for the header background
@@ -788,6 +796,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
       styles: {
         fontSize: 10,
         cellPadding: 2,
+        lineColor: [0, 0, 0],
       },
       columnStyles: {
         0: { cellWidth: 15 },
@@ -816,7 +825,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
       ],
       // foot: [],
       theme: "grid",
-      styles: { fontSize: 10 }, // Light gray background
+      styles: { fontSize: 10, lineColor: [0, 0, 0] }, // Light gray background
       columnStyles: {
         0: { cellWidth: 15 }, // Empty space for alignment
         1: {
@@ -841,7 +850,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         ["", "Grand Total", `${(invoice.total * 1.07).toLocaleString()} baht`],
       ],
       theme: "grid",
-      styles: { fontSize: 10, cellPadding: 4 }, // Increase cell padding for all rows
+      styles: { fontSize: 10, cellPadding: 4, lineColor: [0, 0, 0] }, // Increase cell padding for all rows
       columnStyles: {
         0: { cellWidth: 15, fillColor: [r, g, b] }, // Empty space for alignment
         1: {
@@ -871,7 +880,12 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
       head: [["Invoice Terms"]],
       body: [[invoice.invoiceTerms || ""]],
       theme: "grid",
-      styles: { fontSize: 10, cellPadding: 2, textColor: [0, 0, 0] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+        textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
+      },
       headStyles: { fillColor: [r, g, b] },
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
     });
@@ -895,6 +909,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         cellPadding: 2,
         textColor: [0, 0, 0],
         font: "NotoSansThai",
+        lineColor: [0, 0, 0],
       },
       headStyles: { fillColor: [r, g, b], cellWidth: 180 },
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
@@ -915,6 +930,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
         cellPadding: 2,
         textColor: [0, 0, 0],
         font: "NotoSansThai",
+        lineColor: [0, 0, 0],
       },
       columnStyles: {
         0: {
