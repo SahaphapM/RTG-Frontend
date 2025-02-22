@@ -46,6 +46,8 @@
           <td class="p-2 border">
             <input
               v-model.number="detail.qty"
+              type="number"
+              :step="5"
               class="input input-bordered text-center w-full"
               min="1"
               :disabled="!isEditing"
@@ -53,6 +55,8 @@
           </td>
           <td class="p-2 border">
             <input
+              type="number"
+              :step="10000"
               v-model.number="detail.unitPrice"
               class="input input-bordered text-right w-full"
               min="0"
@@ -83,7 +87,6 @@ import { defineProps, defineEmits } from "vue";
 
 // Props to receive details
 const props = defineProps(["details", "isEditing"]);
-console.log("props", props.details);
 
 // Emit event for updating details in parent
 const emit = defineEmits(["update:details"]);

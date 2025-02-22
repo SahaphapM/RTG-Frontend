@@ -11,7 +11,11 @@
         >
           Edit
         </button>
-        <button class="btn btn-primary w-32" @click="exportToPDF">
+        <button
+          class="btn btn-primary w-32"
+          style="color: white"
+          @click="exportToPDF"
+        >
           Export
         </button>
       </div>
@@ -539,10 +543,12 @@ const exportToPDF = async () => {
 
     checkPageBreak(12); // ✅ ตรวจสอบว่ามีที่ว่างพอไหมก่อนเพิ่มหัวข้อใหม่
 
+    doc.setFontSize(11);
     doc.text("Best regards.", marginLeft, yPos);
+    doc.setFontSize(12);
     doc.setFont("NotoSansThai", "bold");
     doc.text("Socrate Alexiadis", marginLeft, (yPos += 8));
-    doc.text("CEO", marginLeft, (yPos += 4));
+    doc.text("CEO", marginLeft, (yPos += 5));
     // ✅ Define Text & Position
     let text = "MICROTECNOLOGY SRL CO. LTD.";
     let textX = marginLeft; // Left margin for alignment

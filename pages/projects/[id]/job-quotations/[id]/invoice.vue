@@ -11,51 +11,68 @@
         >
           Edit
         </button>
-        <button
-          @click="exportInvoicePDF(invoice)"
-          v-if="!isEditing"
-          class="btn btn-primary w-32"
-        >
-          Export
-        </button>
+
+        <div className="dropdown dropdown-bottom">
+          <div
+            tabIndex="{0}"
+            role="button"
+            style="color: white"
+            className="btn btn-primary  w-32"
+          >
+            Export
+          </div>
+          <ul
+            tabIndex="{0}"
+            className="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
+          >
+            <li @click="exportInvoicePDF(invoice, true)"><a>Original</a></li>
+            <li @click="exportInvoicePDF(invoice, false)"><a>Copy</a></li>
+          </ul>
+        </div>
       </div>
     </div>
 
-    <!-- Total and Remaining Balance -->
-    <div class="flex justify-end text-xl gap-8 font-bold mb-4">
-      <span
-        >Quotation Amount:
-        {{ jobQuotation?.priceOffered?.toLocaleString() }} Baht</span
-      >
-      <span>Remaining: {{ remainingBalance.toLocaleString() }} Baht</span>
-    </div>
-
     <!-- Invoice Selection -->
-    <div class="flex gap-2">
-      <select
-        :disabled="!selectedInvoiceId || isEditing"
-        v-model="selectedInvoiceId"
-        @change="selectInvoice"
-        class="select select-bordered px-4 py-2 rounded-lg w-48"
-      >
-        <option :value="null" hidden :selected="selectedInvoiceId === null">
-          New Invoice
-        </option>
-        <option
-          v-for="invoice in invoices"
-          :key="invoice.id!"
-          :value="invoice.id"
+    <div class="flex justify-between">
+      <div class="flex gap-2">
+        <select
+          :disabled="!selectedInvoiceId || isEditing"
+          v-model="selectedInvoiceId"
+          @change="selectInvoice"
+          class="select select-bordered px-4 py-2 rounded-lg w-48"
         >
-          Invoice {{ invoice.id }}
-        </option>
-      </select>
-      <button
-        class="btn btn-primary w-32"
-        v-if="!isEditing"
-        @click="addInvoice"
-      >
-        Add
-      </button>
+          <option :value="null" hidden :selected="selectedInvoiceId === null">
+            New Invoice
+          </option>
+          <option
+            v-for="(invoice, index) in invoices"
+            :key="invoice.id!"
+            :value="invoice.id"
+          >
+            Invoice {{ index + 1 }}
+          </option>
+        </select>
+        <button
+          class="btn btn-primary w-32"
+          v-if="!isEditing"
+          @click="addInvoice"
+        >
+          Add
+        </button>
+      </div>
+      <!-- Total and Remaining Balance -->
+      <div class="flex flex-col justify-end text-lg font-bold items-end">
+        <div class="flex gap-4">
+          <div class="font-semibold">Quotation Total:</div>
+          <span> {{ jobQuotation?.priceOffered?.toLocaleString() }} </span>
+          <div class="font-semibold">Baht</div>
+        </div>
+        <div class="flex gap-4">
+          <div class="font-semibold">Remaining:</div>
+          <span> {{ remainingBalance.toLocaleString() }} </span>
+          <div class="font-semibold">Baht</div>
+        </div>
+      </div>
     </div>
 
     <!-- Invoice Information -->
@@ -131,7 +148,8 @@
           :disabled="!isEditing"
           v-model="invoice.discount"
           type="number"
-          class="input input-bordered w-60 font-bold"
+          :step="1000"
+          class="input input-bordered w-60 font-normal"
         />
       </div>
       <div class="text-right flex col">
@@ -285,11 +303,7 @@ const newInvoice = (): Invoice => ({
   cusTax: "",
   paidDate: null,
   invoiceTerms: "",
-  invoiceDetails: [
-    {
-      description: "",
-    },
-  ],
+  invoiceDetails: [],
   total: 0,
   bank: "",
   receivedBy: "",
@@ -321,9 +335,10 @@ const refresh = async () => {
 
   const data = await fetchInvoices(Number(route.params.id));
   if (data.length > 0) {
+    const lastIndex = data.length - 1;
     invoices.value = data;
-    selectedInvoiceId.value = invoices.value[0].id;
-    invoice.value = invoices.value[0];
+    selectedInvoiceId.value = invoices.value[lastIndex].id;
+    invoice.value = invoices.value[lastIndex];
     isEditing.value = isEditing.value;
   } else {
     invoices.value = [];
@@ -348,6 +363,7 @@ const totalInvoiceAmount = computed(() => {
 // **Handle Details Update**
 const updateInvoiceDetails = (details: InvoiceDetail[]) => {
   invoice.value.invoiceDetails = details;
+  console.log("Updating invoice details:", invoice.value.invoiceDetails);
 };
 
 // **Compute Remaining Balance**
@@ -418,10 +434,10 @@ const goBack = () => {
 const save = async (invoice: Invoice) => {
   if (invoice.id) {
     const data = await updateInvoice(invoice);
-    console.log("data", data);
   } else {
     if (jobQuotation.value?.id) {
       const data = await createInvoice(jobQuotation.value.id, invoice);
+
       if (data) {
         invoice.id = data.id;
         selectedInvoiceId.value = data.id;
@@ -429,6 +445,7 @@ const save = async (invoice: Invoice) => {
       }
     }
   }
+
   isEditing.value = !isEditing.value;
 };
 
@@ -452,7 +469,7 @@ const formattedDate = computed({
   },
 });
 
-const exportInvoicePDF = async (invoice: Invoice) => {
+const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
   const pathParts = route.fullPath.split("/");
   console.log("pathParts", pathParts);
   const project = await fetchProject(Number(pathParts[2]));
@@ -532,7 +549,9 @@ const exportInvoicePDF = async (invoice: Invoice) => {
     doc.text("TAX INVOICE / RECEIPT", marginLeft, (yPos += 10));
     doc.setFontSize(15);
     doc.setTextColor(0, 153, 0);
-    doc.text("ORIGINAL", marginRight, yPos, { align: "right" });
+    doc.text(` ${original ? "ORIGINAL" : "COPY"}`, marginRight, yPos, {
+      align: "right",
+    });
     doc.setTextColor(0);
     yPos += 6;
 
@@ -671,6 +690,42 @@ const exportInvoicePDF = async (invoice: Invoice) => {
 
     yPos = (doc as any).lastAutoTable.finalY;
 
+    // คำนวณจำนวนแถวเปล่าที่เหลือจนกว่าจะเต็มหน้า
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const remainingHeight = pageHeight - yPos - 40; // เว้นระยะห่าง 20 หน่วยจากขอบล่าง
+    console.log("yPos", yPos);
+    console.log("pageHeight", pageHeight);
+    console.log(" remainingHeight", remainingHeight);
+    const rowHeight = 8; // กำหนดความสูงของแต่ละแถว
+    const emptyRowsCount = Math.floor(remainingHeight / rowHeight);
+
+    // เพิ่มแถวเปล่า
+    const emptyRows = [];
+    for (let i = 0; i < emptyRowsCount; i++) {
+      emptyRows.push(["", "", "", "", ""]); // เพิ่มแถวเปล่า
+    }
+
+    // แสดงตารางแถวเปล่า
+    autoTable(doc, {
+      startY: yPos,
+      body: emptyRows,
+      theme: "grid",
+      styles: {
+        fontSize: 10,
+        cellPadding: 2,
+      },
+      columnStyles: {
+        0: { cellWidth: 15 },
+        1: { cellWidth: 90 },
+        2: { cellWidth: 15, halign: "right" },
+        3: { cellWidth: 30, halign: "right" },
+        4: { cellWidth: 30, halign: "right" },
+      },
+    });
+
+    yPos = (doc as any).lastAutoTable.finalY;
+
     // Add Total and VAT in a new table
     autoTable(doc, {
       startY: yPos,
@@ -747,18 +802,18 @@ const exportInvoicePDF = async (invoice: Invoice) => {
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
     });
     yPos = (doc as any).lastAutoTable.finalY + 5;
-
-    // Example: Adding Bank Details
     autoTable(doc, {
       startY: yPos,
       head: [["Bank Details"]],
       body: [
-        [invoice.bank || ""],
-        [invoice.accountName || ""],
-        [invoice.accountNumber || ""],
-        [invoice.branch || ""],
-        [invoice.swift || ""],
-      ],
+        [invoice.bank],
+        [invoice.accountName],
+        [invoice.accountNumber],
+        [invoice.branch],
+        [invoice.swift],
+      ]
+        .filter((row) => row[0] !== "" && row[0] !== null) // Filter out empty or null rows
+        .map((row) => row), // Map to ensure we get the same format for each row
       theme: "grid",
       styles: {
         fontSize: 10,
@@ -769,6 +824,7 @@ const exportInvoicePDF = async (invoice: Invoice) => {
       headStyles: { fillColor: [r, g, b] },
       columnStyles: { 0: { cellWidth: 180, halign: "left" } },
     });
+
     yPos = (doc as any).lastAutoTable.finalY + 10;
 
     // Example: Adding Receiving Details

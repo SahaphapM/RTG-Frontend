@@ -156,9 +156,6 @@ export default function usePurchaseOrderService() {
     const { default: jsPDF } = await import("jspdf");
     const autoTable = (await import("jspdf-autotable")).default;
 
-    const subTotal = purchaseOrder.total;
-    const vat = purchaseOrder.vat;
-
     // Add Noto Sans Thai font
     var callAddFont = function (this: any) {
       this.addFileToVFS("NotoSansThai-Regular-normal.ttf", notoThaiSanNormal);
@@ -174,7 +171,6 @@ export default function usePurchaseOrderService() {
       orientation: "portrait",
     });
     const marginLeft = 14;
-    const maxWidth = 180;
     let yPos = 10;
 
     // Load and add the logo
