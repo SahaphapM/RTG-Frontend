@@ -5,4 +5,5 @@ export type Subcontractor = {
   address: string; // Address of the subcontractor
   email: string; // Email of the subcontractor
   contact: string; // Contact number of the subcontractor
+  taxId: string;
 };

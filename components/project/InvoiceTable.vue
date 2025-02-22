@@ -10,14 +10,16 @@
     <!-- Table -->
     <table class="table-auto w-full border border-gray-300">
       <thead>
-        <tr class="bg-gray-200 text-center font-bold">
-          <th class="p-2 border w-12">Item</th>
+        <tr class="bg-gray-200 text-center">
+          <th class="p-2 border w-12 font-semibold">Item</th>
           <!-- <th class="p-2 border w-1/5">Name</th> -->
-          <th class="p-2 border w-2/5">Description</th>
-          <th class="p-2 border w-16">QTY</th>
-          <th class="p-2 border w-24">Unit Price</th>
-          <th class="p-2 border w-24 text-right">Amount</th>
-          <th class="p-2 border w-16" v-if="isEditing">Actions</th>
+          <th class="p-2 border w-2/5 font-semibold">Description</th>
+          <th class="p-2 border w-16 font-semibold">QTY</th>
+          <th class="p-2 border w-24 font-semibold">Unit Price</th>
+          <th class="p-2 border w-24 text-right font-semibold">Amount</th>
+          <th class="p-2 border w-16 font-semibold" v-if="isEditing">
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody>

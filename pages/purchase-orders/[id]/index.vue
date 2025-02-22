@@ -23,20 +23,29 @@
 
     <!-- Purchase Order Information -->
     <div class="grid grid-cols-2 gap-4 mt-4">
-      <div>
-        <label class="block font-bold">PO Number:</label>
+      <!-- <div>
+        <label class="block font-semibold">PO Number:</label>
         <input
           :disabled="!isEditing"
           v-model="purchaseOrder.number"
           type="text"
           class="input input-bordered w-full"
         />
-      </div>
+      </div> -->
       <div>
-        <label class="block font-bold">QT Number:</label>
+        <label class="block font-semibold">QT Number:</label>
         <input
           :disabled="!isEditing"
           v-model="purchaseOrder.qtNumber"
+          type="text"
+          class="input input-bordered w-full"
+        />
+      </div>
+      <div>
+        <label class="block font-semibold">Our Ref:</label>
+        <input
+          :disabled="!isEditing"
+          v-model="purchaseOrder.ourRef"
           type="text"
           class="input input-bordered w-full"
         />
@@ -55,7 +64,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Date:</label>
+        <label class="block font-semibold">Date:</label>
         <input
           :disabled="!isEditing"
           v-model="formattedDate"
@@ -63,26 +72,18 @@
           class="input input-bordered w-full"
         />
       </div>
-      <div>
-        <label class="block font-bold">Tax ID:</label>
+      <!-- <div>
+        <label class="block font-semibold">Tax ID:</label>
         <input
           :disabled="!isEditing"
           v-model="purchaseOrder.taxId"
           type="text"
           class="input input-bordered w-full"
         />
-      </div>
+      </div> -->
+
       <div>
-        <label class="block font-bold">Our Ref:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.ourRef"
-          type="text"
-          class="input input-bordered w-full"
-        />
-      </div>
-      <div>
-        <label class="block font-bold">Vat:</label>
+        <label class="block font-semibold">Vat:</label>
         <input
           :disabled="!isEditing"
           v-model="purchaseOrder.vat"
@@ -90,6 +91,14 @@
           class="input input-bordered w-full"
         />
       </div>
+    </div>
+    <div class="mt-4">
+      <label class="block font-semibold">Description:</label>
+      <textarea
+        :disabled="!isEditing"
+        v-model="purchaseOrder.description"
+        class="textarea textarea-bordered w-full min-h-32"
+      ></textarea>
     </div>
 
     <!-- Order Details Table -->
@@ -103,7 +112,7 @@
     <!-- Discount & Total -->
     <div class="flex justify-between text-md mt-2">
       <div>
-        <label class="block font-bold">Discount:</label>
+        <label class="block font-semibold">Discount:</label>
         <input
           :disabled="!isEditing"
           v-model="purchaseOrder.discount"

@@ -69,10 +69,10 @@
 
     <!-- Description -->
     <div class="mt-6">
-      <h2 class="text-lg font-semibold mb-4">Description</h2>
+      <h2 class="text-lg font-semibold">Description</h2>
       <textarea
         v-model="quotation.description"
-        class="textarea textarea-bordered p-3 rounded-lg h-[150px] w-full text-lg"
+        class="textarea textarea-bordered p-3 rounded-lg h-[130px] w-full text-lg"
         :disabled="!isEditing"
       />
     </div>
@@ -133,7 +133,7 @@
       <h2 class="text-lg font-medium mb-4">Message</h2>
       <textarea
         v-model="quotation.message"
-        class="textarea textarea-bordered w-full h-[150px] border p-3 text-lg"
+        class="textarea textarea-bordered w-full h-[130px] border p-3 text-lg"
         :disabled="!isEditing"
       />
     </div>

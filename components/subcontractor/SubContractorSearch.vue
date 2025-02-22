@@ -4,7 +4,6 @@
 
     <div class="flex items-center gap-4">
       <div class="relative w-full">
-        <!-- Input Field with Right Padding -->
         <input
           v-model="searchQuery"
           @focus="showDropdown = true"
@@ -33,7 +32,7 @@
     <!-- Dropdown List -->
     <ul
       v-if="showDropdown && filteredSubcontractors.length"
-      class="absolute w-full bg-white shadow-lg border rounded-lg z-10 mt-1"
+      class="absolute w-[70%] bg-white shadow-lg border rounded-lg z-10 mt-1"
     >
       <li
         v-for="subcontractor in filteredSubcontractors.slice(0, 5)"
@@ -42,6 +41,7 @@
         class="p-2 hover:bg-gray-100 cursor-pointer border border-collapse"
       >
         {{ subcontractor.name }}
+        <div class="text-xs text-gray-500">{{ subcontractor.taxId }}</div>
         <div class="text-xs text-gray-500">{{ subcontractor.address }}</div>
       </li>
     </ul>
@@ -58,9 +58,18 @@
 
 <script setup lang="ts">
 import { Search } from "lucide-vue-next";
-import { ref, computed, defineProps, defineEmits, watch, onMounted } from "vue";
+import {
+  ref,
+  computed,
+  defineProps,
+  defineEmits,
+  watch,
+  onMounted,
+  nextTick,
+} from "vue";
 import useSubcontractorService from "~/composables/subcontractorService";
 import type { Subcontractor } from "~/types/subcontractor";
+import { useSubcontractorStore } from "~/stores/subcontractor"; // Make sure to import store
 
 const props = defineProps<{
   modelValue: Subcontractor | null;
@@ -68,7 +77,9 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["update:modelValue"]);
 
+const subcontractorStore = useSubcontractorStore(); // Initialize the store
 const { fetchSubcontractors, createSubcontractor } = useSubcontractorService();
+
 const searchQuery = ref("");
 const showDropdown = ref(false);
 const newSubcontractor: Subcontractor = {
@@ -80,12 +91,11 @@ const newSubcontractor: Subcontractor = {
 };
 const selectedSubcontractor = ref<Subcontractor | null>(null);
 const isSubcontractorModalOpen = ref(false);
-const subcontractors = ref<Subcontractor[]>([]);
 
 // Filtered subcontractors based on search query
 const filteredSubcontractors = computed(() =>
   searchQuery.value
-    ? subcontractors.value.filter((subcontractor: Subcontractor) =>
+    ? subcontractorStore.subcontractors.filter((subcontractor: Subcontractor) =>
         subcontractor.name
           .toLowerCase()
           .includes(searchQuery.value.toLowerCase())
@@ -109,7 +119,7 @@ const saveSubcontractor = async (subcontractorData: Subcontractor) => {
   if (newSubcontractor) {
     selectedSubcontractor.value = newSubcontractor;
     emit("update:modelValue", newSubcontractor);
-    subcontractors.value = await fetchSubcontractors();
+    subcontractorStore.subcontractors.push(newSubcontractor); // Directly add to the store
   }
   isSubcontractorModalOpen.value = false;
 };
@@ -138,7 +148,7 @@ watch(
 // Fetch subcontractors on mount
 onMounted(async () => {
   nextTick(async () => {
-    subcontractors.value = await fetchSubcontractors();
+    await subcontractorStore.getSubcontractors(); // Use the store method to fetch subcontractors
   });
 });
 </script>

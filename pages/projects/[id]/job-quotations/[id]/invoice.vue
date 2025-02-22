@@ -65,16 +65,16 @@
         </button>
       </div>
       <!-- Total and Remaining Balance -->
-      <div class="flex flex-col justify-end text-lg font-bold items-end">
+      <div class="flex flex-col justify-end text-lg font-semibold items-end">
         <div class="flex gap-4">
-          <div class="font-semibold">Quotation Total:</div>
+          <div class="font-normal">Quotation Total:</div>
           <span> {{ jobQuotation?.priceOffered?.toLocaleString() }} </span>
-          <div class="font-semibold">Baht</div>
+          <div class="font-normal">Baht</div>
         </div>
         <div class="flex gap-4">
-          <div class="font-semibold">Remaining:</div>
+          <div class="font-normal">Remaining:</div>
           <span> {{ remainingBalance.toLocaleString() }} </span>
-          <div class="font-semibold">Baht</div>
+          <div class="font-normal">Baht</div>
         </div>
       </div>
     </div>
@@ -82,7 +82,7 @@
     <!-- Invoice Information -->
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
-        <label class="block font-bold">Date:</label>
+        <label class="block font-semibold">Date:</label>
         <input
           :disabled="!isEditing"
           v-model="formattedDate"
@@ -91,7 +91,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Paid Date:</label>
+        <label class="block font-semibold">Paid Date:</label>
         <!-- Date Picker for Paid Date (only shown when editing) -->
         <div class="flex gap-2">
           <input
@@ -128,7 +128,7 @@
         </div>
       </div>
       <div>
-        <label class="block font-bold">Our Ref:</label>
+        <label class="block font-semibold">Our Ref:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.ourRef"
@@ -137,7 +137,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Tax Invoice:</label>
+        <label class="block font-semibold">Tax Invoice:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.taxInvoice"
@@ -146,7 +146,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Our Tax ID:</label>
+        <label class="block font-semibold">Our Tax ID:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.ourTax"
@@ -155,19 +155,10 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Customer Tax ID:</label>
+        <label class="block font-semibold">Customer Tax ID:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.cusTax"
-          type="text"
-          class="input input-bordered w-full"
-        />
-      </div>
-      <div>
-        <label class="block font-bold">Invoice Terms:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="invoice.invoiceTerms"
           type="text"
           class="input input-bordered w-full"
         />
@@ -184,7 +175,7 @@
     <!-- Discount & Total -->
     <div class="flex justify-between text-md mt-2">
       <div>
-        <label class="block font-bold">Discount:</label>
+        <label class="block font-semibold">Discount:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.discount"
@@ -197,24 +188,38 @@
         <div class="mx-10">
           <div>Sub Total</div>
           <div>Discount</div>
-          <div>Total</div>
+          <div>Vat {{ jobQuotation?.vatPercentage }}%</div>
+          <div class="font-semibold text-md">Total</div>
         </div>
         <div>
-          <div class="font-bold">{{ totalInvoiceAmount.toLocaleString() }}</div>
-          <div>{{ invoice.discount.toLocaleString() }}</div>
-          <div class="font-bold">{{ invoice.total.toLocaleString() }}</div>
+          <div>{{ totalInvoiceAmount.toLocaleString() }}</div>
+          <div>{{ invoice.discount.toLocaleString() || "0" }}</div>
+          <div>{{ vatPrice.toLocaleString() || "0" }}</div>
+          <div class="font-semibold text-md">
+            {{ invoice.total.toLocaleString() }}
+          </div>
         </div>
         <div class="mx-5">
           <div>Baht</div>
           <div>Baht</div>
           <div>Baht</div>
+          <div class="font-semibold text-md">Baht</div>
         </div>
       </div>
     </div>
 
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
-        <label class="block font-bold">Bank:</label>
+        <label class="block font-semibold">Invoice Terms:</label>
+        <input
+          :disabled="!isEditing"
+          v-model="invoice.invoiceTerms"
+          type="text"
+          class="input input-bordered w-full"
+        />
+      </div>
+      <div>
+        <label class="block font-semibold">Bank:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.bank"
@@ -223,7 +228,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Account Name:</label>
+        <label class="block font-semibold">Account Name:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.accountName"
@@ -232,7 +237,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Account Number:</label>
+        <label class="block font-semibold">Account Number:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.accountNumber"
@@ -241,7 +246,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">Branch:</label>
+        <label class="block font-semibold">Branch:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.branch"
@@ -250,7 +255,7 @@
         />
       </div>
       <div>
-        <label class="block font-bold">SWIFT:</label>
+        <label class="block font-semibold">SWIFT:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.swift"
@@ -402,8 +407,18 @@ const totalInvoiceAmount = computed(() => {
     0
   );
   const total = Math.max(detailsTotal - (invoice.value.discount || 0), 0);
-  invoice.value.total = total;
+
   return detailsTotal;
+});
+
+const vatPrice = computed(() => {
+  const totalDiscount = totalInvoiceAmount.value - invoice.value.discount;
+  const vatPercentage = jobQuotation.value?.vatPercentage
+    ? jobQuotation.value?.vatPercentage
+    : 7;
+  const vat = (totalDiscount * vatPercentage) / 100;
+  invoice.value.total = totalDiscount + vat;
+  return vat;
 });
 
 // **Handle Details Update**
@@ -477,6 +492,7 @@ const goBack = () => {
 };
 
 const save = async (invoice: Invoice) => {
+  console.log("invoice", invoice);
   if (invoice.id) {
     const data = await updateInvoice(invoice);
   } else {
@@ -599,7 +615,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
       (yPos += 5),
       { align: "right" }
     );
-    yPos += 10;
+    yPos += 5;
 
     // Invoice Header
     doc.setFont("NotoSansThai", "bold");

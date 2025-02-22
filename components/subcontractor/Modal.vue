@@ -45,6 +45,13 @@
           class="input input-bordered w-full mb-2"
           required
         />
+        <input
+          v-model="form.taxId"
+          type="text"
+          placeholder="Tax ID"
+          class="input input-bordered w-full mb-2"
+          required
+        />
 
         <textarea
           v-model="form.address"
@@ -81,6 +88,7 @@ const form = ref<Subcontractor>({
   email: "",
   contact: "",
   address: "",
+  taxId: "",
 });
 
 watch(
