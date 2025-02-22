@@ -1,9 +1,16 @@
 <template>
   <div class="p-6">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">
-        {{ isNewProject ? "New Project" : projectStore.project?.name }}
-      </h1>
+      <div class="flex flex-col">
+        <h1 class="text-2xl font-semibold">
+          {{ isNewProject ? "New Project" : projectStore.project?.name }}
+        </h1>
+        <div class="flex gap-2">
+          <h1 class="text-md">PROJECT No.</h1>
+          <h1 class="text-md">{{ projectStore.project?.number }}</h1>
+        </div>
+      </div>
+
       <button
         v-if="!isEditing"
         @click="isEditing = true"

@@ -43,6 +43,7 @@ export default function useProjectService() {
       const { data } = await useFetch<Project>(
         `${config.public.apiBase}/projects/${id}`
       );
+      console.log("data", data);
       return data.value || ({} as Project);
     } catch (error) {
       console.error("Error fetching project:", error);

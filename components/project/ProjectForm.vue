@@ -20,15 +20,6 @@
       />
     </div>
 
-    <div class="mt-4">
-      <label class="block font-semibold">Description</label>
-      <textarea
-        v-model="localForm.description"
-        class="textarea textarea-bordered w-full"
-        :disabled="!isEditing"
-      ></textarea>
-    </div>
-
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
         <label class="block font-semibold">Start Date</label>
@@ -48,6 +39,15 @@
           :disabled="!isEditing"
         />
       </div>
+    </div>
+
+    <div class="mt-4">
+      <label class="block font-semibold">Description</label>
+      <textarea
+        v-model="localForm.description"
+        class="textarea textarea-bordered w-full"
+        :disabled="!isEditing"
+      ></textarea>
     </div>
   </div>
 </template>

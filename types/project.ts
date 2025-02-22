@@ -9,7 +9,6 @@ export type Project = {
   number: string;
   startDate: string | null;
   endDate: string | null;
-
   totalProjectPrice: number | null;
   customer?: Customer | null;
   projectItems: ProjectItem[];

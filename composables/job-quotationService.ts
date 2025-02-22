@@ -12,8 +12,8 @@ export default function useJobQuotationService() {
         `${config.public.apiBase}/job-quotations`
       );
       return data.value || [];
-    } catch (error) {
-      console.error("Error fetching jobQuotation:", error);
+    } catch (error: any) {
+      console.error("Error fetching jobQuotation:", error.message);
       return [];
     }
   };
@@ -25,8 +25,8 @@ export default function useJobQuotationService() {
         `${config.public.apiBase}/job-quotations/${id}`
       );
       return data.value || ({} as JobQuotation);
-    } catch (error) {
-      console.error("Error fetching jobQuotation:", error);
+    } catch (error: any) {
+      console.error("Error fetching jobQuotation:", error.message);
       return {} as JobQuotation;
     }
   };
@@ -40,8 +40,8 @@ export default function useJobQuotationService() {
         `${config.public.apiBase}/job-quotations/project/${projectId}`
       );
       return data.value || [];
-    } catch (error) {
-      console.error("Error fetching jobQuotation:", error);
+    } catch (error: any) {
+      console.error("Error fetching jobQuotation:", error.message);
       return [];
     }
   };
@@ -64,8 +64,8 @@ export default function useJobQuotationService() {
         }
       );
       return data.value;
-    } catch (error) {
-      console.error("Error creating jobQuotation:", error);
+    } catch (error: any) {
+      console.error("Error creating jobQuotation:", error.message);
     }
   };
 
@@ -84,8 +84,8 @@ export default function useJobQuotationService() {
         }
       );
       return data.value;
-    } catch (error) {
-      console.error("Error updating jobQuotation:", error);
+    } catch (error: any) {
+      console.error("Error updating jobQuotation:", error.message);
     }
   };
 
@@ -95,8 +95,8 @@ export default function useJobQuotationService() {
       await useFetch(`${config.public.apiBase}/job-quotations/${id}`, {
         method: "DELETE",
       });
-    } catch (error) {
-      console.error("Error deleting jobQuotation:", error);
+    } catch (error: any) {
+      console.error("Error deleting jobQuotation:", error.message);
     }
   };
 
@@ -108,8 +108,8 @@ export default function useJobQuotationService() {
         `${config.public.apiBase}/job-quotations/${jobQuotationId}/invoices`
       );
       return data.value || [];
-    } catch (error) {
-      console.error("Error fetching invoices:", error);
+    } catch (error: any) {
+      console.error("Error fetching invoices:", error.message);
       return [];
     }
   };
@@ -127,8 +127,8 @@ export default function useJobQuotationService() {
         }
       );
       return data.value;
-    } catch (error) {
-      console.error("Error creating invoice:", error);
+    } catch (error: any) {
+      console.error("Error creating invoice:", error.message);
     }
   };
 
@@ -142,8 +142,8 @@ export default function useJobQuotationService() {
         }
       );
       return data.value;
-    } catch (error) {
-      console.error("Error updating invoice:", error);
+    } catch (error: any) {
+      console.error("Error updating invoice:", error.message);
     }
   };
   const deleteInvoice = async (invoiceId: number) => {
@@ -154,8 +154,8 @@ export default function useJobQuotationService() {
           method: "DELETE",
         }
       );
-    } catch (error) {
-      console.error("Error deleting invoice:", error);
+    } catch (error: any) {
+      console.error("Error deleting invoice:", error.message);
     }
   };
 

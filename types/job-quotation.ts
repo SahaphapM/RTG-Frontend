@@ -3,10 +3,7 @@ import type { Invoice } from "./invoice";
 export type JobQuotation = {
   id?: number;
   description: string;
-  customerRef: string;
-  agentName?: string;
-  agentEmail?: string;
-  agentContact?: string;
+  ourRef: string;
   priceOffered: number;
   invoiceMethod?: string;
   invoiceTerms: string;

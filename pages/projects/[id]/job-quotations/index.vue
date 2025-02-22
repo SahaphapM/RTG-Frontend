@@ -5,13 +5,12 @@
       <h1 class="text-2xl font-bold">{{ projectStore.project?.name }}</h1>
       <div class="flex gap-2">
         <button
-          v-if="!isEditing && quotation.id"
-          @click="isEditing = true"
+          v-if="!isEditing && selectedQuotationId"
+          @click="startEdit"
           class="btn btn-warning w-32"
         >
           Edit
         </button>
-
         <button class="btn btn-primary w-32" @click="exportToPDF">
           Export
         </button>
@@ -23,32 +22,44 @@
       <div class="flex gap-2">
         <select
           v-model="selectedQuotationId"
-          :disabled="!selectedQuotationId"
-          @change="selectQuotation"
+          @change="loadSelectedQuotation"
+          :disabled="projectStore.project?.jobQuotations.length === 0"
           class="select select-bordered px-4 py-2 rounded-lg w-48"
         >
           <option :value="null" :hidden="true">New Job Quotation</option>
           <option
-            v-for="quote in jobQuotations"
+            class="text-md"
+            v-for="(quote, index) in projectStore.project?.jobQuotations"
             :key="quote.id"
             :value="quote.id"
           >
-            Job Quotation {{ quote.id }}
+            Job Quotation {{ index + 1 }}
           </option>
         </select>
         <button
           class="btn btn-primary w-32"
-          @click="addQuotation"
+          @click="createNewQuotation"
           v-if="!isEditing"
         >
           New
         </button>
       </div>
-      <div class="text-right w-[40%]">
+      <!-- <div class="text-right w-[40%]">
         <p class="text-lg font-semibold">
           {{ projectStore.project?.customer?.name }}
         </p>
         <p class="text-lg">{{ projectStore.project?.customer?.email }}</p>
+      </div> -->
+
+      <!-- Price -->
+      <div class="flex justify-end gap-8 items-center">
+        <h2 class="text-lg font-semibold">Total Price</h2>
+        <div
+          class="p-2 px-8 text-xl border font-medium bg-gray-100 rounded-lg min-w-[250px] text-right"
+        >
+          {{ formatPrice?.toLocaleString() }}
+          <span class="text-[16px] font-normal">Bath</span>
+        </div>
       </div>
     </div>
 
@@ -57,27 +68,22 @@
       <h2 class="text-lg font-semibold mb-4">Description</h2>
       <textarea
         v-model="quotation.description"
-        class="w-full textarea textarea-bordered p-3 rounded-lg h-[150px] text-lg"
+        class="textarea textarea-bordered p-3 rounded-lg h-[150px] w-full text-lg"
         :disabled="!isEditing"
       />
     </div>
 
-    <!-- Project Item Total -->
-    <div class="mt-6 flex justify-end">
-      <h2 class="text-lg font-semibold mt-2 mx-10">Price Offered</h2>
-      <div
-        class="p-3 px-8 text-lg border font-medium bg-gray-100 text-black rounded-lg"
-      >
-        {{
-          quotation.priceOffered?.toLocaleString() ||
-          projectStore.project?.totalProjectPrice?.toLocaleString()
-        }}
-        Baht
-      </div>
-    </div>
-
     <!-- Commercial Conditions -->
     <div class="grid grid-cols-2 gap-4 mt-2">
+      <div>
+        <h3 class="text-lg font-medium">Our Ref</h3>
+        <input
+          v-model="quotation.ourRef"
+          type="text"
+          class="input input-bordered w-full"
+          :disabled="!isEditing"
+        />
+      </div>
       <div>
         <h3 class="text-lg font-medium">Invoice</h3>
         <input
@@ -96,15 +102,7 @@
           :disabled="!isEditing"
         />
       </div>
-      <div>
-        <h3 class="text-lg font-medium">Delivery Place</h3>
-        <input
-          v-model="quotation.deliveryPlace"
-          type="text"
-          class="input input-bordered w-full"
-          :disabled="!isEditing"
-        />
-      </div>
+
       <div>
         <h3 class="text-lg font-medium">Vat %</h3>
         <input
@@ -116,22 +114,22 @@
       </div>
     </div>
 
+    <div>
+      <h3 class="text-lg font-medium">Delivery Place</h3>
+      <input
+        v-model="quotation.deliveryPlace"
+        type="text"
+        class="input input-bordered w-full"
+        :disabled="!isEditing"
+      />
+    </div>
+
     <!-- Message -->
     <div class="mt-4">
       <h2 class="text-lg font-medium mb-4">Message</h2>
       <textarea
         v-model="quotation.message"
         class="textarea textarea-bordered w-full h-[150px] border p-3 text-lg"
-        :disabled="!isEditing"
-      />
-    </div>
-
-    <!-- Best Regards -->
-    <div class="mt-4">
-      <h2 class="text-lg font-medium mb-4">Best Regards</h2>
-      <textarea
-        v-model="quotation.bestRegards"
-        class="textarea textarea-bordered w-full border p-3 h-24 text-lg"
         :disabled="!isEditing"
       />
     </div>
@@ -153,7 +151,7 @@
       </button>
       <button
         v-if="isEditing"
-        @click="saveQuotation(quotation)"
+        @click="saveQuotation"
         class="btn btn-success w-32"
       >
         Save
@@ -163,23 +161,26 @@
 </template>
 
 <script setup lang="ts">
+import { Watch } from "lucide-vue-next";
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import type { JobQuotation } from "~/types/job-quotation";
 import useJobQuotationService from "~/composables/job-quotationService";
 import useProjectService from "~/composables/projectService";
+import type { JobQuotation } from "~/types/job-quotation";
 
 const route = useRoute();
 const router = useRouter();
 const projectStore = useProjectStore();
-const { updateJobQuotation, createJobQuotation } = useJobQuotationService();
+const { fetchByProjectId, updateJobQuotation, createJobQuotation } =
+  useJobQuotationService();
 const { fetchProject } = useProjectService();
-const stateStore = useStateStore();
 
-const jobQuotations = ref<JobQuotation[]>([]);
+const stateStore = useStateStore();
 const isEditing = ref(false);
-const originalQuotation = ref<JobQuotation | null>(null);
-const newQuotation = <JobQuotation>{
+const selectedQuotationId = ref<number | null>(null);
+const originalQuotation = ref<JobQuotation>();
+
+const newQuotationTemplate: JobQuotation = {
   description: "",
   invoiceTerms: "",
   deliveryTime: "",
@@ -187,103 +188,105 @@ const newQuotation = <JobQuotation>{
   vatPercentage: 7,
   bestRegards: "",
   message: "",
-  invoices: [],
-  customerRef: "",
-  agentName: "",
   priceOffered: 0,
+  ourRef: "",
 };
 
-const quotation = ref<JobQuotation>(JSON.parse(JSON.stringify(newQuotation)));
-const selectedQuotationId = ref<number | null>(null);
+const quotation = ref<JobQuotation>({ ...newQuotationTemplate });
 
+// Format price helper
+const formatPrice = computed(() =>
+  quotation.value.priceOffered > 0
+    ? quotation.value.priceOffered
+    : projectStore.project?.totalProjectPrice
+);
+
+// Fetch project and initialize quotation
 onMounted(async () => {
   nextTick(async () => {
-    console.log(selectedQuotationId);
-    if (!projectStore.project?.jobQuotations) {
-      const projectData = await fetchProject(Number(route.params.id));
-      projectStore.project = projectData;
-      jobQuotations.value = projectStore.project.jobQuotations || [];
-      if (jobQuotations.value[0].id) {
-        quotation.value = { ...jobQuotations.value[0] }; // Set initial values
-        selectedQuotationId.value = jobQuotations.value[0].id;
-        originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
-      }
+    projectStore.project = await fetchProject(Number(route.params.id));
+    projectStore.project.jobQuotations = await fetchByProjectId(
+      Number(route.params.id)
+    );
+    if (projectStore.project.jobQuotations.length > 0) {
+      const lastIndex = projectStore.project.jobQuotations.length - 1;
+      if (!projectStore.project.jobQuotations[lastIndex].id) return;
+      selectedQuotationId.value =
+        projectStore.project.jobQuotations[lastIndex].id;
+      loadSelectedQuotation();
     } else {
-      jobQuotations.value = projectStore.project?.jobQuotations;
-      quotation.value.priceOffered =
-        projectStore.project.totalProjectPrice || 0;
-      quotation.value = projectStore.project.jobQuotations[0];
-      selectedQuotationId.value = jobQuotations.value[0].id
-        ? jobQuotations.value[0].id
-        : null;
-
-      originalQuotation.value = JSON.parse(JSON.stringify(quotation.value)); // Deep Copy
+      createNewQuotation();
     }
   });
 });
 
-// Save Quotation
-const saveQuotation = async (selectedQuotation: JobQuotation) => {
-  selectedQuotation.vatPercentage = Number(selectedQuotation.vatPercentage);
-  console.log("selectedQuotation is there have id", selectedQuotation);
-  if (selectedQuotation.id) {
-    await updateJobQuotation(selectedQuotation.id, selectedQuotation);
-  } else {
-    if (!projectStore.project) return;
-
-    const created = await createJobQuotation(
-      projectStore.project.id!,
-      selectedQuotation
-    );
-    if (created)
-      (selectedQuotationId.value = created.id || null),
-        jobQuotations.value.push(created);
-  }
-  originalQuotation.value = JSON.parse(JSON.stringify(selectedQuotation)); // Save new values
-  isEditing.value = false;
-};
-
-const addQuotation = () => {
-  selectedQuotationId.value = null;
-  quotation.value = newQuotation;
-  quotation.value.priceOffered = projectStore.project?.totalProjectPrice || 0;
-  isEditing.value = true;
-};
-
-// Update quotation data when selection changes
-const selectQuotation = () => {
+// Load selected quotation
+const loadSelectedQuotation = () => {
   if (!selectedQuotationId.value) return;
-  const selected = jobQuotations.value.find(
+  const selected = projectStore.project?.jobQuotations.find(
     (q) => q.id === selectedQuotationId.value
   );
   if (selected) {
-    console.log("selected", selected);
-    quotation.value = JSON.parse(JSON.stringify(selected)); // Deep copy
+    quotation.value = JSON.parse(JSON.stringify(selected));
     originalQuotation.value = JSON.parse(JSON.stringify(quotation.value));
   }
 };
 
-// Cancel Edit and Reset
+// Start edit mode
+const startEdit = () => {
+  isEditing.value = true;
+};
+
+// Save quotation
+const saveQuotation = async () => {
+  quotation.value.vatPercentage = Number(quotation.value.vatPercentage);
+  console.log("quotation", quotation.value);
+
+  if (!quotation.value.priceOffered) {
+    quotation.value.priceOffered = projectStore.project?.totalProjectPrice || 0;
+  }
+
+  if (quotation.value.id) {
+    await updateJobQuotation(quotation.value.id, quotation.value);
+  } else {
+    const created = await createJobQuotation(
+      projectStore.project?.id!,
+      quotation.value
+    );
+    if (created?.id) {
+      selectedQuotationId.value = created.id;
+      projectStore.project?.jobQuotations.push(created);
+    }
+  }
+  originalQuotation.value = JSON.parse(JSON.stringify(quotation.value));
+  isEditing.value = false;
+};
+
+// Create a new quotation
+const createNewQuotation = () => {
+  isEditing.value = true;
+  selectedQuotationId.value = null;
+  quotation.value = { ...newQuotationTemplate };
+  quotation.value.priceOffered = projectStore.project?.totalProjectPrice || 0;
+};
+
+// Cancel edit
 const cancelEdit = () => {
-  console.log("originalQuotation.value", originalQuotation.value);
-  quotation.value = JSON.parse(JSON.stringify(originalQuotation.value)); // Restore original
-  console.log("quotation.value", quotation.value);
+  selectedQuotationId.value =
+    projectStore.project?.jobQuotations.length || null;
 
-  selectedQuotationId.value = quotation.value.id ? quotation.value.id : null;
-  isEditing.value = !isEditing.value;
+  quotation.value = originalQuotation.value || { ...newQuotationTemplate };
+  isEditing.value = false;
 };
 
-const goBack = () => {
-  router.push(`/projects/${route.params.id}`);
-};
-
-const goNext = () => {
-  console.log("selectedQuotationId.value", selectedQuotationId.value);
+// Navigation functions
+const goBack = () => router.push(`/projects/${route.params.id}`);
+const goNext = () =>
   router.push(
     `/projects/${route.params.id}/job-quotations/${selectedQuotationId.value}/invoice`
   );
-};
 
+// Export PDF (Implementation remains the same)
 const exportToPDF = async () => {
   if (!quotation.value || !projectStore.project) {
     console.error("Error: Job Quotation or Project Data is not available");
@@ -379,7 +382,7 @@ const exportToPDF = async () => {
       yPos
     );
     doc.text(
-      `Our ref: ${quotation.value.customerRef || ""}`,
+      `Our ref: ${quotation.value.ourRef || ""}`,
       marginLeft,
       (yPos += 6)
     );
@@ -413,7 +416,7 @@ const exportToPDF = async () => {
     doc.setFont("NotoSansThai", "bold");
     doc.setFontSize(12);
     doc.text(
-      `Attn: ${quotation.value.agentName || "Mr. Robert Smith secretary"}`,
+      `Attn: ${projectStore.project?.customer?.agentName}`,
       marginLeft,
       (yPos += 10)
     );
@@ -430,7 +433,7 @@ const exportToPDF = async () => {
 
     // ✅ Proposal Message (Auto-Wrap)
     doc.setFontSize(12);
-    let message = "We would like to propose our best price for:";
+    let message = "We would like to propose our best price for";
     let splitMessage = doc.splitTextToSize(message, maxWidth);
     doc.text(splitMessage, marginLeft + 15, (yPos += 5));
 
@@ -540,9 +543,3 @@ const exportToPDF = async () => {
   };
 };
 </script>
-
-<style scoped>
-button {
-  font-weight: 700;
-}
-</style>

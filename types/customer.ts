@@ -4,4 +4,7 @@ export type Customer = {
   email: string;
   contact: string;
   address: string;
+  agentName?: string;
+  agentEmail?: string;
+  agentContact?: string;
 };
