@@ -27,93 +27,100 @@
       </div>
     </div>
 
-    <!-- Purchase Order Information -->
-    <div class="grid grid-cols-2 gap-4 mt-4">
-      <!-- <div>
-        <label class="block font-semibold">PO Number:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.number"
-          type="text"
-          class="input input-bordered w-full"
-        />
-      </div> -->
-      <div>
-        <label class="block font-semibold">QT Number:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.qtNumber"
-          type="text"
-          class="input input-bordered w-full"
-        />
+    <div class="flex gap-10">
+      <div class="w-[40%]">
+        <div class="rounded-lg flex flex-col p-4 items-center">
+          <CertificateViewer :previewUrl="previewUrl || examplePdf" />
+        </div>
+        <!-- File Upload -->
+        <div class="flex gap-10 items-center justify-center">
+          <label
+            class="flex items-center border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 h-16"
+            :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
+          >
+            <input
+              type="file"
+              class="hidden"
+              accept="application/pdf"
+              @change="handleFileUpload"
+              :disabled="!isEditing"
+            />
+            <span v-if="!purchaseOrder.file">Click to upload PDF</span>
+            <span v-else>{{ file?.name || purchaseOrder.file }}</span>
+            <HardDriveUpload class="w-7 h-7 ml-5" />
+          </label>
+        </div>
       </div>
-      <div>
-        <label class="block font-semibold">Our Ref:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.ourRef"
-          type="text"
-          class="input input-bordered w-full"
-        />
-      </div>
-      <div>
-        <SubContractorSearch
-          :modelValue="purchaseOrder.subcontractor"
-          :isEditing="isEditing"
-          @update:model-value="updateSubcontractor"
-        />
-      </div>
-      <div>
-        <CustomerSearch
-          :modelValue="purchaseOrder.customer"
-          :isEditing="isEditing"
-        />
-      </div>
-      <div>
-        <label class="block font-semibold">Date:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="formattedDate"
-          type="date"
-          class="input input-bordered w-full"
-        />
-      </div>
-      <!-- <div>
-        <label class="block font-semibold">Tax ID:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.taxId"
-          type="text"
-          class="input input-bordered w-full"
-        />
-      </div> -->
-
-      <div>
-        <label class="block font-semibold">Vat:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.vat"
-          type="number"
-          class="input input-bordered w-full"
-        />
+      <div class="flex-grow mt-10 gap-4">
+        <div>
+          <label class="block text-lg font-semibold">QT Number:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.qtNumber"
+            type="text"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <div>
+          <label class="block font-semibold">Our Ref:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.ourRef"
+            type="text"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <div>
+          <SubContractorSearch
+            :modelValue="purchaseOrder.subcontractor"
+            :isEditing="isEditing"
+            @update:model-value="updateSubcontractor"
+          />
+        </div>
+        <div>
+          <CustomerSearch
+            :modelValue="purchaseOrder.customer"
+            :isEditing="isEditing"
+          />
+        </div>
+        <div>
+          <label class="block font-semibold">Date:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="formattedDate"
+            type="date"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <div>
+          <label class="block font-semibold">Vat:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.vat"
+            type="number"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <div>
+          <label class="block font-semibold">Description:</label>
+          <textarea
+            :disabled="!isEditing"
+            v-model="purchaseOrder.description"
+            class="textarea textarea-bordered w-full min-h-32"
+          ></textarea>
+        </div>
       </div>
     </div>
-    <div class="mt-4">
-      <label class="block font-semibold">Description:</label>
-      <textarea
-        :disabled="!isEditing"
-        v-model="purchaseOrder.description"
-        class="textarea textarea-bordered w-full min-h-32"
-      ></textarea>
-    </div>
 
-    <!-- Order Details Table -->
-    <PaymentTable
-      v-if="isEditing || purchaseOrder.orderDetails.length > 0"
-      :isEditing="isEditing"
-      :details="purchaseOrder.orderDetails"
-      @update:details="updateOrderDetails"
-    />
+    <div>
+      <!-- Order Details Table -->
+      <PaymentTable
+        v-if="isEditing || purchaseOrder.orderDetails.length > 0"
+        :isEditing="isEditing"
+        :details="purchaseOrder.orderDetails"
+        @update:details="updateOrderDetails"
+      />
+    </div>
 
     <!-- Discount & Total -->
     <div class="flex justify-between text-md mt-2">
@@ -201,6 +208,7 @@
 </template>
 
 <script setup lang="ts">
+import { HardDriveUpload } from "lucide-vue-next";
 import { ref, computed, onMounted, nextTick } from "vue";
 import CustomerSearch from "~/components/project/customerSearch.vue";
 import PaymentTable from "~/components/project/InvoiceTable.vue";
@@ -217,6 +225,8 @@ const {
   updatePurchaseOrder,
   deletePurchaseOrder,
   exportPOToPDF,
+  uploadQoutationFile,
+  fetchQuotationFile,
 } = usePurchaseOrderService();
 
 // ** State Store
@@ -250,6 +260,7 @@ const newPurchaseOrder = (): PurchaseOrder => ({
   vat: 0,
   qtNumber: "",
   ourRef: "",
+  file: null,
 });
 
 // **State Variables**
@@ -257,6 +268,11 @@ const purchaseOrder = ref<PurchaseOrder>(newPurchaseOrder());
 const selectedPurchaseOrderId = ref<number | null>(null);
 const isEditing = ref(false);
 const isDeleteModalOpen = ref(false);
+
+const file = ref<File | null>(null); // Store uploaded file
+const previewUrl = ref<string | null>(null); // Store preview URL
+const isUploading = ref(false);
+const examplePdf = "/pdf/sample.pdf"; // ✅ Correct Path
 
 // **Computed Properties**
 const formattedDate = computed({
@@ -294,6 +310,21 @@ onMounted(async () => {
   }
 });
 
+// Handle File Upload
+const handleFileUpload = (event: Event) => {
+  console.log("handleFileUpload");
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  // Store the selected file
+  file.value = input.files[0];
+
+  // Generate a preview URL for the PDF
+  previewUrl.value = URL.createObjectURL(file.value);
+
+  isUploading.value = true;
+};
+
 const refresh = async () => {
   if (route.params.id) {
     const data = await fetchPurchaseOrder(Number(route.params.id));
@@ -311,6 +342,10 @@ const refresh = async () => {
 
     // Assign the updated data to purchaseOrder.value
     Object.assign(purchaseOrder.value, data);
+    if (purchaseOrder.value.file) {
+      previewUrl.value = await fetchQuotationFile(purchaseOrder.value.file); // Fetch PDF URL
+      file.value = null;
+    }
     isEditing.value = false;
   }
 };
@@ -335,8 +370,23 @@ const savePurchaseOrder = async () => {
         subTotal.value - purchaseOrder.value.discount + vat.value;
       await updatePurchaseOrder(purchaseOrder.value.id, purchaseOrder.value);
     } else {
-      await createPurchaseOrder(purchaseOrder.value);
+      const savedPurchaseOrder = await createPurchaseOrder(purchaseOrder.value);
+
+      if (savedPurchaseOrder) {
+        purchaseOrder.value = savedPurchaseOrder;
+      }
     }
+
+    if (isUploading.value && file.value && purchaseOrder.value.id) {
+      const result = await uploadQoutationFile(
+        purchaseOrder.value.id,
+        file.value
+      );
+      if (result) {
+        purchaseOrder.value.file = result.filename; // Update certificate file name after upload
+      }
+    }
+
     await refresh();
   } catch (error) {
     console.error("Failed to save purchase order:", error);

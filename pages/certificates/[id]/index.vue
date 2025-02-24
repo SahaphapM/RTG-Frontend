@@ -157,7 +157,6 @@ const file = ref<File | null>(null); // Store uploaded file
 const previewUrl = ref<string | null>(null); // Store preview URL
 const isUploading = ref(false);
 const examplePdf = "/pdf/sample.pdf"; // ✅ Correct Path
-const fileInput = ref<HTMLInputElement | null>(null);
 
 // Load Certificate Data
 onMounted(async () => {

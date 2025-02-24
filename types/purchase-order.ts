@@ -15,4 +15,5 @@ export type PurchaseOrder = {
   total: number;
   discount: number;
   vat: number;
+  file: string | null;
 };

@@ -11,6 +11,7 @@ export default function usePurchaseOrderService() {
   const totalPurchaseOrders = ref(0);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const errorMessage = ref<string | null>(null);
   const API_URL = `${config.public.apiBase}/purchase-orders`;
 
   // Fetch Purchase Orders
@@ -31,6 +32,32 @@ export default function usePurchaseOrderService() {
       totalPurchaseOrders.value = data.value?.total || 0;
     } catch (error) {
       console.error("Error fetching purchase orders:", error);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const fetchQuotationFile = async (filename: string) => {
+    isLoading.value = true;
+    errorMessage.value = null;
+    try {
+      const response = await fetch(
+        `${config.public.apiBase}/uploads/quotations/${filename}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/pdf",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch certificate file.");
+      }
+      return URL.createObjectURL(await response.blob());
+    } catch (error: any) {
+      errorMessage.value = error.message || "Failed to fetch certificate file.";
+      console.error("Error fetching certificate file:", errorMessage.value);
+      return null;
     } finally {
       isLoading.value = false;
     }
@@ -59,6 +86,66 @@ export default function usePurchaseOrderService() {
       return data.value;
     } catch (error) {
       console.error("Error creating purchase order:", error);
+    }
+  };
+
+  // ✅ Upload file for a certificate
+  const uploadQoutationFile = async (id: number, file: File) => {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    console.log("file", file);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${API_URL}/upload/${id}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      console.log("response", response);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to upload file.");
+      }
+
+      return result;
+    } catch (error: any) {
+      errorMessage.value = error.message || "Error upisLoading file.";
+      console.error("Error upisLoading quotation file:", errorMessage.value);
+      return null;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // ✅ Download certificate file
+  const downloadQoutation = async (filename: string) => {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    try {
+      const response = await fetch(`${API_URL}/download/${filename}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to download file.");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error: any) {
+      errorMessage.value = error.message || "Error downisLoading file.";
+      console.error("Error downisLoading quotation:", errorMessage.value);
+    } finally {
+      isLoading.value = false;
     }
   };
 
@@ -466,6 +553,9 @@ export default function usePurchaseOrderService() {
     updatePurchaseOrder,
     deletePurchaseOrder,
     exportPOToPDF,
+    uploadQoutationFile,
+    fetchQuotationFile,
+    downloadQoutation,
     purchaseOrders,
     totalPurchaseOrders,
     totalPages,
