@@ -2,8 +2,15 @@
   <div class="p-6">
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
-      <h1 class="text-2xl font-bold mb-4">{{ projectStore.project?.name }}</h1>
-      <div class="flex gap-2">
+      <div class="mb-4">
+        <h1 class="text-2xl font-bold">
+          {{ projectStore.project?.name }}
+        </h1>
+        <div>
+          <p>Tax Invoice {{ invoice.taxInvoice }}</p>
+        </div>
+      </div>
+      <div class="flex gap-4">
         <button
           v-if="!isEditing && selectedInvoiceId"
           @click="isEditing = true"
@@ -33,7 +40,7 @@
 
     <!-- Invoice Selection -->
     <div class="flex justify-between">
-      <div class="flex gap-2">
+      <div class="flex gap-4">
         <select
           :disabled="!selectedInvoiceId || isEditing"
           v-model="selectedInvoiceId"
@@ -47,12 +54,11 @@
             v-for="(invoice, index) in invoices"
             :key="invoice.id! "
             :value="invoice.id"
+            :class="{ 'bg-neutral-300': invoice.paidDate }"
           >
             Invoice {{ index + 1 }}
             <!-- Conditionally render the badge if the invoice is paid -->
-            <div>
-              {{ invoice.paidDate ? "Paid" : "" }}
-            </div>
+            {{ invoice.paidDate ? "Paid" : "" }}
           </option>
         </select>
 
@@ -63,6 +69,39 @@
         >
           Add
         </button>
+        <!-- Date Picker for Paid Date (only shown when editing) -->
+        <div class="flex gap-2">
+          <input
+            v-if="invoice.paidDate"
+            :disabled="!isEditing"
+            type="date"
+            v-model="invoice.paidDate"
+            class="input input-bordered w-full"
+          />
+          <div class="dropdown">
+            <div
+              tabindex="0"
+              role="button"
+              style="color: white"
+              class="btn w-32"
+              @click="isDropdownOpen = true"
+              :class="{
+                'btn-success': invoice.paidDate,
+                'bg-neutral-400': !invoice.paidDate,
+              }"
+            >
+              {{ invoice.paidDate ? "Paid" : "Unpaid" }}
+            </div>
+            <ul
+              v-if="isDropdownOpen"
+              tabindex="0"
+              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
+            >
+              <li @click.stop="setUnpaid"><a>Unpaid</a></li>
+              <li @click.stop="setPaid"><a>Paid</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
       <!-- Total and Remaining Balance -->
       <div class="flex flex-col justify-end text-lg font-semibold items-end">
@@ -90,43 +129,7 @@
           class="input input-bordered w-full"
         />
       </div>
-      <div>
-        <label class="block font-semibold">Paid Date:</label>
-        <!-- Date Picker for Paid Date (only shown when editing) -->
-        <div class="flex gap-2">
-          <input
-            v-if="showDateInput && invoice.paidDate"
-            :disabled="!isEditing"
-            type="date"
-            v-model="invoice.paidDate"
-            class="input input-bordered w-full"
-          />
-          <div class="dropdown">
-            <div
-              tabindex="0"
-              role="button"
-              style="color: white"
-              class="btn w-32"
-              @click="isDropdownOpen = true"
-              :class="{
-                'btn-success': invoice.paidDate,
-                'btn-error': !invoice.paidDate,
-                'btn-disabled': !isEditing,
-              }"
-            >
-              {{ invoice.paidDate ? "Paid" : "Unpaid" }}
-            </div>
-            <ul
-              v-if="isDropdownOpen"
-              tabindex="0"
-              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
-            >
-              <li @click.stop="setUnpaid"><a>Unpaid</a></li>
-              <li @click.stop="setPaid"><a>Paid</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+
       <div>
         <label class="block font-semibold">Our Ref:</label>
         <input
@@ -136,7 +139,7 @@
           class="input input-bordered w-full"
         />
       </div>
-      <div>
+      <!-- <div>
         <label class="block font-semibold">Tax Invoice:</label>
         <input
           :disabled="!isEditing"
@@ -144,7 +147,7 @@
           type="text"
           class="input input-bordered w-full"
         />
-      </div>
+      </div> -->
       <div>
         <label class="block font-semibold">Our Tax ID:</label>
         <input
@@ -173,15 +176,15 @@
     />
 
     <!-- Discount & Total -->
-    <div class="flex justify-between text-md mt-2">
-      <div>
+    <div class="flex justify-between text-md mt-4">
+      <div class="flex-grow">
         <label class="block font-semibold">Discount:</label>
         <input
           :disabled="!isEditing"
           v-model="invoice.discount"
           type="number"
           :step="1000"
-          class="input input-bordered w-60 font-normal"
+          class="input input-bordered w-[25%] font-normal"
         />
       </div>
       <div class="text-right flex col">
@@ -189,13 +192,13 @@
           <div>Sub Total</div>
           <div>Discount</div>
           <div>Vat {{ jobQuotation?.vatPercentage }}%</div>
-          <div class="font-semibold text-md">Total</div>
+          <div class="font-semibold text-lg">Total</div>
         </div>
         <div>
           <div>{{ totalInvoiceAmount.toLocaleString() }}</div>
           <div>{{ invoice.discount.toLocaleString() || "0" }}</div>
           <div>{{ vatPrice.toLocaleString() || "0" }}</div>
-          <div class="font-semibold text-md">
+          <div class="font-semibold text-lg">
             {{ invoice.total.toLocaleString() }}
           </div>
         </div>
@@ -203,12 +206,12 @@
           <div>Baht</div>
           <div>Baht</div>
           <div>Baht</div>
-          <div class="font-semibold text-md">Baht</div>
+          <div class="font-semibold text-lg">Baht</div>
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mt-4">
+    <div class="grid grid-cols-2 gap-4">
       <div>
         <label class="block font-semibold">Invoice Terms:</label>
         <input
@@ -281,24 +284,25 @@
         message="Are you sure you want to delete this user?"
         confirmText="Yes, Delete"
         cancelText="Cancel"
+        primary
         @confirm="confirmDeleteInvoice"
         @cancel="isDeleteModalOpen = false"
       />
       <div class="ml-auto">
-        <div class="flex gap-2">
+        <div class="flex gap-4">
           <button
             @click="goBack"
             v-if="!isEditing"
-            class="btn btn-secondary w-32"
+            class="btn btn-primary w-32"
           >
             Back
           </button>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-4">
           <button
             v-if="isEditing"
             @click="cancelEdit"
-            class="btn btn-secondary w-32"
+            class="btn btn-error w-32"
           >
             Cancel
           </button>
@@ -370,6 +374,9 @@ const invoice = ref<Invoice>(newInvoice());
 const selectedInvoiceId = ref<number | null>(null);
 const isEditing = ref(false);
 const isDeleteModalOpen = ref(false);
+// Invoice backup for canceling changes
+const invoiceBackup = ref<Invoice>();
+
 // สถานะการแสดงผลของ input และ dropdown
 const showDateInput = ref(false);
 const isDropdownOpen = ref(false);
@@ -397,7 +404,7 @@ const refresh = async () => {
     invoice.value = newInvoice();
     isEditing.value = !isEditing.value;
   }
-  console.log("invoices", invoice.value.invoiceDetails);
+  console.log("refresh invoices", invoice.value.invoiceDetails);
 };
 
 // **Compute Total in Real-Time**
@@ -447,6 +454,8 @@ const selectInvoice = () => {
   invoice.value =
     invoices.value.find((p) => p.id === selectedInvoiceId.value) ||
     newInvoice();
+
+  invoiceBackup.value = { ...invoice.value };
 };
 
 // **Add New Invoice**
@@ -470,8 +479,15 @@ const addInvoice = () => {
 };
 
 const cancelEdit = () => {
-  if (invoices.value[0]) {
-    invoice.value = JSON.parse(JSON.stringify(invoices.value[0])); // Restore original
+  // Restore the original invoice
+  if (invoiceBackup.value) {
+    invoice.value = { ...invoiceBackup.value };
+    selectedInvoiceId.value = invoice.value.id || null;
+    isEditing.value = !isEditing.value;
+  } else if (invoices.value[invoices.value.length - 1]) {
+    invoice.value = JSON.parse(
+      JSON.stringify(invoices.value[invoices.value.length - 1])
+    ); // Restore original
 
     selectedInvoiceId.value = invoice.value.id || null;
     isEditing.value = !isEditing.value;
@@ -507,7 +523,7 @@ const save = async (invoice: Invoice) => {
     }
   }
 
-  isEditing.value = !isEditing.value;
+  isEditing.value = false;
 };
 
 const confirmDeleteInvoice = async () => {
@@ -532,15 +548,15 @@ const formattedDate = computed({
 
 // ฟังก์ชันที่ใช้ตั้งค่าว่า "Paid"
 const setPaid = () => {
-  showDateInput.value = true; // แสดง input ของวันที่เมื่อเลือก Paid
   invoice.value.paidDate = new Date().toISOString().split("T")[0]; // ตั้งค่าวันที่ปัจจุบันเป็น paidDate
+  if (!isEditing.value) save(invoice.value);
   isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Paid
 };
 
 // ฟังก์ชันที่ใช้ตั้งค่าว่า "Unpaid"
 const setUnpaid = () => {
   invoice.value.paidDate = null; // ลบค่า paidDate เมื่อเลือก Unpaid
-  showDateInput.value = false; // ซ่อน input วันที่เมื่อเลือก Unpaid
+  if (!isEditing.value) save(invoice.value);
   isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Unpaid
 };
 const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {

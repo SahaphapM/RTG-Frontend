@@ -30,8 +30,8 @@ export default function usePurchaseOrderService() {
       purchaseOrders.value = data.value?.data || [];
       totalPages.value = data.value?.totalPages || 1;
       totalPurchaseOrders.value = data.value?.total || 0;
-    } catch (error) {
-      console.error("Error fetching purchase orders:", error);
+    } catch (error: any) {
+      console.error("Error fetching purchase orders:", error.message);
     } finally {
       isLoading.value = false;
     }
@@ -66,10 +66,15 @@ export default function usePurchaseOrderService() {
   // Fetch Single Purchase Order
   const fetchPurchaseOrder = async (id: number): Promise<PurchaseOrder> => {
     try {
-      const { data } = await useFetch<PurchaseOrder>(`${API_URL}/${id}`);
+      const { data, error } = await useFetch<PurchaseOrder>(`${API_URL}/${id}`);
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+      console.log("data", data.value);
       return data.value || ({} as PurchaseOrder);
-    } catch (error) {
-      console.error("Error fetching purchase order:", error);
+    } catch (error: any) {
+      console.error("Error fetching purchase order:", error.message);
       return {} as PurchaseOrder;
     }
   };
@@ -84,8 +89,8 @@ export default function usePurchaseOrderService() {
         body: purchaseOrder,
       });
       return data.value;
-    } catch (error) {
-      console.error("Error creating purchase order:", error);
+    } catch (error: any) {
+      console.error("Error creating purchase order:", error.message);
     }
   };
 
@@ -159,8 +164,8 @@ export default function usePurchaseOrderService() {
         method: "PATCH",
         body: purchaseOrder,
       });
-    } catch (error) {
-      console.error("Error updating purchase order:", error);
+    } catch (error: any) {
+      console.error("Error updating purchase order:", error.message);
     }
   };
 
@@ -168,8 +173,8 @@ export default function usePurchaseOrderService() {
   const deletePurchaseOrder = async (id: number) => {
     try {
       await useFetch(`${API_URL}/${id}`, { method: "DELETE" });
-    } catch (error) {
-      console.error("Error deleting purchase order:", error);
+    } catch (error: any) {
+      console.error("Error deleting purchase order:", error.message);
     }
   };
 

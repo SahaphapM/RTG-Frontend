@@ -1,15 +1,27 @@
 <template>
   <div>
-    <div class="grid grid-cols-2 gap-4 text-lg">
-      <div>
-        <label class="block font-semibold">Name</label>
-        <input
-          v-model="localForm.name"
-          type="text"
-          class="input input-bordered w-full"
-          :disabled="!isEditing"
-          required
-        />
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex gap-4">
+        <div>
+          <label class="block font-semibold">No.</label>
+          <input
+            v-model="localForm.number"
+            type="text"
+            class="input input-bordered w-full"
+            :disabled="!isEditing"
+            required
+          />
+        </div>
+        <div class="flex-grow">
+          <label class="block font-semibold">Name</label>
+          <input
+            v-model="localForm.name"
+            type="text"
+            class="input input-bordered w-full"
+            :disabled="!isEditing"
+            required
+          />
+        </div>
       </div>
 
       <!-- Customer Search Component -->
@@ -45,7 +57,7 @@
       <label class="block font-semibold">Description</label>
       <textarea
         v-model="localForm.description"
-        class="textarea textarea-bordered w-full"
+        class="textarea textarea-bordered w-full h-[150px]"
         :disabled="!isEditing"
       ></textarea>
     </div>

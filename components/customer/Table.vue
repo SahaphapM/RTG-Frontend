@@ -24,7 +24,7 @@
               Contact <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th class="text-center">Actions</th>
+          <th class="text-center w-32">Actions</th>
         </tr>
       </thead>
 
@@ -40,25 +40,27 @@
         <tr
           v-for="customer in customerStore.customers"
           :key="customer.id"
-          class="hover border-b border-gray-200"
+          class="hover"
         >
           <td>{{ customer.id }}</td>
           <td>{{ customer.name }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.contact }}</td>
-          <td class="text-center justify-center flex gap-2">
-            <button
-              @click="$emit('edit', customer)"
-              class="btn btn-warning btn-sm w-16"
-            >
-              Edit
-            </button>
-            <button
-              @click="$emit('delete', customer.id)"
-              class="btn btn-error btn-sm w-16"
-            >
-              Delete
-            </button>
+          <td class="text-center">
+            <div class="justify-center flex gap-2">
+              <button
+                @click="$emit('edit', customer)"
+                class="btn btn-warning btn-sm w-16"
+              >
+                Edit
+              </button>
+              <button
+                @click="$emit('delete', customer.id)"
+                class="btn btn-error btn-sm w-16"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -96,27 +98,24 @@ let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 // Watch for search or sorting changes and fetch data with a delay
 watch(
-  () => customerStore.query,
+  () => customerStore.query.search,
   () => {
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-
     debounceTimeout.value = setTimeout(() => {
       customerStore.getCustomers();
-    }, 500);
-  },
-  { deep: true }
+    }, 800);
+  }
 );
 
 watch(
-  () => customerStore.query.order,
-  () => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-
-    debounceTimeout.value = setTimeout(() => {
-      customerStore.getCustomers();
-    }, 500);
-  },
-  { deep: true }
+  () => [
+    customerStore.query,
+    customerStore.query.page,
+    customerStore.query.sortBy,
+  ],
+  async () => {
+    await customerStore.getCustomers();
+  }
 );
 
 // Sorting function

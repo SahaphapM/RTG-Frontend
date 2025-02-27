@@ -5,7 +5,7 @@
       <div class="flex flex-col">
         <h1 class="text-2xl font-semibold">Purchase Order Detail</h1>
         <div class="flex gap-2">
-          <h1 class="text-md">PO No.</h1>
+          <h1 class="text-md">No.</h1>
           <h1 class="text-md">{{ purchaseOrder.number }}</h1>
         </div>
       </div>
@@ -13,7 +13,7 @@
         <button
           v-if="!isEditing"
           @click="isEditing = !isEditing"
-          class="btn btn-warning w-32"
+          class="btn btn-warning w-32 text-white"
         >
           Edit
         </button>
@@ -29,11 +29,11 @@
 
     <div class="flex gap-10">
       <div class="w-[40%]">
-        <div class="rounded-lg flex flex-col p-4 items-center">
+        <div class="rounded-lg flex flex-col items-center">
           <CertificateViewer :previewUrl="previewUrl || examplePdf" />
         </div>
         <!-- File Upload -->
-        <div class="flex gap-10 items-center justify-center">
+        <div class="flex mt-5 items-center justify-center">
           <label
             class="flex items-center border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 h-16"
             :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
@@ -46,22 +46,63 @@
               :disabled="!isEditing"
             />
             <span v-if="!purchaseOrder.file">Click to upload PDF</span>
-            <span v-else>{{ file?.name || purchaseOrder.file }}</span>
+            <span v-else
+              >{{ file?.name ? file.name : purchaseOrder.file }}
+            </span>
             <HardDriveUpload class="w-7 h-7 ml-5" />
           </label>
         </div>
       </div>
-      <div class="flex-grow mt-10 gap-4">
-        <div>
-          <label class="block text-lg font-semibold">QT Number:</label>
-          <input
-            :disabled="!isEditing"
-            v-model="purchaseOrder.qtNumber"
-            type="text"
-            class="input input-bordered w-full"
-          />
+      <div class="flex-grow mt-6 items-center">
+        <div class="flex gap-4">
+          <div class="flex-grow">
+            <label class="block text-md font-semibold mt-2">QT Number:</label>
+            <input
+              :disabled="!isEditing"
+              v-model="purchaseOrder.qtNumber"
+              type="text"
+              class="input input-bordered w-full"
+            />
+          </div>
+          <!-- Date Picker for Paid Date (only shown when editing) -->
+          <div class="gap-2 w-[50%] mb-4">
+            <label class="block text-md font-semibold mt-2">Delivery:</label>
+            <div class="flex gap-2">
+              <input
+                v-if="purchaseOrder.shippedDate"
+                :disabled="!isEditing"
+                type="date"
+                v-model="purchaseOrder.shippedDate"
+                class="input input-bordered w-full"
+              />
+              <div class="dropdown">
+                <div
+                  tabindex="0"
+                  role="button"
+                  style="color: white"
+                  class="btn w-32"
+                  @click="isDropdownOpen = true"
+                  :class="{
+                    'btn-success': purchaseOrder.shippedDate,
+                    'bg-neutral-400': !purchaseOrder.shippedDate,
+                  }"
+                >
+                  {{ purchaseOrder.shippedDate ? "Shipped" : "Shipping" }}
+                </div>
+                <ul
+                  v-if="isDropdownOpen"
+                  tabindex="0"
+                  class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
+                >
+                  <li @click.stop="setShipping"><a>shipping</a></li>
+                  <li @click.stop="setShipped"><a>shipped</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
+
+        <div class="mb-4">
           <label class="block font-semibold">Our Ref:</label>
           <input
             :disabled="!isEditing"
@@ -70,20 +111,20 @@
             class="input input-bordered w-full"
           />
         </div>
-        <div>
+        <div class="mb-4">
           <SubContractorSearch
             :modelValue="purchaseOrder.subcontractor"
             :isEditing="isEditing"
             @update:model-value="updateSubcontractor"
           />
         </div>
-        <div>
+        <div class="mb-4">
           <CustomerSearch
             :modelValue="purchaseOrder.customer"
             :isEditing="isEditing"
           />
         </div>
-        <div>
+        <div class="mb-4">
           <label class="block font-semibold">Date:</label>
           <input
             :disabled="!isEditing"
@@ -92,21 +133,13 @@
             class="input input-bordered w-full"
           />
         </div>
-        <div>
-          <label class="block font-semibold">Vat:</label>
-          <input
-            :disabled="!isEditing"
-            v-model="purchaseOrder.vat"
-            type="number"
-            class="input input-bordered w-full"
-          />
-        </div>
-        <div>
+
+        <div class="mb-4">
           <label class="block font-semibold">Description:</label>
           <textarea
             :disabled="!isEditing"
             v-model="purchaseOrder.description"
-            class="textarea textarea-bordered w-full min-h-32"
+            class="textarea textarea-bordered w-full text-lg min-h-32"
           ></textarea>
         </div>
       </div>
@@ -123,15 +156,29 @@
     </div>
 
     <!-- Discount & Total -->
-    <div class="flex justify-between text-md mt-2">
-      <div>
-        <label class="block font-semibold">Discount:</label>
-        <input
-          :disabled="!isEditing"
-          v-model="purchaseOrder.discount"
-          type="number"
-          class="input input-bordered w-60"
-        />
+    <div
+      class="flex justify-between text-md mt-4"
+      v-if="purchaseOrder.orderDetails.length > 0"
+    >
+      <div class="flex gap-4">
+        <div>
+          <label class="block font-semibold">Vat:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.vat"
+            type="number"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <div>
+          <label class="block font-semibold">Discount:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.discount"
+            type="number"
+            class="input input-bordered w-full"
+          />
+        </div>
       </div>
       <div class="text-right flex col">
         <div class="mx-10">
@@ -162,7 +209,7 @@
     <!-- Action Buttons -->
     <div class="mt-6 flex gap-2">
       <button
-        v-if="!isEditing && purchaseOrder.id"
+        v-if="isEditing && purchaseOrder.id"
         @click="isDeleteModalOpen = true"
         class="btn btn-error w-32"
       >
@@ -179,18 +226,14 @@
         @cancel="isDeleteModalOpen = false"
       />
       <div class="ml-auto">
-        <button
-          @click="goBack"
-          v-if="!isEditing"
-          class="btn btn-secondary w-32"
-        >
+        <button @click="goBack" v-if="!isEditing" class="btn btn-primary w-32">
           Back
         </button>
         <div class="flex gap-2">
           <button
             v-if="isEditing"
             @click="cancelEdit"
-            class="btn btn-secondary w-32"
+            class="btn btn-error w-32"
           >
             Cancel
           </button>
@@ -257,10 +300,12 @@ const newPurchaseOrder = (): PurchaseOrder => ({
   orderDetails: [],
   total: 0,
   discount: 0,
-  vat: 0,
+  vat: 7,
   qtNumber: "",
   ourRef: "",
   file: null,
+  name: "",
+  shippedDate: null,
 });
 
 // **State Variables**
@@ -273,6 +318,10 @@ const file = ref<File | null>(null); // Store uploaded file
 const previewUrl = ref<string | null>(null); // Store preview URL
 const isUploading = ref(false);
 const examplePdf = "/pdf/sample.pdf"; // ✅ Correct Path
+
+// สถานะการแสดงผลของ input และ dropdown
+const showDateInput = ref(false);
+const isDropdownOpen = ref(false);
 
 // **Computed Properties**
 const formattedDate = computed({
@@ -312,7 +361,6 @@ onMounted(async () => {
 
 // Handle File Upload
 const handleFileUpload = (event: Event) => {
-  console.log("handleFileUpload");
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
 
@@ -346,6 +394,11 @@ const refresh = async () => {
       previewUrl.value = await fetchQuotationFile(purchaseOrder.value.file); // Fetch PDF URL
       file.value = null;
     }
+
+    // set shipped date
+    if (purchaseOrder.value.shippedDate) {
+      showDateInput.value = true;
+    }
     isEditing.value = false;
   }
 };
@@ -353,7 +406,6 @@ const refresh = async () => {
 // **Update Order Details**
 const updateOrderDetails = (details: OrderDetail[]) => {
   purchaseOrder.value.orderDetails = details;
-  console.log("Updating order details:", purchaseOrder);
 };
 
 // **Update Subcontractor**
@@ -365,15 +417,16 @@ const updateSubcontractor = (subcontractor: Subcontractor) => {
 const savePurchaseOrder = async () => {
   try {
     if (purchaseOrder.value.id) {
-      console.log("Updating purchase order:", purchaseOrder.value);
       purchaseOrder.value.total =
         subTotal.value - purchaseOrder.value.discount + vat.value;
       await updatePurchaseOrder(purchaseOrder.value.id, purchaseOrder.value);
     } else {
+      console.log("save New");
       const savedPurchaseOrder = await createPurchaseOrder(purchaseOrder.value);
 
       if (savedPurchaseOrder) {
         purchaseOrder.value = savedPurchaseOrder;
+        router.push(`/purchase-orders/${savedPurchaseOrder.id}`);
       }
     }
 
@@ -386,8 +439,7 @@ const savePurchaseOrder = async () => {
         purchaseOrder.value.file = result.filename; // Update certificate file name after upload
       }
     }
-
-    await refresh();
+    isEditing.value = false;
   } catch (error) {
     console.error("Failed to save purchase order:", error);
   }
@@ -418,11 +470,26 @@ const goBack = () => {
 
 // **Export Purchase Order**
 const exportPurchaseOrder = () => {
-  console.log("Exporting purchase order:", purchaseOrder.value);
   exportPOToPDF(
     purchaseOrder.value,
     stateStore.notoThaiSanNormal,
     stateStore.notoThaiSanBold
   );
+};
+
+// ฟังก์ชันที่ใช้ตั้งค่าว่า "setShipped"
+const setShipped = () => {
+  showDateInput.value = true; // แสดง input ของวันที่เมื่อเลือก Paid
+  purchaseOrder.value.shippedDate = new Date().toISOString().split("T")[0]; // ตั้งค่าวันที่ปัจจุบันเป็น paidDate
+  if (!isEditing.value) savePurchaseOrder();
+  isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Paid
+};
+
+// ฟังก์ชันที่ใช้ตั้งค่าว่า "Unpaid"
+const setShipping = () => {
+  purchaseOrder.value.shippedDate = null; // ลบค่า paidDate เมื่อเลือก Unpaid
+  showDateInput.value = false; // ซ่อน input วันที่เมื่อเลือก Unpaid
+  if (!isEditing.value) savePurchaseOrder();
+  isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Unpaid
 };
 </script>

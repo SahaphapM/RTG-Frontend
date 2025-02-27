@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
       <h1 class="text-2xl font-bold">{{ projectStore.project?.name }}</h1>
-      <div class="flex gap-2">
+      <div class="flex gap-4">
         <button
           v-if="!isEditing && selectedQuotationId"
           @click="startEdit"
@@ -23,7 +23,7 @@
 
     <!-- Job Quotation Selection & Customer Info -->
     <div class="flex justify-between items-center mt-4">
-      <div class="flex gap-2">
+      <div class="flex gap-4">
         <select
           v-model="selectedQuotationId"
           @change="loadSelectedQuotation"
@@ -139,7 +139,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="mt-6 flex justify-between gap-2">
+    <div class="mt-6 flex justify-between gap-4">
       <div>
         <button
           v-if="isEditing && selectedQuotationId"
@@ -160,22 +160,14 @@
         />
       </div>
 
-      <div class="flex justify-end gap-2">
-        <button
-          @click="goBack"
-          v-if="!isEditing"
-          class="btn btn-secondary w-32"
-        >
+      <div class="flex justify-end gap-4">
+        <button @click="goBack" v-if="!isEditing" class="btn btn-primary w-32">
           Back
         </button>
         <button @click="goNext" v-if="!isEditing" class="btn btn-primary w-32">
           Next
         </button>
-        <button
-          v-if="isEditing"
-          @click="cancelEdit"
-          class="btn btn-secondary w-32"
-        >
+        <button v-if="isEditing" @click="cancelEdit" class="btn btn-error w-32">
           Cancel
         </button>
         <button

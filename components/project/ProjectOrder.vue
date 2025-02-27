@@ -12,10 +12,10 @@
     @close="isNewItemModalOpen = false"
     @create-item="addNewItem"
   />
-  <div class="mt-10">
-    <div class="flex justify-between items-center mb-2">
-      <h2 class="text-xl font-semibold">Project Order</h2>
-      <div class="flex justify-end gap-2 mb-2">
+  <div class="mt-2 mb-5">
+    <div class="flex justify-between items-center">
+      <h2 class="font-semibold">Project Order</h2>
+      <div class="flex justify-end gap-4 mb-2">
         <button
           v-if="isEditing"
           @click="openSearchModal"
@@ -33,73 +33,99 @@
       </div>
     </div>
 
-    <table class="table w-full border border-gray-200">
-      <thead>
-        <tr class="bg-base-300 text-lg">
-          <th>No.</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Amount</th>
-          <th>Value</th>
-          <th v-if="isEditing">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in projectItems" :key="index">
-          <td>{{ index + 1 }}</td>
-          <td>{{ item.item.name }}</td>
-          <td>
-            <input
-              v-if="isEditing"
-              v-model.number="item.price"
-              class="input input-sm input-bordered w-24 text-center"
-            />
-            <span v-else>
-              {{ item.price }}
-            </span>
-          </td>
-          <td>
-            <div class="flex items-center">
-              <button
-                @click="$emit('decrease-amount', index)"
-                class="btn btn-sm"
+    <!-- Table -->
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th class="font-semibold">No.</th>
+            <th class="font-semibold">Name</th>
+            <th class="font-semibold text-right">Price</th>
+            <th class="w-[200px] font-semibold text-center">Qty</th>
+            <th class="w-[100px] font-semibold text-right">Value</th>
+            <td class="w-[10px]"></td>
+            <th class="w-[100px] font-semibold" v-if="isEditing">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, index) in projectItems"
+            :key="index"
+            class="text-left"
+          >
+            <td class="">{{ index + 1 }}</td>
+            <td class="">{{ item.item.name }}</td>
+            <td class="text-right">
+              <input
                 v-if="isEditing"
-              >
-                ➖
-              </button>
-              <span class="mx-2">{{ item.quantity }}</span>
+                v-model.number="item.price"
+                class="input input-sm input-bordered w-30 text-right"
+              />
+              <span v-else>{{ item.price?.toLocaleString() }}</span>
+            </td>
+            <td class="">
+              <div class="flex justify-center">
+                <button
+                  @click="$emit('decrease-amount', index)"
+                  class="btn btn-sm rounded-lg"
+                  v-if="isEditing"
+                >
+                  ➖
+                </button>
+                <span class="mx-2 my-auto">{{ item.quantity }}</span>
+                <button
+                  @click="$emit('increase-amount', index)"
+                  class="btn btn-sm rounded-lg"
+                  v-if="isEditing"
+                >
+                  ➕
+                </button>
+              </div>
+            </td>
+            <td class="text-right">
+              {{
+                (
+                  (item.price || item.item.price) * item.quantity
+                ).toLocaleString()
+              }}
+            </td>
+            <td>{{}}</td>
+            <td v-if="isEditing" class="">
               <button
-                @click="$emit('increase-amount', index)"
-                class="btn btn-sm"
-                v-if="isEditing"
+                @click="$emit('remove-item', index)"
+                class="btn btn-error btn-sm rounded-lg"
               >
-                ➕
+                <TrashIcon class="w-4 h-4" color="white" />
               </button>
-            </div>
-          </td>
-          <td>
-            {{
-              ((item.price || item.item.price) * item.quantity).toLocaleString()
-            }}
-          </td>
-          <td v-if="isEditing">
-            <button
-              @click="$emit('remove-item', index)"
-              class="btn btn-error btn-sm"
-            >
-              <TrashIcon class="w-4 h-4" color="white" />
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="text-lg" style="background-color: rgb(231, 231, 231)">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="font-semibold text-center">Total Value</td>
+            <td class="font-semibold flex justify-center">
+              <div>{{ totalValue.toLocaleString() }}</div>
+            </td>
+            <td v-if="isEditing" class="font-semibold">
+              {{ isEditing ? "Baht" : "" }}
+            </td>
+            <td class="font-semibold text-left">
+              {{ !isEditing ? "Baht" : "" }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-    <div class="flex justify-end mt-4 font-semibold text-lg">
-      <!-- <span>{{ `Item Qty :    ${totalAmount} ` }}</span> -->
+    <!-- <div class="flex justify-end mt-4 font-semibold text-lg">
+    
       <span>{{
         `Total Value :    ${totalValue.toLocaleString()}   Baht`
       }}</span>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -177,5 +203,51 @@ onMounted(async () => {
 <style scoped>
 button {
   font-weight: 700;
+}
+.table-container {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+}
+/* Table */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+/* Table Header */
+.custom-table thead tr {
+  background: rgb(231, 231, 231);
+
+  text-align: left;
+  font-size: 15px;
+  color: #1d1d1d;
+}
+
+.custom-table th {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Table Body */
+.custom-table td {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.custom-table tfoot tr td {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  background: rgb(243, 243, 243);
 }
 </style>

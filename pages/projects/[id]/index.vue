@@ -32,22 +32,43 @@
       @add-item="addItem"
       @remove-item="removeItem"
     />
+    <div class="justify-end"></div>
 
     <!-- Buttons -->
-    <div class="flex justify-end items-center mt-4 gap-2" v-if="isEditing">
-      <button
-        type="button"
-        @click="resetForm(), (isEditing = false)"
-        class="btn btn-error w-32"
-      >
-        Cancel
-      </button>
-      <button @click="saveProject" class="btn btn-success w-32">Save</button>
+    <div class="flex justify-between mt-4" v-if="isEditing">
+      <div>
+        <button
+          v-if="isEditing && projectStore.project?.id"
+          @click="isDeleteModalOpen = true"
+          class="btn btn-error w-32"
+        >
+          Delete
+        </button>
+        <ConfirmDelete
+          v-if="isDeleteModalOpen"
+          :isOpen="isDeleteModalOpen"
+          title="Confirm Delete"
+          message="Are you sure you want to delete this purchase order?"
+          confirmText="Yes, Delete"
+          cancelText="Cancel"
+          @confirm="confirmDeleteProject"
+          @cancel="isDeleteModalOpen = false"
+        />
+      </div>
+      <div class="flex gap-4">
+        <button
+          type="button"
+          @click="resetForm(), (isEditing = false)"
+          class="btn btn-error w-32"
+        >
+          Cancel
+        </button>
+        <button @click="saveProject" class="btn btn-success w-32">Save</button>
+      </div>
     </div>
 
-    <div class="h-5"></div>
-    <div class="flex justify-end gap-2" v-if="!isEditing">
-      <button @click="goBack" class="btn btn-error w-32">Back</button>
+    <div class="flex justify-end gap-4" v-if="!isEditing">
+      <button @click="goBack" class="btn btn-primary w-32">Back</button>
       <button @click="goNext" class="btn btn-primary w-32">Next</button>
     </div>
   </div>
@@ -62,14 +83,17 @@ import type { Customer } from "~/types/customer";
 import ProjectOrder from "~/components/project/ProjectOrder.vue";
 import type { Item } from "~/types/item";
 import type { Project } from "~/types/project";
+import ConfirmDelete from "~/components/ConfirmDelete.vue";
 
 const route = useRoute();
 const router = useRouter();
-const { fetchProject, createProject, updateProject } = useProjectService();
+const { fetchProject, createProject, updateProject, deleteProject } =
+  useProjectService();
 const projectStore = useProjectStore();
 
 const isNewProject = ref(false);
 const isEditing = ref(false);
+const isDeleteModalOpen = ref(false);
 
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
@@ -80,13 +104,13 @@ const formatDate = (date: Date): string => {
 
 const form = ref<Project>({
   name: "",
+  number: "",
   description: "",
   customer: null as Customer | null,
   startDate: formatDate(new Date()), // Format to "YYYY-MM-DD"
   endDate: formatDate(new Date()), // Format to "YYYY-MM-DD"
   projectItems: [] as ProjectItem[],
   totalProjectPrice: 0,
-  number: "",
   jobQuotations: [],
 });
 
@@ -115,7 +139,8 @@ const saveProject = async () => {
       router.push(`/projects/${updatedProject.id}`);
     }
   } else {
-    console.log("Updating project:", form.value.customer?.id);
+    // Update existing project
+    if (!projectStore.project?.id) return window.alert("Project ID not found");
     await updateProject(projectStore.project.id, form.value);
   }
   isEditing.value = false;
@@ -124,15 +149,17 @@ const saveProject = async () => {
 const resetForm = () => {
   if (projectStore.project) {
     form.value = {
-      name: projectStore.project.name,
-      description: projectStore.project.description,
-      customer: projectStore.project.customer || null,
-      startDate: projectStore.project.startDate || new Date(),
-      endDate: projectStore.project.endDate || new Date(),
-      projectItems: projectStore.project.projectItems
-        ? JSON.parse(JSON.stringify(projectStore.project.projectItems))
-        : [], // Ensure it's always an array
-      totalProjectPrice: projectStore.project.totalProjectPrice || 0,
+      ...projectStore.project,
+      // id: projectStore.project.id,
+      // name: projectStore.project.name,
+      // description: projectStore.project.description,
+      // customer: projectStore.project.customer || null,
+      // startDate: projectStore.project.startDate || new Date().toISOString(),
+      // endDate: projectStore.project.endDate || new Date().toISOString(),
+      // projectItems: projectStore.project.projectItems
+      //   ? JSON.parse(JSON.stringify(projectStore.project.projectItems))
+      //   : [], // Ensure it's always an array
+      // totalProjectPrice: projectStore.project.totalProjectPrice || 0,
     };
   }
 };
@@ -176,5 +203,17 @@ const addItem = (item: Item) => {
 
 const removeItem = (index: number) => {
   form.value.projectItems.splice(index, 1);
+};
+
+// **Delete Project**
+const confirmDeleteProject = async () => {
+  try {
+    if (projectStore.project) {
+      await deleteProject(projectStore.project.id!);
+      router.push("/projects");
+    }
+  } catch (error) {
+    console.error("Failed to delete purchase order:", error);
+  }
 };
 </script>

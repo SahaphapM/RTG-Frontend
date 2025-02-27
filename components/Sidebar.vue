@@ -50,7 +50,7 @@ const props = defineProps<{ isOpen: boolean }>();
 
 // Sidebar menu items
 const menuItems = [
-  { to: "/", label: "Home", icon: HomeIcon },
+  // { to: "/", label: "Home", icon: HomeIcon },
   { to: "/projects", label: "Project", icon: FolderIcon },
   { to: "/purchase-orders", label: "Purchase Order", icon: ShoppingCartIcon },
   { to: "/certificates", label: "Certificate", icon: BookText },

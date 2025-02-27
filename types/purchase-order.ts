@@ -5,6 +5,7 @@ import type { Subcontractor } from "./subcontractor";
 export type PurchaseOrder = {
   id?: number | null;
   number: string;
+  name: string;
   qtNumber: string;
   ourRef: string;
   description: string;
@@ -16,4 +17,5 @@ export type PurchaseOrder = {
   discount: number;
   vat: number;
   file: string | null;
+  shippedDate: string | null; // ส่งแล้ว กำลังส่ง
 };

@@ -111,7 +111,11 @@
           >
             Save
           </button>
-          <button @click="goBack" class="btn btn-error w-32" v-if="!isEditing">
+          <button
+            @click="goBack"
+            class="btn btn-primary w-32"
+            v-if="!isEditing"
+          >
             Back
           </button>
         </div>

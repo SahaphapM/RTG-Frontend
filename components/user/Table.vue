@@ -28,11 +28,7 @@
       </tbody>
 
       <tbody v-else>
-        <tr
-          v-for="user in userStore.users"
-          :key="user.id"
-          class="hover border-b border-gray-200"
-        >
+        <tr v-for="user in userStore.users" :key="user.id" class="hover">
           <td>{{ user.id }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
@@ -42,19 +38,21 @@
               user.role
             }}</span>
           </td>
-          <td class="text-center justify-center flex gap-2">
-            <button
-              @click="$emit('edit', user)"
-              class="btn btn-warning btn-sm w-16"
-            >
-              Edit
-            </button>
-            <button
-              @click="$emit('delete', user.id)"
-              class="btn btn-error btn-sm w-16"
-            >
-              Delete
-            </button>
+          <td class="text-center">
+            <div class="justify-center flex gap-2">
+              <button
+                @click="$emit('edit', user)"
+                class="btn btn-warning btn-sm w-16"
+              >
+                Edit
+              </button>
+              <button
+                @click="$emit('delete', user.id)"
+                class="btn btn-error btn-sm w-16"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -89,15 +87,20 @@ const userStore = useUserStore();
 let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 watch(
-  () => userStore.query, // Watch only the search input
-  (newValue) => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
-
+  () => userStore.query.search,
+  () => {
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
-      userStore.getUsers(); // Fetch users after 2s delay
-    }, 200);
-  },
-  { deep: true }
+      userStore.getUsers();
+    }, 800);
+  }
+);
+
+watch(
+  () => [userStore.query, userStore.query.page, userStore.query.sortBy],
+  async () => {
+    await userStore.getUsers();
+  }
 );
 
 // Sorting function

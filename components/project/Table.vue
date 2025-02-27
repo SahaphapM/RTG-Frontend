@@ -8,9 +8,7 @@
             <div class="flex">No. <SortDescIcon class="sort-icon" /></div>
           </th>
           <th @click="setSorting('name')" class="cursor-pointer">
-            <div class="flex">
-              Project Name <SortDescIcon class="sort-icon" />
-            </div>
+            <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
           </th>
           <th>Customer</th>
           <th>Start Date</th>
@@ -21,7 +19,7 @@
               <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th style="text-align: center">Actions</th>
+          <th style="text-align: center; width: 120px">Actions</th>
         </tr>
       </thead>
 
@@ -39,22 +37,32 @@
           </td>
           <td class="text-center">{{ project.startDate }}</td>
           <!-- <td class="text-center">{{ project.endDate }}</td> -->
+          <!-- <td>
+            <div
+              class="badge gap-2 badge-md font-medium text-white h-7 w-20"
+              :class="purchaseOrder.shippedDate ? 'bg-success' : 'bg-error'"
+            >
+              {{ purchaseOrder.shippedDate ? "Shipped" : "Shipping" }}
+            </div>
+          </td> -->
           <td class="text-right">
             {{ project.totalProjectPrice!.toLocaleString() }}
           </td>
-          <td class="action-buttons gap-2">
-            <button
-              @click.stop="$emit('edit', project)"
-              class="btn btn-warning btn-sm w-16"
-            >
-              Edit
-            </button>
-            <button
-              @click.stop="$emit('delete', project.id)"
-              class="btn btn-error btn-sm w-16"
-            >
-              Delete
-            </button>
+          <td>
+            <div class="action-buttons gap-2">
+              <button
+                @click.stop="$emit('edit', project)"
+                class="btn btn-warning btn-sm w-16"
+              >
+                Edit
+              </button>
+              <button
+                @click.stop="$emit('delete', project.id)"
+                class="btn btn-error btn-sm w-16"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -104,14 +112,24 @@ const navigateToProject = (id: number) => {
 let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 watch(
-  () => projectStore.query,
-  (newValue) => {
+  () => projectStore.query.search,
+  () => {
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-    debounceTimeout.value = setTimeout(async () => {
-      await projectStore.getProjects();
-    }, 150);
-  },
-  { deep: true }
+    debounceTimeout.value = setTimeout(() => {
+      projectStore.getProjects();
+    }, 800);
+  }
+);
+
+watch(
+  () => [
+    projectStore.query,
+    projectStore.query.page,
+    projectStore.query.sortBy,
+  ],
+  async () => {
+    await projectStore.getProjects();
+  }
 );
 
 // Sorting function

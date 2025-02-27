@@ -48,11 +48,7 @@ import Table from "~/components/purchase-order/Table.vue";
 
 const purchaseOrderStore = usePurchaseOrderStore();
 const { deletePurchaseOrder } = purchaseOrderService();
-
-const purchaseOrders = ref<PurchaseOrder[]>([]);
 const isDeleteModalOpen = ref(false);
-const selectedPurchaseOrder = ref<PurchaseOrder | null>(null);
-const isModalOpen = ref(false);
 const purchaseOrderToDelete = ref<number | null>(null);
 
 onMounted(async () => {
@@ -68,7 +64,6 @@ const confirmDeletePurchaseOrder = async (id: number) => {
 };
 
 const toDeletePurchaseOrder = async () => {
-  console.log("purchaseOrderToDelete.value", purchaseOrderToDelete.value);
   if (purchaseOrderToDelete.value) {
     await deletePurchaseOrder(purchaseOrderToDelete.value);
     isDeleteModalOpen.value = false;

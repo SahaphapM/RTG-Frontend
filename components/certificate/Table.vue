@@ -29,7 +29,7 @@
           <th>
             <div class="flex items-center">Subcontractor</div>
           </th>
-          <th class="text-center">Actions</th>
+          <th class="text-center w-32">Actions</th>
         </tr>
       </thead>
 
@@ -45,7 +45,7 @@
         <tr
           v-for="(certificate, index) in certificates"
           :key="certificate.id"
-          class="hover border-b border-gray-200"
+          class="hover"
           @click="certificate.id ? navigateToCertificate(certificate.id) : ''"
         >
           <td>{{ index + 1 }}</td>
@@ -64,28 +64,30 @@
             <span v-else class="text-gray-400 italic">No file</span>
           </td> -->
           <td>{{ certificate.subcontractor?.name }}</td>
-          <td class="text-center justify-center flex gap-2">
-            <button
-              @click="
-                certificate.id ? navigateToCertificate(certificate.id) : ''
-              "
-              class="btn btn-warning btn-sm w-16"
-            >
-              Edit
-            </button>
-            <!-- <button
+          <td>
+            <div class="text-center justify-center flex gap-2">
+              <button
+                @click="
+                  certificate.id ? navigateToCertificate(certificate.id) : ''
+                "
+                class="btn btn-warning btn-sm w-16"
+              >
+                Edit
+              </button>
+              <!-- <button
               @click="$emit('delete', certificate.id)"
               class="btn btn-error btn-sm w-16"
             >
               Delete
             </button> -->
-            <button
-              v-if="certificate.file"
-              @click.stop="$emit('download', certificate.file)"
-              class="btn btn-success btn-sm w-16"
-            >
-              PDF
-            </button>
+              <button
+                v-if="certificate.file"
+                @click.stop="$emit('download', certificate.file)"
+                class="btn btn-success btn-sm w-16"
+              >
+                PDF
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -134,27 +136,24 @@ let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 // Watch for search or sorting changes and fetch data with a delay
 watch(
-  () => certificateStore.query,
+  () => certificateStore.query.search,
   () => {
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-
     debounceTimeout.value = setTimeout(() => {
       certificateStore.getCertificates();
-    }, 500);
-  },
-  { deep: true }
+    }, 800);
+  }
 );
 
 watch(
-  () => certificateStore.query.order,
-  () => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-
-    debounceTimeout.value = setTimeout(() => {
-      certificateStore.getCertificates();
-    }, 500);
-  },
-  { deep: true }
+  () => [
+    certificateStore.query,
+    certificateStore.query.page,
+    certificateStore.query.sortBy,
+  ],
+  async () => {
+    await certificateStore.getCertificates();
+  }
 );
 
 // Sorting function

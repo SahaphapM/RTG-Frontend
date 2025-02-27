@@ -29,7 +29,8 @@
               Contact <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th class="text-center">Actions</th>
+          <th class="text-center" style="width: 120px">Actions</th>
+          <!-- Fixed width for the Actions column -->
         </tr>
       </thead>
 
@@ -45,7 +46,7 @@
         <tr
           v-for="subcontractor in subcontractorStore.subcontractors"
           :key="subcontractor.id"
-          class="hover border-b border-gray-200"
+          class="hover"
         >
           <td>{{ subcontractor.id }}</td>
           <td>{{ subcontractor.name }}</td>
@@ -53,18 +54,20 @@
           <td>{{ subcontractor.email }}</td>
           <td>{{ subcontractor.contact }}</td>
           <td class="text-center">
-            <button
-              @click="$emit('edit', subcontractor)"
-              class="btn btn-warning btn-sm w-16"
-            >
-              Edit
-            </button>
-            <button
-              @click="$emit('delete', subcontractor.id)"
-              class="btn btn-error btn-sm ml-2 w-16"
-            >
-              Delete
-            </button>
+            <div class="flex justify-center gap-2">
+              <button
+                @click="$emit('edit', subcontractor)"
+                class="btn btn-warning btn-sm w-16"
+              >
+                Edit
+              </button>
+              <button
+                @click="$emit('delete', subcontractor.id)"
+                class="btn btn-error btn-sm w-16"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -105,27 +108,24 @@ let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 
 // Watch for search or sorting changes and fetch data with a delay
 watch(
-  () => subcontractorStore.query,
+  () => subcontractorStore.query.search,
   () => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
-
+    if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
-      subcontractorStore.getSubcontractors(); // Fetch subcontractors after delay
-    }, 500);
-  },
-  { deep: true }
+      subcontractorStore.getSubcontractors();
+    }, 800);
+  }
 );
 
 watch(
-  () => subcontractorStore.query.order,
-  () => {
-    if (debounceTimeout.value) clearTimeout(debounceTimeout.value); // Clear previous timeout
-
-    debounceTimeout.value = setTimeout(() => {
-      subcontractorStore.getSubcontractors(); // Fetch subcontractors after delay
-    }, 500);
-  },
-  { deep: true }
+  () => [
+    subcontractorStore.query,
+    subcontractorStore.query.page,
+    subcontractorStore.query.sortBy,
+  ],
+  async () => {
+    await subcontractorStore.getSubcontractors();
+  }
 );
 
 // Sorting function

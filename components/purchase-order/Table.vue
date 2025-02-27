@@ -8,20 +8,24 @@
               No. <SortDescIcon class="sort-icon" />
             </div>
           </th>
+
+          <th @click="setSorting('name')" class="sortable">
+            <div class="flex items-center">
+              Name <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
           <th @click="setSorting('date')" class="sortable text-center w-32">
             <div class="flex justify-center items-center">
               Date <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('description')" class="sortable">
-            <div class="flex items-center">
-              Description <SortDescIcon class="sort-icon" />
-            </div>
-          </th>
           <th>
             <div class="flex items-center">Subcontractor</div>
           </th>
-          <th @click="setSorting('total')" class="sortable text-right w-32">
+          <th>
+            <div>Shipped</div>
+          </th>
+          <th @click="setSorting('total')" class="sortable w-32">
             <div class="flex justify-end items-center">
               Price <SortDescIcon class="sort-icon" />
             </div>
@@ -47,24 +51,37 @@
           @click="navigateToPurchaseOrder(purchaseOrder.id!)"
         >
           <td>{{ purchaseOrder.number }}</td>
+
+          <td class="truncate">{{ purchaseOrder.name }}</td>
           <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
-          <td class="truncate">{{ purchaseOrder.description }}</td>
           <td>{{ purchaseOrder.subcontractor?.name || "-" }}</td>
+          <td>
+            <div
+              class="badge gap-2 badge-md font-medium text-white h-7 w-20"
+              :class="
+                purchaseOrder.shippedDate ? 'bg-success' : 'bg-neutral-400'
+              "
+            >
+              {{ purchaseOrder.shippedDate ? "Shipped" : "Shipping" }}
+            </div>
+          </td>
           <td class="text-right">{{ formatPrice(purchaseOrder.total) }}</td>
 
-          <td class="text-center flex gap-2">
-            <button
-              @click.stop="navigateToPurchaseOrder(purchaseOrder.id!)"
-              class="btn btn-warning btn-sm w-16"
-            >
-              Edit
-            </button>
-            <button
-              @click.stop="$emit('delete', purchaseOrder.id)"
-              class="btn btn-error btn-sm w-16"
-            >
-              Delete
-            </button>
+          <td class="text-center">
+            <div class="flex gap-2">
+              <button
+                @click.stop="navigateToPurchaseOrder(purchaseOrder.id!)"
+                class="btn btn-warning btn-sm w-16"
+              >
+                Edit
+              </button>
+              <button
+                @click.stop="$emit('delete', purchaseOrder.id)"
+                class="btn btn-error btn-sm w-16"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -142,14 +159,18 @@ watch(
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
       purchaseOrderStore.getPurchaseOrders();
-    }, 500);
+    }, 800);
   }
 );
 
 watch(
-  () => purchaseOrderStore.query.sortBy,
-  () => {
-    purchaseOrderStore.getPurchaseOrders();
+  () => [
+    purchaseOrderStore.query,
+    purchaseOrderStore.query.page,
+    purchaseOrderStore.query.sortBy,
+  ],
+  async () => {
+    await purchaseOrderStore.getPurchaseOrders();
   }
 );
 </script>
