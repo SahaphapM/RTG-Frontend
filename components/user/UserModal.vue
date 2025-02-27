@@ -64,12 +64,11 @@ import type { User } from "~/types/user";
 const props = defineProps<{ user?: User | null }>();
 const emit = defineEmits(["save", "close"]);
 
-const form = ref({
+const form = ref<User>({
   name: "",
-  email: "",
-  contact: "",
-
   position: "",
+  contact: "",
+  email: "",
   role: "User",
 });
 

@@ -31,14 +31,7 @@
         <tbody>
           <tr v-for="(detail, index) in details" :key="index" class="">
             <td class="">{{ index + 1 }}</td>
-            <!-- <td class="">
-            <input
-              v-model="detail.name"
-              type="text"
-              class="input input-bordered w-full"
-              :disabled="!isEditing"
-            />
-          </td> -->
+
             <td>
               <textarea
                 v-model="detail.description"

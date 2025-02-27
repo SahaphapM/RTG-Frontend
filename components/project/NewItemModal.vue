@@ -23,10 +23,12 @@
       />
 
       <div class="flex justify-between mt-6">
-        <button @click="$emit('close')" class="btn btn-secondary">
+        <button @click="$emit('close')" class="btn btn-primary w-32">
           Cancel
         </button>
-        <button @click="createItem" class="btn btn-success">Create</button>
+        <button @click="createItem" class="btn btn-success text-white w-32">
+          Create
+        </button>
       </div>
     </div>
   </div>

@@ -38,14 +38,24 @@ export default function useServiceUsers() {
   };
 
   // Create User
-  const createUser = async (
-    newUser: Omit<User, "id" | "createdAt" | "updatedAt">
-  ) => {
-    const { data } = await useFetch<User>(`${config.public.apiBase}/users`, {
-      method: "POST",
-      body: newUser,
-    });
-    return data.value;
+  const createUser = async (newUser: Omit<User, "id">) => {
+    try {
+      const { data, error } = await useFetch<PaginationResponse<User>>(
+        API_URL,
+        {
+          method: "POST",
+          body: newUser,
+        }
+      );
+
+      if (error.value) throw new Error(error.value.message);
+
+      return data.value;
+    } catch (error: any) {
+      window.alert(
+        "Error creating user with duplicate email!! : " + newUser.email
+      );
+    }
   };
 
   // Delete User

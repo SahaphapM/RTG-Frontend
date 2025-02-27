@@ -21,10 +21,10 @@
           @click="selectItem(item)"
           class="p-3 hover:bg-blue-100 cursor-pointer flex justify-between items-center transition duration-200"
         >
-          <span class="font-medium text-gray-900">{{ item.name }}</span>
+          <span>{{ item.name }}</span>
           <span>
             <div class="flex gap-4">
-              <div class="text-gray-600">
+              <div class="text-black">
                 {{ item.price.toLocaleString() }} Bath
               </div>
               <!-- trash icon -->
@@ -38,12 +38,15 @@
       </ul>
 
       <div class="flex justify-between mt-6">
-        <button @click="$emit('close')" class="btn btn-error text-md font-bold">
+        <button
+          @click="$emit('close')"
+          class="btn btn-primary text-md font-bold w-32"
+        >
           Cancel
         </button>
         <button
           @click="$emit('new-item')"
-          class="btn btn-primary text-md font-bold"
+          class="btn btn-primary text-md font-bold w-32"
         >
           New Item
         </button>
@@ -55,10 +58,7 @@
 <script setup lang="ts">
 import { TrashIcon } from "lucide-vue-next";
 import { ref, defineProps, defineEmits, computed } from "vue";
-import useItemService from "~/composables/itemService";
 import type { Item } from "~/types/item";
-
-const { fetchItems } = useItemService();
 
 const props = defineProps<{ isOpen: boolean; items: Item[] }>();
 const emit = defineEmits(["close", "select-item", "new-item"]);

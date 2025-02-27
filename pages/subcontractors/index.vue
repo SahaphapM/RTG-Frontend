@@ -95,6 +95,7 @@ const handleSave = async (subcontractorData: Partial<Subcontractor>) => {
       // Add to the list
       subcontractors.value.push(newSubcontractor as Subcontractor);
     }
+    subcontractorStore.getSubcontractors();
     closeModal();
   } catch (error) {
     console.error("Failed to save subcontractor:", error);
