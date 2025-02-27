@@ -1,7 +1,7 @@
 <template>
   <div class="p-6">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-semibold">
         {{ isNewCertificate ? "New Certificate" : certificate?.name }}
       </h1>
       <button
@@ -13,38 +13,45 @@
       </button>
     </div>
 
-    <div class="flex gap-10 min-h-[500px]">
+    <div class="flex gap-10">
       <!-- Left: File Upload & Preview (Fixed Width) -->
-      <div class="w-[40%] rounded-lg p-4 flex flex-col items-center">
-        <CertificateViewer :previewUrl="previewUrl || examplePdf" />
+      <div class="w-[40%] mt-5">
+        <div class="rounded-lg flex flex-col items-center">
+          <CertificateViewer :previewUrl="previewUrl || examplePdf" />
+          <div class="mt-2 font-semibold">
+            {{ certificate.file || file?.name }}
+          </div>
+        </div>
       </div>
 
       <!-- Right: Form Fields (Expands to Fill Remaining Space) -->
-      <div class="flex-grow flex flex-col justify-between mt-10">
+      <div class="flex-grow flex flex-col justify-between mt-5">
         <div class="space-y-4">
           <!-- File Upload -->
-          <div class="flex gap-10 mt-4 items-center">
-            <div><h2 class="font-semibold text-lg">Upload PDF</h2></div>
-            <label
-              class="flex items-center border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 h-16 w-full"
-              :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
-            >
-              <input
-                type="file"
-                class="hidden"
-                accept="application/pdf"
-                @change="handleFileUpload"
-                :disabled="!isEditing"
-              />
-              <span v-if="!certificate.file">Click to upload PDF</span>
-              <span v-else>{{ file?.name || certificate.file }}</span>
-              <HardDriveUpload class="w-7 h-7 ml-5" />
-            </label>
+          <div v-if="isEditing">
+            <label class="block font-semibold">Upload </label>
+            <div class="flex items-center">
+              <label
+                class="flex items-center border-dashed border-2 border-neutral-500 rounded-lg px-4 py-2 text-center bg-neutral-100 text-gray-600 cursor-pointer hover:bg-neutral-300 hover:border-neutral-700 transition-all"
+                :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
+              >
+                <input
+                  type="file"
+                  class="hidden"
+                  accept="application/pdf"
+                  @change="handleFileUpload"
+                  :disabled="!isEditing"
+                />
+                <span v-if="!certificate.file">Click to upload PDF</span>
+                <span v-else>{{ file?.name || certificate.file }}</span>
+                <HardDriveUpload class="w-7 h-7 ml-5" />
+              </label>
+            </div>
           </div>
 
           <!-- Name & Date -->
           <div class="flex gap-4">
-            <div class="flex-grow">
+            <div>
               <label class="block font-semibold">Name</label>
               <input
                 v-model="certificate.name"

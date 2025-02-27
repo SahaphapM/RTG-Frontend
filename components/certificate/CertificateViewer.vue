@@ -1,7 +1,5 @@
 <template>
   <div v-if="pdfUrl" class="w-full">
-    <h2 class="text-xl font-semibold mb-2 text-center">PDF Preview</h2>
-
     <!-- Use `object` for better PDF scaling -->
     <!-- <object
       :data="pdfUrl"
@@ -18,7 +16,7 @@
     <embed
       :src="pdfUrl"
       type="application/pdf"
-      class="w-full min-h-[650px] border rounded-lg"
+      class="w-full min-h-[700px] border rounded-lg"
     />
   </div>
 </template>

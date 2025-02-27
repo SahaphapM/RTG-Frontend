@@ -170,6 +170,7 @@
 
     <!-- Invoice Table -->
     <InvoiceTable
+      class="mt-4"
       :isEditing="isEditing"
       :details="invoice.invoiceDetails"
       @update:details="updateInvoiceDetails"

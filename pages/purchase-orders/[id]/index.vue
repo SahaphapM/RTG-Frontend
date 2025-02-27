@@ -33,9 +33,9 @@
           <CertificateViewer :previewUrl="previewUrl || examplePdf" />
         </div>
         <!-- File Upload -->
-        <div class="flex mt-5 items-center justify-center">
+        <div v-if="isEditing" class="flex mt-5 items-center justify-center">
           <label
-            class="flex items-center border-dashed border-2 border-gray-500 rounded-lg p-6 text-center bg-gray-100 text-gray-600 h-16"
+            class="flex items-center border-dashed border-2 border-neutral-500 rounded-lg px-4 py-2 text-center bg-neutral-100 text-gray-600 cursor-pointer hover:bg-neutral-300 hover:border-neutral-700 transition-all"
             :class="isEditing ? 'cursor-pointer' : 'cursor-default'"
           >
             <input

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <!-- Add New Item Button -->
     <div class="flex justify-between items-end">
       <div class="font-semibold text-md">Invoice Items</div>
