@@ -9,7 +9,7 @@
           <h1 class="text-md">{{ purchaseOrder.number }}</h1>
         </div>
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-4">
         <button
           v-if="!isEditing"
           @click="isEditing = !isEditing"
@@ -53,7 +53,7 @@
           </label>
         </div>
       </div>
-      <div class="flex-grow mt-6 items-center">
+      <div class="flex-grow items-center">
         <div class="flex gap-4">
           <div class="flex-grow">
             <label class="block text-md font-semibold mt-2">QT Number:</label>
@@ -102,6 +102,15 @@
           </div>
         </div>
 
+        <div class="mb-4">
+          <label class="block font-semibold">Name :</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.name"
+            type="text"
+            class="input input-bordered w-full"
+          />
+        </div>
         <div class="mb-4">
           <label class="block font-semibold">Our Ref:</label>
           <input
