@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { useFetch } from "#app";
+import { useFetch, useRouter, useRuntimeConfig } from "#app";
 import type { User } from "~/types/user";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -10,48 +10,55 @@ export const useAuthStore = defineStore("auth", () => {
   const router = useRouter();
   const URL = useRuntimeConfig().public.apiBase;
 
-  // ✅ Login และให้ Backend จัดการ Cookie
+  // ✅ Check authentication before app starts
+  const initAuth = async () => {
+    await getUser();
+  };
+
+  // ✅ Login and fetch user data
   const login = async (email: string, password: string) => {
     try {
       const { data, error } = await useFetch(URL + "/auth/login", {
         method: "POST",
         body: { email, password },
-        credentials: "include", // ✅ ให้ Browser ส่ง-รับ Cookie อัตโนมัติ
+        credentials: "include",
       });
 
       if (error.value) throw new Error(error.value.message);
 
-      await getUser(); // ✅ ดึงข้อมูล User หลังจาก Login
+      await getUser(); // ✅ Fetch user after login
     } catch (err: any) {
       console.error("Login error:", err.message);
     }
   };
 
-  // ✅ Logout และให้ Backend ลบ Cookie
+  // ✅ Logout and clear user session
   const logout = async () => {
     await useFetch(URL + "/auth/logout", {
       method: "POST",
       credentials: "include",
     });
     user.value = null;
-    router.push("/");
+    router.push("/"); // ✅ Redirect to login page
   };
 
-  // ✅ ดึงข้อมูล User จาก Cookie
+  // ✅ Fetch user details from `/auth/me`
   const getUser = async () => {
-    const { data, error } = await useFetch<User>(URL + "/auth/me", {
-      credentials: "include", // ✅ ให้ส่ง Cookie ไปกับ Request
-    });
+    try {
+      const { data, error } = await useFetch<User>(URL + "/auth/me", {
+        credentials: "include",
+      });
 
-    if (!error.value) {
-      user.value = data.value;
-      console.log("data value : : :", user.value);
-
-      if (user.value && router.currentRoute.value.path === "/") {
-        router.push("/projects");
+      if (!error.value) {
+        user.value = data.value;
+        console.log("User authenticated:", user.value);
+      } else {
+        user.value = null; // ✅ Ensure user is null if token is invalid
       }
+    } catch (err) {
+      console.error("Error fetching user:", err);
     }
   };
 
-  return { user, isAuthenticated, login, logout, getUser };
+  return { user, isAuthenticated, login, logout, getUser, initAuth };
 });

@@ -87,6 +87,12 @@
               >
                 PDF
               </button>
+              <button
+                @click.stop="$emit('delete', certificate.id)"
+                class="btn btn-error btn-sm w-16"
+              >
+                Delete
+              </button>
             </div>
           </td>
         </tr>

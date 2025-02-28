@@ -20,33 +20,40 @@
           required
         />
         <input
+          v-model="form.contact"
+          type="contact"
+          placeholder="Contact"
+          class="input input-bordered w-full mb-2"
+          required
+        />
+        <input
           v-model="form.email"
           type="email"
           placeholder="Email"
           class="input input-bordered w-full mb-2"
           required
         />
+
         <input
           v-model="form.password"
           type="text"
           placeholder="Password"
           class="input input-bordered w-full mb-2"
-          required
         />
-        <input
+        <!-- <input
           v-model="form.position"
           type="text"
           placeholder="Position"
           class="input input-bordered w-full mb-2"
           required
-        />
+        /> -->
         <select
           v-model="form.role"
           class="select select-bordered w-full mb-2"
           required
         >
-          <option value="Admin">Admin</option>
-          <option value="User">User</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
         </select>
 
         <div class="flex justify-end mt-4">

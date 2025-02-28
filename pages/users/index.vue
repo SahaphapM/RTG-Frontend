@@ -37,7 +37,7 @@
       message="Are you sure you want to delete this user?"
       confirmText="Yes, Delete"
       cancelText="Cancel"
-      @confirm="confirmDeleteUser"
+      @confirm="deleteUser"
       @cancel="isDeleteModalOpen = false"
     />
   </div>
@@ -49,10 +49,9 @@ import UserModal from "~/components/user/UserModal.vue";
 import useServiceUsers from "~/composables/usersService";
 import { ref, onMounted, nextTick } from "vue";
 import type { User } from "~/types/user";
-import user from "~/server/api/user";
 
 const userStore = useUserStore();
-const { fetchUsers, createUser } = useServiceUsers();
+const { createUser, updateUser } = useServiceUsers();
 
 const isModalOpen = ref(false);
 const selectedUser = ref<User | null>(null);
@@ -84,8 +83,10 @@ const editUser = (user: User) => {
 };
 
 // Save (Add or Edit) User
-const saveUser = async (userData: Omit<User, "id">) => {
-  await createUser(userData);
+const saveUser = async (userData: Partial<User>) => {
+  if (selectedUser.value) await updateUser(selectedUser.value.id!, userData);
+  // Add New User omit id
+  else await createUser({ ...userData } as Required<Omit<User, "id">>);
   isModalOpen.value = false;
   getUsers();
 };
@@ -97,9 +98,9 @@ const confirmDeleteUser = (id: number) => {
 };
 
 // Delete User
-const deleteUser = async (id: number) => {
-  if (userToDelete.value === id) {
-    await userStore.deleteUser(id);
+const deleteUser = async () => {
+  if (userToDelete.value) {
+    await userStore.deleteUser(userToDelete.value);
     isDeleteModalOpen.value = false;
     getUsers();
   }
@@ -111,6 +112,6 @@ const closeModal = () => {
 };
 
 definePageMeta({
-  middleware: "auth-role",
+  middleware: "auth-role", // ✅ This ensures role-based access
 });
 </script>

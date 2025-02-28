@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: "http://localhost:5000", // NestJS API base URL
+      apiBase: "http://localhost:3001", // NestJS API base URL
     },
   },
   pinia: {

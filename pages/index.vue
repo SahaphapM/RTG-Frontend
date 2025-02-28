@@ -48,6 +48,15 @@ const password = ref("");
 
 const handleLogin = async () => {
   await authStore.login(email.value, password.value);
+
+  if (authStore.isAuthenticated) {
+    // ✅ Redirect to dashboard page after successful login
+    if (authStore.user?.role === "admin") {
+      navigateTo("/projects");
+    } else if (authStore.user?.role === "user") {
+      navigateTo("/purchase-orders");
+    }
+  }
 };
 
 definePageMeta({

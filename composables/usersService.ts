@@ -54,8 +54,23 @@ export default function useServiceUsers() {
       return data.value;
     } catch (error: any) {
       window.alert(
-        "Error creating user with duplicate email!! : " + newUser.email
+        "Error creating user with duplicate email!! : " +
+          newUser.email +
+          error.message
       );
+    }
+  };
+
+  // Update User
+  const updateUser = async (id: number, updatedUser: Partial<User>) => {
+    try {
+      await useFetch(`${config.public.apiBase}/users/${id}`, {
+        method: "PUT",
+        body: updatedUser,
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Error updating user:", error);
     }
   };
 
@@ -80,5 +95,6 @@ export default function useServiceUsers() {
     fetchUsers,
     createUser,
     deleteUser,
+    updateUser,
   };
 }

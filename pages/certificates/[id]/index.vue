@@ -102,29 +102,51 @@
         </div>
 
         <!-- Buttons (Aligned to Bottom) -->
-        <div class="flex justify-end items-end mt-auto gap-2">
+        <div
+          class="flex items-end mt-auto gap-2"
+          :class="isEditing ? 'justify-between' : 'justify-end'"
+        >
           <button
-            type="button"
-            @click="resetForm(), (isEditing = false)"
+            v-if="isEditing && certificate.id"
+            @click="isDeleteModalOpen = true"
             class="btn btn-error w-32"
-            v-if="isEditing"
           >
-            Cancel
+            Delete
           </button>
-          <button
-            @click="saveCertificate"
-            class="btn btn-success w-32"
-            v-if="isEditing"
-          >
-            Save
-          </button>
-          <button
-            @click="goBack"
-            class="btn btn-primary w-32"
-            v-if="!isEditing"
-          >
-            Back
-          </button>
+          <ConfirmDelete
+            v-if="isDeleteModalOpen"
+            :isOpen="isDeleteModalOpen"
+            title="Confirm Delete"
+            message="Are you sure you want to delete this purchase order?"
+            confirmText="Yes, Delete"
+            cancelText="Cancel"
+            @confirm="toDeleteCertificate"
+            @cancel="isDeleteModalOpen = false"
+          />
+          <div class="flex gap-4">
+            <button
+              type="button"
+              @click="resetForm(), (isEditing = false)"
+              class="btn btn-error w-32"
+              v-if="isEditing"
+            >
+              Cancel
+            </button>
+            <button
+              @click="saveCertificate"
+              class="btn btn-success w-32"
+              v-if="isEditing"
+            >
+              Save
+            </button>
+            <button
+              @click="goBack"
+              class="btn btn-primary w-32"
+              v-if="!isEditing"
+            >
+              Back
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -150,6 +172,7 @@ const {
   updateCertificate,
   uploadCertificateFile,
   fetchCertificateFile,
+  deleteCertificate,
 } = useCertificateService();
 
 const isEditing = ref(false);
@@ -168,6 +191,7 @@ const file = ref<File | null>(null); // Store uploaded file
 const previewUrl = ref<string | null>(null); // Store preview URL
 const isUploading = ref(false);
 const examplePdf = "/pdf/sample.pdf"; // ✅ Correct Path
+const isDeleteModalOpen = ref(false);
 
 // Load Certificate Data
 onMounted(async () => {
@@ -253,5 +277,14 @@ const updateSubcontractor = (subcontractor: any) => {
 // Update project
 const updateProject = (project: Project) => {
   certificate.value.project = project;
+};
+
+// Delete Certificate
+const toDeleteCertificate = async () => {
+  if (certificate.value) {
+    await deleteCertificate(certificate.value.id!);
+    isDeleteModalOpen.value = false;
+    router.push("/certificates");
+  }
 };
 </script>

@@ -30,6 +30,19 @@
       :isEditing="isEditing"
       @download="download"
       @update:certificates="updateCertificates"
+      @delete="confirmDeleteCertificate"
+    />
+
+    <!-- Reusable Delete Confirmation Modal -->
+    <ConfirmDelete
+      v-if="isDeleteModalOpen"
+      :isOpen="isDeleteModalOpen"
+      title="Confirm Delete"
+      message="Are you sure you want to delete this customer?"
+      confirmText="Yes, Delete"
+      cancelText="Cancel"
+      @confirm="toDeleteCustomer"
+      @cancel="isDeleteModalOpen = false"
     />
   </div>
 </template>
@@ -46,6 +59,8 @@ const { downloadCertificate } = useCertificateService();
 const certificateStore = useCertificateStore();
 const router = useRouter();
 const isEditing = ref(false);
+const isDeleteModalOpen = ref(false);
+const certificateToDelete = ref<number | null>(null);
 
 // Fetch all certificates on mount
 onMounted(async () => {
@@ -62,5 +77,17 @@ const download = async (name: string) => {
 // Update Certificates
 const updateCertificates = (updatedCertificates: Certificate[]) => {
   certificateStore.certificates = updatedCertificates;
+};
+
+// Open Delete Confirmation Modal
+const confirmDeleteCertificate = (id: number) => {
+  certificateToDelete.value = id;
+  isDeleteModalOpen.value = true;
+};
+
+const toDeleteCustomer = async () => {
+  await certificateStore.deleteCertificate(certificateToDelete.value!);
+  isDeleteModalOpen.value = false;
+  await certificateStore.getCertificates();
 };
 </script>

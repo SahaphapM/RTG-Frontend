@@ -8,13 +8,13 @@
 
     <!-- Middle Section: Nav Links (Desktop) -->
     <div class="flex flex-col mx-4 leading-2">
-      <span class="font-bold text-md">{{ authStore.user?.name }}</span>
+      <span class="font-bold text-md">{{ user?.name }}</span>
       <div class="text-sm font-semibold">
-        <div class="flex gap-x-1" v-if="authStore.user?.role === 'admin'">
+        <div class="flex gap-x-1" v-if="user?.role === 'admin'">
           {{ "Admin" }}
         </div>
         <span class="text-sm" v-else>
-          {{ authStore.user?.position || "Manager" }}
+          {{ user?.position }}
         </span>
       </div>
     </div>
@@ -49,19 +49,11 @@
 
 <script setup lang="ts">
 import { defineEmits } from "vue";
-import {
-  MenuIcon,
-  UserIcon,
-  LogOutIcon,
-  MenuSquareIcon,
-} from "lucide-vue-next";
 
 const authStore = useAuthStore();
 
-const rolePosition = computed(() => {
-  if (authStore.user?.role) {
-  }
-});
+// watch for changes  in authStore.user
+const user = computed(() => authStore.user);
 
 defineEmits(["toggle-sidebar"]);
 

@@ -35,7 +35,7 @@
           <td>{{ user.position }}</td>
           <td>
             <span class="badge bg-gray-200 text-gray-800 px-3 py-2">{{
-              user.role
+              user.role === "admin" ? "Admin" : "User"
             }}</span>
           </td>
           <td class="text-center">

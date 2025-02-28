@@ -1,20 +1,34 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { useAuthStore } from "~/stores/auth";
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore();
+  const nuxtApp = useNuxtApp();
 
-  if (!authStore.isAuthenticated) {
-    return navigateTo("/login"); // ✅ Redirect if not logged in
+  // ✅ Ensure user is fetched before checking role
+  if (!authStore.user) {
+    await nuxtApp.runWithContext(async () => {
+      await authStore.getUser();
+    });
   }
 
-  // ✅ Restrict pages based on roles
-  const role = authStore.user?.role;
-  const restrictedRoutes = {
-    userOnly: ["/purchase-orders", "/projects", "/certificates"],
-  };
+  // ✅ If not authenticated, redirect to login
+  if (!authStore.isAuthenticated) {
+    return navigateTo("/");
+  }
 
-  if (restrictedRoutes.userOnly.includes(to.path) && role !== "user") {
-    return navigateTo("/purchase-orders"); // ✅ Redirect non-users
+  const role = authStore.user?.role;
+
+  // ✅ Allow admin to access all pages
+  if (role === "admin") {
+    return;
+  }
+
+  // ✅ Define restricted routes for users
+  const userAllowedRoutes = ["/purchase-orders", "/projects", "/certificates"];
+
+  // ✅ If user tries to access a restricted page, redirect to `/projects`
+  if (role === "user" && !userAllowedRoutes.includes(to.path)) {
+    return navigateTo("/projects");
   }
 });
