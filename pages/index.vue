@@ -1,24 +1,40 @@
 <template>
-  <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
-    <h1 class="text-2xl font-bold text-center">Login</h1>
-    <form @submit.prevent="handleLogin">
-      <input
-        v-model="email"
-        placeholder="Email"
-        class="w-full p-2 border rounded mb-2"
-        required
-      />
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-        class="w-full p-2 border rounded mb-2"
-        required
-      />
-      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">
-        Login
-      </button>
-    </form>
+  <div class="flex flex-col items-center justify-center">
+    <img
+      src="/image/microtecnology-logo.png"
+      class="w-[50%] mx-auto mb-4"
+      alt="image"
+    />
+
+    <div class="flex flex-col w-full max-w-lg">
+      <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+        <h1 class="text-2xl font-bold text-center mb-8">Login</h1>
+        <form
+          @submit.prevent="handleLogin"
+          class="flex flex-col items-center gap-1"
+        >
+          <input
+            v-model="email"
+            placeholder="Email"
+            class="w-full p-2 border rounded-md mb-2"
+            required
+          />
+          <input
+            v-model="password"
+            type="password"
+            placeholder="Password"
+            class="w-full p-2 border rounded-md mb-2"
+            required
+          />
+          <button
+            type="submit"
+            class="w-32 bg-primary font-semibold mt-4 text-white p-2 rounded-md"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 

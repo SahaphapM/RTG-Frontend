@@ -46,7 +46,10 @@ export const useAuthStore = defineStore("auth", () => {
     if (!error.value) {
       user.value = data.value;
       console.log("data value : : :", user.value);
-      if (user.value) router.push("/projects");
+
+      if (user.value && router.currentRoute.value.path === "/") {
+        router.push("/projects");
+      }
     }
   };
 

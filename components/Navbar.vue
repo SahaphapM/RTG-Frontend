@@ -7,11 +7,16 @@
     </div>
 
     <!-- Middle Section: Nav Links (Desktop) -->
-    <div class="hidden lg:flex space-x-4">
-      <NuxtLink to="/" class="btn btn-ghost">Home</NuxtLink>
-      <NuxtLink to="/about" class="btn btn-ghost">About</NuxtLink>
-      <NuxtLink to="/services" class="btn btn-ghost">Services</NuxtLink>
-      <NuxtLink to="/contact" class="btn btn-ghost">Contact</NuxtLink>
+    <div class="flex flex-col mx-4 leading-2">
+      <span class="font-bold text-md">{{ authStore.user?.name }}</span>
+      <div class="text-sm font-semibold">
+        <div class="flex gap-x-1" v-if="authStore.user?.role === 'admin'">
+          {{ "Admin" }}
+        </div>
+        <span class="text-sm" v-else>
+          {{ authStore.user?.position || "Manager" }}
+        </span>
+      </div>
     </div>
 
     <!-- Right Section: Profile Dropdown -->
@@ -19,10 +24,10 @@
       <div class="dropdown dropdown-end">
         <button class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
-            <img src="../public/image/ceoMavin.webp" alt="User Avatar" />
+            <img src="../public/image/user-icon-thumb.png" alt="User Avatar" />
           </div>
         </button>
-        <ul
+        <!-- <ul
           tabindex="0"
           class="dropdown-content menu menu-sm bg-base-200 rounded-lg shadow-md mt-2 w-48"
         >
@@ -36,7 +41,7 @@
               <LogOutIcon class="w-4 h-4 text-red-500" /> Logout
             </button>
           </li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </div>
@@ -50,6 +55,13 @@ import {
   LogOutIcon,
   MenuSquareIcon,
 } from "lucide-vue-next";
+
+const authStore = useAuthStore();
+
+const rolePosition = computed(() => {
+  if (authStore.user?.role) {
+  }
+});
 
 defineEmits(["toggle-sidebar"]);
 
