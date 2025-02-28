@@ -122,6 +122,7 @@ watch(
     subcontractorStore.query,
     subcontractorStore.query.page,
     subcontractorStore.query.sortBy,
+    subcontractorStore.query.order,
   ],
   async () => {
     await subcontractorStore.getSubcontractors();
@@ -133,8 +134,6 @@ const setSorting = (field: string) => {
   subcontractorStore.query.sortBy = field;
   subcontractorStore.query.order =
     subcontractorStore.query.order === "ASC" ? "DESC" : "ASC";
-  console.log("userStore.query", subcontractorStore.query.sortBy);
-  console.log("userStore.query", subcontractorStore.query.order);
 };
 
 // Pagination functions

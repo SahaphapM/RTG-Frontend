@@ -126,6 +126,7 @@ watch(
     projectStore.query,
     projectStore.query.page,
     projectStore.query.sortBy,
+    projectStore.query.order,
   ],
   async () => {
     await projectStore.getProjects();

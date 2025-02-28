@@ -109,4 +109,8 @@ const deleteUser = async (id: number) => {
 const closeModal = () => {
   isModalOpen.value = false;
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

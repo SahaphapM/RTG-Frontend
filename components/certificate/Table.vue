@@ -150,6 +150,7 @@ watch(
     certificateStore.query,
     certificateStore.query.page,
     certificateStore.query.sortBy,
+    certificateStore.query.order,
   ],
   async () => {
     await certificateStore.getCertificates();

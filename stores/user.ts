@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
     page: 1,
     limit: 10,
     search: "",
-    sortBy: "name",
+    sortBy: "id",
     order: "ASC",
   });
 

@@ -23,8 +23,8 @@ export const useProjectStore = defineStore("project", () => {
     page: 1,
     limit: 10,
     search: "",
-    sortBy: "number",
-    order: "ASC",
+    sortBy: "id",
+    order: "DESC",
   });
 
   // **Wrapper function to fetch

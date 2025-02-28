@@ -112,6 +112,7 @@ watch(
     customerStore.query,
     customerStore.query.page,
     customerStore.query.sortBy,
+    customerStore.query.order,
   ],
   async () => {
     await customerStore.getCustomers();

@@ -18,8 +18,8 @@ export const usePurchaseOrderStore = defineStore("purchaseOrder", () => {
     page: 1,
     limit: 10,
     search: "",
-    sortBy: "id",
-    order: "ASC",
+    sortBy: "number",
+    order: "DESC",
   });
 
   // **Wrapper function to fetch purchaseOrders (calls fetchPurchaseOrders from composable)**

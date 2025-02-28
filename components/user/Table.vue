@@ -78,7 +78,6 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, SortDescIcon } from "lucide-vue-next";
 import { defineProps, defineEmits } from "vue";
-import useServiceUsers from "~/composables/usersService";
 defineEmits(["edit", "delete"]);
 
 const userStore = useUserStore();
@@ -97,7 +96,12 @@ watch(
 );
 
 watch(
-  () => [userStore.query, userStore.query.page, userStore.query.sortBy],
+  () => [
+    userStore.query,
+    userStore.query.page,
+    userStore.query.sortBy,
+    userStore.query.order,
+  ],
   async () => {
     await userStore.getUsers();
   }
@@ -107,7 +111,6 @@ watch(
 const setSorting = (field: string) => {
   userStore.query.sortBy = field;
   userStore.query.order = userStore.query.order === "ASC" ? "DESC" : "ASC";
-  console.log("userStore.query", userStore.query.sortBy);
 };
 
 // Pagination functions

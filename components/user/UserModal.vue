@@ -27,6 +27,13 @@
           required
         />
         <input
+          v-model="form.password"
+          type="text"
+          placeholder="Password"
+          class="input input-bordered w-full mb-2"
+          required
+        />
+        <input
           v-model="form.position"
           type="text"
           placeholder="Position"
@@ -70,6 +77,7 @@ const form = ref<User>({
   contact: "",
   email: "",
   role: "User",
+  password: "",
 });
 
 // Watch for changes (Edit Mode)
@@ -85,6 +93,7 @@ watch(
         contact: "",
         position: "",
         role: "User",
+        password: "",
       };
     }
   },

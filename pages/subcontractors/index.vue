@@ -123,4 +123,8 @@ const toDeleteSubcontractor = async () => {
     await subcontractorStore.getSubcontractors();
   }
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

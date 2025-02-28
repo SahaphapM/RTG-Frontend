@@ -109,6 +109,10 @@ const toDeleteCustomer = async () => {
 const closeModal = () => {
   isModalOpen.value = false;
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>
 
 <!-- CSS for fade transition -->
