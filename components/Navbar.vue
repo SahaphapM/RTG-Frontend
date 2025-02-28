@@ -7,15 +7,10 @@
     </div>
 
     <!-- Middle Section: Nav Links (Desktop) -->
-    <div class="flex flex-col mx-4 leading-2">
-      <span class="font-bold text-md">{{ user?.name }}</span>
+    <div class="flex flex-col items-end mx-4 leading-2">
+      <span class="font-semibold text-lg">{{ user?.name }}</span>
       <div class="text-sm font-semibold">
-        <div class="flex gap-x-1" v-if="user?.role === 'admin'">
-          {{ "Admin" }}
-        </div>
-        <span class="text-sm" v-else>
-          {{ user?.position }}
-        </span>
+        {{ user?.role === "admin" ? "Admin" : "User" }}
       </div>
     </div>
 

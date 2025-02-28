@@ -17,12 +17,12 @@
           <li v-for="item in filteredMenu" :key="item.to">
             <NuxtLink
               :to="item.to"
-              class="flex items-center p-3 rounded-lg transition duration-300 text-xl gap-4 mt-2"
+              class="flex items-center font-medium p-3 rounded-lg transition duration-300 text-xl gap-4 mt-2"
               :class="{
                 'bg-gray-200 ': $route.path === item.to,
               }"
             >
-              <component :is="item.icon" class="w-5 h-5" />
+              <component :is="item.icon" class="w-6 h-6" />
               {{ item.label }}
             </NuxtLink>
           </li>
@@ -31,9 +31,9 @@
       <!-- ✅ Logout Button at the Bottom -->
       <button
         @click="logout"
-        class="flex items-center p-3 rounded-lg transition duration-300 text-xl gap-4 mt-4 hover:bg-red-700 hover:text-white text-black w-full"
+        class="flex font-medium items-center p-3 rounded-lg transition duration-300 text-xl gap-4 mt-4 hover:bg-red-700 hover:text-white text-black w-full"
       >
-        <LogOutIcon class="w-5 h-5" />
+        <LogOutIcon class="w-6 h-6" />
         Logout
       </button>
     </div>
