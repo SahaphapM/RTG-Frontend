@@ -20,7 +20,8 @@ export const useCertificateService = () => {
 
     try {
       const { data, error: fetchError } = await useFetch<Certificate>(
-        `${API_BASE}/${id}`
+        `${API_BASE}/${id}`,
+        { credentials: "include" }
       );
 
       if (fetchError.value) throw new Error(fetchError.value.message);
@@ -44,6 +45,7 @@ export const useCertificateService = () => {
         PaginationResponse<Certificate>
       >(API_BASE, {
         query: query,
+        credentials: "include",
       });
 
       if (fetchError.value) throw new Error(fetchError.value.message);
@@ -70,6 +72,7 @@ export const useCertificateService = () => {
           headers: {
             "Content-Type": "application/pdf",
           },
+          credentials: "include",
         }
       );
       if (!response.ok) {
@@ -94,6 +97,7 @@ export const useCertificateService = () => {
       const { data, error } = await useFetch<Certificate>(`${API_BASE}`, {
         method: "POST",
         body: certificate,
+        credentials: "include",
       });
 
       if (error.value) {
@@ -127,6 +131,7 @@ export const useCertificateService = () => {
       const response = await fetch(`${API_BASE}/upload/${id}`, {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       console.log("response", response);
@@ -152,7 +157,9 @@ export const useCertificateService = () => {
     errorMessage.value = null;
 
     try {
-      const response = await fetch(`${API_BASE}/download/${filename}`);
+      const response = await fetch(`${API_BASE}/download/${filename}`, {
+        credentials: "include",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to download file.");
@@ -186,6 +193,7 @@ export const useCertificateService = () => {
       const { data, error } = await useFetch<Certificate>(`${API_BASE}/${id}`, {
         method: "PATCH",
         body: certificate,
+        credentials: "include",
       });
 
       if (error.value) {
@@ -214,6 +222,7 @@ export const useCertificateService = () => {
     try {
       const response = await fetch(`${API_BASE}/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       const result = await response.json();

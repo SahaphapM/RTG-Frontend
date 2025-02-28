@@ -6,7 +6,12 @@ export default function useItemService() {
   // Fetch Items
   const fetchItems = async (): Promise<Item[]> => {
     try {
-      const { data } = await useFetch<Item[]>(`${config.public.apiBase}/items`);
+      const { data } = await useFetch<Item[]>(
+        `${config.public.apiBase}/items`,
+        {
+          credentials: "include",
+        }
+      );
       return data.value || [];
     } catch (error) {
       console.error("Error fetching items:", error);
@@ -39,6 +44,7 @@ export default function useItemService() {
       await useFetch(`${config.public.apiBase}/items/${id}`, {
         method: "PUT",
         body: item,
+        credentials: "include",
       });
     } catch (error) {
       console.error("Error updating item:", error);
@@ -50,6 +56,7 @@ export default function useItemService() {
     try {
       await useFetch(`${config.public.apiBase}/items/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
     } catch (error) {
       console.error("Error deleting item:", error);

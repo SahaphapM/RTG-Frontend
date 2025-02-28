@@ -23,6 +23,7 @@ export default function useSubcontractorService() {
         PaginationResponse<Subcontractor>
       >(API_URL, {
         query: query,
+        credentials: "include", // Set to send with credentials
       });
       if (fetchError.value) throw new Error(fetchError.value.message);
 
@@ -40,7 +41,9 @@ export default function useSubcontractorService() {
   // Fetch single subcontractor by ID
   const fetchSubcontractor = async (id: number): Promise<Subcontractor> => {
     try {
-      const { data } = await useFetch<Subcontractor>(`${API_URL}/${id}`);
+      const { data } = await useFetch<Subcontractor>(`${API_URL}/${id}`, {
+        credentials: "include", // Set to send with credentials
+      });
       return data.value || ({} as Subcontractor);
     } catch (error) {
       console.error("Error fetching subcontractor:", error);
@@ -56,6 +59,7 @@ export default function useSubcontractorService() {
       const response = await useFetch<Subcontractor>(API_URL, {
         method: "POST",
         body: newSubcontractor,
+        credentials: "include", // Set to send with credentials
       });
 
       if (!response.error.value) {
@@ -84,6 +88,7 @@ export default function useSubcontractorService() {
       const { data } = await useFetch<Subcontractor>(`${API_URL}/${id}`, {
         method: "PATCH",
         body: updatedSubcontractor,
+        credentials: "include", // Set to send with credentials
       });
       return data.value;
     } catch (error) {
@@ -96,6 +101,7 @@ export default function useSubcontractorService() {
     try {
       await useFetch(`${API_URL}/${id}`, {
         method: "DELETE",
+        credentials: "include", // Set to send with credentials
       });
     } catch (error) {
       console.error("Error deleting subcontractor:", error);

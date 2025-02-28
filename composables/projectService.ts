@@ -23,6 +23,7 @@ export default function useProjectService() {
         PaginationResponse<Project>
       >(API_URL, {
         query: query,
+        credentials: "include",
       });
       if (fetchError.value) throw new Error(fetchError.value.message);
 
@@ -41,7 +42,10 @@ export default function useProjectService() {
   const fetchProject = async (id: number): Promise<Project> => {
     try {
       const { data } = await useFetch<Project>(
-        `${config.public.apiBase}/projects/${id}`
+        `${config.public.apiBase}/projects/${id}`,
+        {
+          credentials: "include",
+        }
       );
       console.log("data", data);
       return data.value || ({} as Project);
@@ -61,6 +65,7 @@ export default function useProjectService() {
         },
         method: "POST",
         body: project,
+        credentials: "include",
       });
 
       return data;
@@ -99,6 +104,7 @@ export default function useProjectService() {
       await useFetch(`${config.public.apiBase}/projects/${id}`, {
         method: "PUT",
         body: projectData,
+        credentials: "include",
       });
     } catch (error: any) {
       console.error("Error updating project:", error.message);
@@ -112,6 +118,7 @@ export default function useProjectService() {
         `${config.public.apiBase}/projects/${id}`,
         {
           method: "DELETE",
+          credentials: "include",
         }
       );
       if (fetchError.value) throw new Error(fetchError.value.message);

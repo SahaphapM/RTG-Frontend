@@ -23,6 +23,7 @@ export default function useCustomerService() {
         PaginationResponse<Customer>
       >(API_URL, {
         query: query,
+        credentials: "include",
       });
 
       if (fetchError.value) throw new Error(fetchError.value.message);
@@ -41,7 +42,9 @@ export default function useCustomerService() {
   // Fetch a single customer by ID
   const fetchCustomer = async (id: number): Promise<Customer> => {
     try {
-      const { data } = await useFetch<Customer>(`${API_URL}/${id}`);
+      const { data } = await useFetch<Customer>(`${API_URL}/${id}`, {
+        credentials: "include",
+      });
       return data.value || ({} as Customer);
     } catch (error) {
       console.error("Error fetching customer:", error);
@@ -55,6 +58,7 @@ export default function useCustomerService() {
       const response = await useFetch<Customer>(API_URL, {
         method: "POST",
         body: newCustomer,
+        credentials: "include",
       });
 
       if (!response.error.value) {
@@ -82,6 +86,7 @@ export default function useCustomerService() {
       const { data } = await useFetch<Customer>(`${API_URL}/${id}`, {
         method: "PUT",
         body: updatedCustomer,
+        credentials: "include",
       });
       return data.value;
     } catch (error) {
@@ -94,6 +99,7 @@ export default function useCustomerService() {
     try {
       await useFetch(`${API_URL}/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
     } catch (error) {
       console.error("Error deleting customer:", error);

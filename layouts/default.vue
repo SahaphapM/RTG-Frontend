@@ -7,16 +7,7 @@
     </div>
 
     <Sidebar v-model:isOpen="isOpen" :update:isOpen="isOpen" />
-    <!-- Toggle Button: Moves Smoothly with Sidebar -->
-    <!-- <button
-      @click="toggle"
-      class="btn fixed top-4 transition-transform duration-500 ease-in-out z-50"
-      :class="isOpen ? 'translate-x-48' : 'translate-x-4'"
-    >
-      ☰
-    </button> -->
 
-    <!-- Content Area -->
     <div
       class="flex-1 px-6 transition-all duration-300"
       :class="isOpen ? 'ml-64' : 'ml-8'"

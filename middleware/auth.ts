@@ -1,10 +1,10 @@
-function isAuthenticated(): boolean {
-  return false;
-}
-// ---cut---
+import { defineNuxtRouteMiddleware, navigateTo } from "#app";
+import { useAuthStore } from "~/stores/auth";
+
 export default defineNuxtRouteMiddleware((to, from) => {
-  // isAuthenticated() is an example method verifying if a user is authenticated
-  if (isAuthenticated() === false) {
-    return navigateTo("/login");
+  const authStore = useAuthStore();
+
+  if (!authStore.isAuthenticated && to.path !== "/") {
+    return navigateTo("/"); // ✅ ถ้ายังไม่ล็อกอินให้ไปหน้า Login
   }
 });

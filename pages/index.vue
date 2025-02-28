@@ -1,12 +1,40 @@
-<!-- Login Page -->
-
 <template>
-  <div class="flex items-center justify-center h-screen">
-    <div class="text-center">
-      <h1 class="text-4xl font-bold mb-4">Welcome to the Login Page</h1>
-      <p class="mb-4">Please log in to access the dashboard.</p>
-      <NuxtLink to="/login" class="btn btn-primary">Login</NuxtLink>
-    </div>
+  <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold text-center">Login</h1>
+    <form @submit.prevent="handleLogin">
+      <input
+        v-model="email"
+        placeholder="Email"
+        class="w-full p-2 border rounded mb-2"
+        required
+      />
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Password"
+        class="w-full p-2 border rounded mb-2"
+        required
+      />
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">
+        Login
+      </button>
+    </form>
   </div>
 </template>
-<script lang="ts" setup></script>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { useAuthStore } from "~/stores/auth";
+
+const authStore = useAuthStore();
+const email = ref("");
+const password = ref("");
+
+const handleLogin = async () => {
+  await authStore.login(email.value, password.value);
+};
+
+definePageMeta({
+  layout: "auth", // ✅ Use "auth" layout for the login page
+});
+</script>

@@ -23,6 +23,7 @@ export default function useServiceUsers() {
         PaginationResponse<User>
       >(API_URL, {
         query: query,
+        credentials: "include", // Set to send with credentials
       });
       if (fetchError.value) throw new Error(fetchError.value.message);
 
@@ -36,7 +37,6 @@ export default function useServiceUsers() {
       isLoading.value = false;
     }
   };
-
   // Create User
   const createUser = async (newUser: Omit<User, "id">) => {
     try {
@@ -45,6 +45,7 @@ export default function useServiceUsers() {
         {
           method: "POST",
           body: newUser,
+          credentials: "include",
         }
       );
 
@@ -63,6 +64,7 @@ export default function useServiceUsers() {
     try {
       await useFetch(`${config.public.apiBase}/users/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
     } catch (error) {
       console.error("Error deleting user:", error);

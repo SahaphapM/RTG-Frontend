@@ -5,7 +5,7 @@
       <thead>
         <tr>
           <th @click="setSorting('id')" class="cursor-pointer">
-            <div class="flex">ID. <SortDescIcon class="sort-icon" /></div>
+            <div class="flex">ID <SortDescIcon class="sort-icon" /></div>
           </th>
           <th @click="setSorting('name')" class="cursor-pointer">
             <div class="flex">Name <SortDescIcon class="sort-icon" /></div>

@@ -19,7 +19,7 @@ export const useSubcontractorStore = defineStore("subcontractor", () => {
     page: 1,
     limit: 10,
     search: "",
-    sortBy: "name",
+    sortBy: "id",
     order: "ASC",
   });
 

@@ -24,6 +24,7 @@ export default function usePurchaseOrderService() {
         PaginationResponse<PurchaseOrder>
       >(API_URL, {
         query: query,
+        credentials: "include",
       });
       if (fetchError.value) throw new Error(fetchError.value.message);
 
@@ -48,6 +49,7 @@ export default function usePurchaseOrderService() {
           headers: {
             "Content-Type": "application/pdf",
           },
+          credentials: "include",
         }
       );
       if (!response.ok) {
@@ -66,7 +68,10 @@ export default function usePurchaseOrderService() {
   // Fetch Single Purchase Order
   const fetchPurchaseOrder = async (id: number): Promise<PurchaseOrder> => {
     try {
-      const { data, error } = await useFetch<PurchaseOrder>(`${API_URL}/${id}`);
+      const { data, error } = await useFetch<PurchaseOrder>(
+        `${API_URL}/${id}`,
+        { credentials: "include" }
+      );
 
       if (error.value) {
         throw new Error(error.value.message);
@@ -87,6 +92,7 @@ export default function usePurchaseOrderService() {
       const { data } = await useFetch<PurchaseOrder>(API_URL, {
         method: "POST",
         body: purchaseOrder,
+        credentials: "include",
       });
       return data.value;
     } catch (error: any) {
@@ -99,7 +105,6 @@ export default function usePurchaseOrderService() {
     isLoading.value = true;
     errorMessage.value = null;
 
-    console.log("file", file);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -107,6 +112,7 @@ export default function usePurchaseOrderService() {
       const response = await fetch(`${API_URL}/upload/${id}`, {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       console.log("response", response);
@@ -132,7 +138,9 @@ export default function usePurchaseOrderService() {
     errorMessage.value = null;
 
     try {
-      const response = await fetch(`${API_URL}/download/${filename}`);
+      const response = await fetch(`${API_URL}/download/${filename}`, {
+        credentials: "include",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to download file.");
@@ -163,6 +171,7 @@ export default function usePurchaseOrderService() {
       await useFetch(`${API_URL}/${id}`, {
         method: "PATCH",
         body: purchaseOrder,
+        credentials: "include",
       });
     } catch (error: any) {
       console.error("Error updating purchase order:", error.message);
@@ -172,7 +181,10 @@ export default function usePurchaseOrderService() {
   // Delete Purchase Order
   const deletePurchaseOrder = async (id: number) => {
     try {
-      await useFetch(`${API_URL}/${id}`, { method: "DELETE" });
+      await useFetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
     } catch (error: any) {
       console.error("Error deleting purchase order:", error.message);
     }

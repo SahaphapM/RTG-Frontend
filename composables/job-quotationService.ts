@@ -9,7 +9,8 @@ export default function useJobQuotationService() {
   const fetchJobQuotations = async (): Promise<JobQuotation[]> => {
     try {
       const { data } = await useFetch<JobQuotation[]>(
-        `${config.public.apiBase}/job-quotations`
+        `${config.public.apiBase}/job-quotations`,
+        { credentials: "include" }
       );
       return data.value || [];
     } catch (error: any) {
@@ -22,7 +23,8 @@ export default function useJobQuotationService() {
   const fetchJobQuotation = async (id: number): Promise<JobQuotation> => {
     try {
       const { data } = await useFetch<JobQuotation>(
-        `${config.public.apiBase}/job-quotations/${id}`
+        `${config.public.apiBase}/job-quotations/${id}`,
+        { credentials: "include" }
       );
       return data.value || ({} as JobQuotation);
     } catch (error: any) {
@@ -37,7 +39,8 @@ export default function useJobQuotationService() {
   ): Promise<JobQuotation[]> => {
     try {
       const { data } = await useFetch<JobQuotation[]>(
-        `${config.public.apiBase}/job-quotations/project/${projectId}`
+        `${config.public.apiBase}/job-quotations/project/${projectId}`,
+        { credentials: "include" }
       );
       return data.value || [];
     } catch (error: any) {
@@ -61,6 +64,7 @@ export default function useJobQuotationService() {
           },
           method: "POST",
           body: jobQuotation,
+          credentials: "include",
         }
       );
       return data.value;
@@ -81,6 +85,7 @@ export default function useJobQuotationService() {
         {
           method: "PUT",
           body: jobQuotation,
+          credentials: "include",
         }
       );
       return data.value;
@@ -94,6 +99,7 @@ export default function useJobQuotationService() {
     try {
       await useFetch(`${config.public.apiBase}/job-quotations/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
     } catch (error: any) {
       console.error("Error deleting jobQuotation:", error.message);
@@ -105,7 +111,8 @@ export default function useJobQuotationService() {
   const fetchInvoices = async (jobQuotationId: number): Promise<Invoice[]> => {
     try {
       const { data } = await useFetch<Invoice[]>(
-        `${config.public.apiBase}/job-quotations/${jobQuotationId}/invoices`
+        `${config.public.apiBase}/job-quotations/${jobQuotationId}/invoices`,
+        { credentials: "include" }
       );
       return data.value || [];
     } catch (error: any) {
@@ -124,6 +131,7 @@ export default function useJobQuotationService() {
         {
           method: "POST",
           body: invoice,
+          credentials: "include",
         }
       );
       return data.value;
@@ -139,6 +147,7 @@ export default function useJobQuotationService() {
         {
           method: "PUT",
           body: invoice,
+          credentials: "include",
         }
       );
       return data.value;
@@ -152,6 +161,7 @@ export default function useJobQuotationService() {
         `${config.public.apiBase}/job-quotations/invoices/${invoiceId}`,
         {
           method: "DELETE",
+          credentials: "include",
         }
       );
     } catch (error: any) {
