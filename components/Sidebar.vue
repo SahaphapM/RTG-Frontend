@@ -14,7 +14,7 @@
         />
 
         <ul class="menu w-full">
-          <li v-for="item in menuItems" :key="item.to">
+          <li v-for="item in filteredMenu" :key="item.to">
             <NuxtLink
               :to="item.to"
               class="flex items-center p-3 rounded-lg transition duration-300 text-xl gap-4 mt-2"
@@ -41,9 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineProps } from "vue";
 import {
-  HomeIcon,
   FolderIcon,
   ShoppingCartIcon,
   UsersIcon,
@@ -56,18 +55,45 @@ import {
 // Use v-model for reactivity
 const props = defineProps<{ isOpen: boolean }>();
 
-// Sidebar menu items
-const menuItems = [
-  // { to: "/", label: "Home", icon: HomeIcon },
-  { to: "/projects", label: "Project", icon: FolderIcon },
-  { to: "/purchase-orders", label: "Purchase Order", icon: ShoppingCartIcon },
-  { to: "/certificates", label: "Certificate", icon: BookText },
-  { to: "/customers", label: "Customer", icon: UsersIcon },
-  { to: "/subcontractors", label: "Subcontractor", icon: BriefcaseIcon },
-  { to: "/users", label: "User", icon: UserIcon },
+// ✅ Get Auth Store
+const authStore = useAuthStore();
+
+const userRole = computed(() => authStore.user?.role); // ✅ Get user role
+
+// Define menu items
+const allMenuItems = [
+  {
+    to: "/projects",
+    label: "Project",
+    icon: FolderIcon,
+    roles: ["admin", "user"],
+  },
+  {
+    to: "/purchase-orders",
+    label: "Purchase Order",
+    icon: ShoppingCartIcon,
+    roles: ["admin", "user"],
+  },
+  {
+    to: "/certificates",
+    label: "Certificate",
+    icon: BookText,
+    roles: ["admin", "user"],
+  },
+  { to: "/customers", label: "Customer", icon: UsersIcon, roles: ["admin"] },
+  {
+    to: "/subcontractors",
+    label: "Subcontractor",
+    icon: BriefcaseIcon,
+    roles: ["admin"],
+  },
+  { to: "/users", label: "User", icon: UserIcon, roles: ["admin"] },
 ];
 
-// ✅ Get Auth Store and Logout Function
-const authStore = useAuthStore();
+// ✅ Filter menu based on user role
+const filteredMenu = computed(() => {
+  return allMenuItems.filter((item) => item.roles.includes(userRole.value!));
+});
+
 const logout = authStore.logout;
 </script>

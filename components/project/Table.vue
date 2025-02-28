@@ -19,7 +19,9 @@
               <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th style="text-align: center; width: 120px">Actions</th>
+          <th v-if="role === 'admin'" style="text-align: center; width: 120px">
+            Actions
+          </th>
         </tr>
       </thead>
 
@@ -28,7 +30,10 @@
         <tr
           v-for="project in projectStore.projects"
           :key="project.id"
-          @click="navigateToProject(project.id!)"
+          @click="role === 'admin' ? navigateToProject(project.id!) : null"
+          :class="{
+            'cursor-pointer': role === 'admin',
+          }"
         >
           <td class="text-center">{{ project.number }}</td>
           <td>{{ project.name }}</td>
@@ -48,7 +53,7 @@
           <td class="text-right">
             {{ project.totalProjectPrice!.toLocaleString() }}
           </td>
-          <td>
+          <td v-if="role === 'admin'">
             <div class="action-buttons gap-2">
               <button
                 @click.stop="$emit('edit', project)"
@@ -99,6 +104,8 @@ import {
 import { defineEmits, onMounted, nextTick, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useProjectStore } from "~/stores/project";
+
+const prop = defineProps<{ role: string }>();
 
 const emit = defineEmits(["edit", "delete"]);
 const router = useRouter();
@@ -176,7 +183,6 @@ onMounted(async () => {
 /* Table Header */
 .custom-table thead tr {
   background: rgb(231, 231, 231);
-
   text-align: left;
   font-size: 15px;
   color: #1d1d1d;
@@ -217,7 +223,6 @@ onMounted(async () => {
 /* Row Hover Effect */
 .custom-table tbody tr:hover {
   background: #f9fafb;
-  cursor: pointer;
 }
 
 /* Actions Column */
