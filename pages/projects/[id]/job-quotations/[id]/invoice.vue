@@ -7,7 +7,7 @@
           {{ projectStore.project?.name }}
         </h1>
         <div>
-          <p>Tax Invoice {{ invoice.taxInvoice }}</p>
+          <p>Tax Invoice : {{ "No " + invoice.taxInvoice }}</p>
         </div>
       </div>
       <div class="flex gap-4">
@@ -692,7 +692,7 @@ const exportInvoicePDF = async (
         ],
         [
           "Tax Invoice :",
-          invoice.taxInvoice || "",
+          `No ${invoice.taxInvoice || ""}`,
           "Our Tax ID :",
           invoice.ourTax || "",
         ],
