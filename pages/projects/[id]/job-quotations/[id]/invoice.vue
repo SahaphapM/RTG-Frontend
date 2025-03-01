@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-6" v-if="authStore.user?.role === 'admin'">
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
       <div class="mb-4">
@@ -339,6 +339,7 @@ const {
 } = useJobQuotationService();
 
 const { fetchProject } = useProjectService();
+const authStore = useAuthStore();
 const projectStore = useProjectStore();
 const stateStore = useStateStore();
 
@@ -379,12 +380,20 @@ const isDeleteModalOpen = ref(false);
 const invoiceBackup = ref<Invoice>();
 
 // สถานะการแสดงผลของ input และ dropdown
-const showDateInput = ref(false);
 const isDropdownOpen = ref(false);
 
 // **Fetch Data on Mount**
 onMounted(async () => {
   nextTick(async () => {
+    await authStore.initAuth();
+    if (!authStore.user) {
+      window.alert("User is not authenticated, redirecting to login.");
+      router.push("/login");
+      return;
+    } else if (authStore.user.role !== "admin") {
+      router.push("/projects");
+      return;
+    }
     await refresh();
   });
 });

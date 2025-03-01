@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-6" v-if="authStore.user?.role === 'admin'">
     <div class="flex justify-between items-center mb-4">
       <div class="flex flex-col">
         <h1 class="text-2xl font-semibold">
@@ -87,6 +87,7 @@ import ConfirmDelete from "~/components/ConfirmDelete.vue";
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const { fetchProject, createProject, updateProject, deleteProject } =
   useProjectService();
 const projectStore = useProjectStore();
@@ -116,6 +117,18 @@ const form = ref<Project>({
 
 // Load project data
 onMounted(async () => {
+  nextTick(async () => {
+    await authStore.initAuth();
+    if (!authStore.user) {
+      window.alert("User is not authenticated, redirecting to login.");
+      router.push("/login");
+      return;
+    } else if (authStore.user.role !== "admin") {
+      router.push("/projects");
+      return;
+    }
+  });
+
   if (route.params.id === "new") {
     isNewProject.value = true;
     isEditing.value = true;

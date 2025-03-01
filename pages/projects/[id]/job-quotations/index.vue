@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-6" v-if="authStore.user?.role === 'admin'">
     <!-- Header -->
     <div class="flex justify-between items-center pb-4">
       <h1 class="text-2xl font-bold">{{ projectStore.project?.name }}</h1>
@@ -193,6 +193,7 @@ import type { JobQuotation } from "~/types/job-quotation";
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 const projectStore = useProjectStore();
 const {
   fetchByProjectId,
@@ -232,6 +233,16 @@ const formatPrice = computed(() =>
 // Fetch project and initialize quotation
 onMounted(async () => {
   nextTick(async () => {
+    await authStore.initAuth();
+    if (!authStore.user) {
+      window.alert("User is not authenticated, redirecting to login.");
+      router.push("/login");
+      return;
+    } else if (authStore.user.role !== "admin") {
+      router.push("/projects");
+      return;
+    }
+
     projectStore.project = await fetchProject(Number(route.params.id));
     projectStore.project.jobQuotations = await fetchByProjectId(
       Number(route.params.id)

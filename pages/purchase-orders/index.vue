@@ -52,7 +52,9 @@ const isDeleteModalOpen = ref(false);
 const purchaseOrderToDelete = ref<number | null>(null);
 
 onMounted(async () => {
-  await purchaseOrderStore.getPurchaseOrders();
+  nextTick(async () => {
+    await purchaseOrderStore.getPurchaseOrders();
+  });
 });
 
 // Handle delete action

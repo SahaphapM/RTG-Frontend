@@ -52,7 +52,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     );
     return navigateTo("/projects");
   }
-
   // ✅ Prevent users from accessing restricted pages
   if (role === "user" && !userAllowedRoutes.includes(to.path)) {
     console.warn("User is restricted, redirecting to /projects");
