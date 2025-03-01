@@ -31,8 +31,20 @@
             tabindex="0"
             class="dropdown-content menu bg-base-100 rounded-box z-[1] w-32 p-2 shadow font-semibold"
           >
-            <li @click="exportInvoicePDF(invoice, true)"><a>Original</a></li>
-            <li @click="exportInvoicePDF(invoice, false)"><a>Copy</a></li>
+            <li
+              @click="
+                exportInvoicePDF(invoice, true, totalInvoiceAmount, vatPrice)
+              "
+            >
+              <a>Original</a>
+            </li>
+            <li
+              @click="
+                exportInvoicePDF(invoice, false, totalInvoiceAmount, vatPrice)
+              "
+            >
+              <a>Copy</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -568,7 +580,12 @@ const setUnpaid = () => {
   if (!isEditing.value) save(invoice.value);
   isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Unpaid
 };
-const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
+const exportInvoicePDF = async (
+  invoice: Invoice,
+  original: boolean,
+  subtotal: number,
+  vat: number
+) => {
   const pathParts = route.fullPath.split("/");
   console.log("pathParts", pathParts);
   const project = await fetchProject(Number(pathParts[2]));
@@ -800,7 +817,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
     // คำนวณจำนวนแถวเปล่าที่เหลือจนกว่าจะเต็มหน้า
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const remainingHeight = pageHeight - yPos - 40; // เว้นระยะห่าง 20 หน่วยจากขอบล่าง
+    const remainingHeight = pageHeight - yPos - 50; // เว้นระยะห่าง 20 หน่วยจากขอบล่าง
     console.log("yPos", yPos);
     console.log("pageHeight", pageHeight);
     console.log(" remainingHeight", remainingHeight);
@@ -838,14 +855,14 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
     autoTable(doc, {
       startY: yPos,
       body: [
-        ["", "Sub Total", `${invoice.total.toLocaleString()}   baht`],
+        ["", "Sub Total", `${subtotal.toLocaleString()}   baht`],
+        // if have discount show discount if not then don't show discount
+
+        ["", "Discount", `${invoice.discount.toLocaleString() || 0}   baht`],
         [
           "",
           `V.A.T.  ${jobQuotation.value?.vatPercentage} %`,
-          `${(
-            (invoice.total * (jobQuotation.value?.vatPercentage || 7)) /
-            100
-          ).toLocaleString()}   baht`,
+          `${vat.toLocaleString()}   baht`,
         ],
       ],
       // foot: [],
@@ -871,9 +888,7 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
     // Add Grand Total in a new table
     autoTable(doc, {
       startY: yPos,
-      body: [
-        ["", "Grand Total", `${(invoice.total * 1.07).toLocaleString()} baht`],
-      ],
+      body: [["", "Grand Total", `${invoice.total.toLocaleString()} baht`]],
       theme: "grid",
       styles: { fontSize: 10, cellPadding: 4, lineColor: [0, 0, 0] }, // Increase cell padding for all rows
       columnStyles: {
