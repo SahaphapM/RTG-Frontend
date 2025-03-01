@@ -517,16 +517,15 @@ const goBack = () => {
   router.push(`/projects/${projectId}/job-quotations`);
 };
 
-const save = async (invoice: Invoice) => {
-  console.log("invoice", invoice);
-  if (invoice.id) {
-    const data = await updateInvoice(invoice);
+const save = async (invoiceInput: Invoice) => {
+  if (invoiceInput.id) {
+    const data = await updateInvoice(invoiceInput);
   } else {
     if (jobQuotation.value?.id) {
-      const data = await createInvoice(jobQuotation.value.id, invoice);
+      const data = await createInvoice(jobQuotation.value.id, invoiceInput);
 
       if (data) {
-        invoice.id = data.id;
+        invoice.value = data;
         selectedInvoiceId.value = data.id;
         invoices.value.push(data);
       }

@@ -46,16 +46,16 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["update:modelValue"]);
 
-const { fetchProjects } = useProjectService();
 const searchQuery = ref("");
 const showDropdown = ref(false);
 const selectedProject = ref<Project | null>(null);
-const projects = ref<Project[]>([]);
+
+const projectStore = useProjectStore();
 
 // Filtered projects based on search query
 const filteredProjects = computed(() =>
   searchQuery.value
-    ? projects.value.filter((project: Project) =>
+    ? projectStore.projects.filter((project: Project) =>
         project.name.toLowerCase().includes(searchQuery.value.toLowerCase())
       )
     : []
@@ -90,7 +90,7 @@ watch(
 // Fetch projects on mount
 onMounted(async () => {
   nextTick(async () => {
-    projects.value = await fetchProjects();
+    await projectStore.getProjects();
   });
 });
 </script>
