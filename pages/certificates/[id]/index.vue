@@ -227,12 +227,12 @@ const handleFileUpload = (event: Event) => {
 
 // Save Certificate
 const saveCertificate = async () => {
+  let newCertificate;
   if (isNewCertificate.value) {
-    const newCertificate = await createCertificate(certificate.value);
+    newCertificate = await createCertificate(certificate.value);
     if (newCertificate) {
       certificate.value = newCertificate;
       isNewCertificate.value = false;
-      router.push(`/certificates/${newCertificate.id}`);
     }
   } else {
     await updateCertificate(certificate.value.id!, certificate.value);
@@ -247,8 +247,12 @@ const saveCertificate = async () => {
       certificate.value.file = result.filename; // Update certificate file name after upload
     }
   }
-
-  await resetForm();
+  if (newCertificate) {
+    router.push(`/certificates/${newCertificate.id}`);
+    return;
+  } else {
+    await resetForm();
+  }
 };
 
 // Reset Form

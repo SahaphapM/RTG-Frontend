@@ -1,6 +1,8 @@
 import { useFetch } from "#app";
 import type { PaginationQuery, PaginationResponse } from "~/types/pagination";
 import type { Subcontractor } from "~/types/subcontractor";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 export default function useSubcontractorService() {
   const config = useRuntimeConfig();
@@ -99,11 +101,21 @@ export default function useSubcontractorService() {
   // Delete a subcontractor
   const deleteSubcontractor = async (id: number) => {
     try {
-      await useFetch(`${API_URL}/${id}`, {
+      const response = await useFetch(`${API_URL}/${id}`, {
         method: "DELETE",
-        credentials: "include", // Set to send with credentials
+        credentials: "include",
       });
-    } catch (error) {
+
+      if (!response.error.value) {
+      } else {
+        throw new Error(
+          "Subcontractor cannot be deleted as it is associated with an existing job quotation."
+        );
+      }
+    } catch (error: any) {
+      window.alert(
+        "❌ Subcontractor cannot be deleted. It is linked to an existing job quotation."
+      );
       console.error("Error deleting subcontractor:", error);
     }
   };
