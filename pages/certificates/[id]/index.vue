@@ -4,13 +4,22 @@
       <h1 class="text-2xl font-semibold">
         {{ isNewCertificate ? "New Certificate" : certificate?.name }}
       </h1>
-      <button
-        v-if="!isEditing"
-        @click="isEditing = true"
-        class="w-32 btn btn-warning"
-      >
-        Edit
-      </button>
+      <div class="flex gap-4">
+        <button
+          v-if="!isEditing"
+          @click="isEditing = true"
+          class="w-32 btn btn-warning text-white"
+        >
+          Edit
+        </button>
+        <button
+          v-if="certificate.file"
+          @click="downloadCertificate(certificate.file)"
+          class="w-32 btn btn-success text-white"
+        >
+          Download
+        </button>
+      </div>
     </div>
 
     <div class="flex gap-10">
@@ -127,14 +136,14 @@
             <button
               type="button"
               @click="resetForm(), (isEditing = false)"
-              class="btn btn-error w-32"
+              class="btn btn-error w-32 text-white"
               v-if="isEditing"
             >
               Cancel
             </button>
             <button
               @click="saveCertificate"
-              class="btn btn-success w-32"
+              class="btn btn-success w-32 text-white"
               v-if="isEditing"
             >
               Save
@@ -173,6 +182,7 @@ const {
   uploadCertificateFile,
   fetchCertificateFile,
   deleteCertificate,
+  downloadCertificate,
 } = useCertificateService();
 
 const isEditing = ref(false);
@@ -281,6 +291,12 @@ const updateSubcontractor = (subcontractor: any) => {
 // Update project
 const updateProject = (project: Project) => {
   certificate.value.project = project;
+};
+
+const download = async (name: string) => {
+  if (name) {
+    await downloadCertificate(name);
+  }
 };
 
 // Delete Certificate

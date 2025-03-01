@@ -14,7 +14,7 @@
         </div>
         <button
           @click="openAddCustomerModal"
-          class="btn btn-primary btn-md w-32"
+          class="btn btn-primary w-32 text-white"
         >
           Add New
         </button>

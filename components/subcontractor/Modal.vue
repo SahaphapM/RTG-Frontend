@@ -64,11 +64,13 @@
           <button
             @click="$emit('close')"
             type="button"
-            class="btn btn-error mr-2 px-8"
+            class="btn text-whitebtn-error mr-2 px-8"
           >
             Cancel
           </button>
-          <button type="submit" class="btn btn-success px-10">Save</button>
+          <button type="submit" class="btn text-whitebtn-success px-10">
+            Save
+          </button>
         </div>
       </form>
     </div>
@@ -96,7 +98,14 @@ watch(
   (subcontractor) => {
     form.value = subcontractor
       ? { ...subcontractor }
-      : { name: "", type: "Contractor", email: "", contact: "", address: "" };
+      : {
+          name: "",
+          type: "Contractor",
+          email: "",
+          contact: "",
+          address: "",
+          taxId: "",
+        };
   },
   { immediate: true }
 );

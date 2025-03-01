@@ -15,7 +15,7 @@
         <!-- Action Buttons -->
         <div class="flex justify-end">
           <button
-            class="btn btn-primary w-32"
+            class="btn btn-primary w-32 text-white"
             @click="router.push('/certificates/new')"
           >
             Add New

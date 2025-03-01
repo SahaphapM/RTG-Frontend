@@ -14,7 +14,10 @@
         </div>
         <!-- Action Buttons -->
         <div class="flex justify-end">
-          <NuxtLink to="/purchase-orders/new" class="btn btn-primary w-32">
+          <NuxtLink
+            to="/purchase-orders/new"
+            class="btn btn-primary w-32 text-white"
+          >
             Add New
           </NuxtLink>
         </div>

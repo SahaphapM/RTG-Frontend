@@ -63,11 +63,13 @@
           <button
             @click="$emit('close')"
             type="button"
-            class="btn btn-error mr-2 px-8"
+            class="btn text-white btn-error mr-2 px-8"
           >
             Cancel
           </button>
-          <button type="submit" class="btn btn-success px-10">Save</button>
+          <button type="submit" class="btn text-white btn-success px-10">
+            Save
+          </button>
         </div>
       </form>
     </div>

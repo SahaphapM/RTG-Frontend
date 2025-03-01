@@ -18,7 +18,7 @@
         />
       </div>
       <button
-        class="btn btn-primary w-32"
+        class="btn text-white btn-primary w-32"
         v-if="isEditing"
         @click="isCustomerModalOpen = true"
       >

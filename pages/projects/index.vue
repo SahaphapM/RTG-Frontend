@@ -11,7 +11,7 @@
             class="input input-bordered w-full"
           />
         </div>
-        <NuxtLink to="/projects/new" class="btn btn-primary w-32"
+        <NuxtLink to="/projects/new" class="btn btn-primary w-32 text-white"
           >Add New</NuxtLink
         >
       </div>

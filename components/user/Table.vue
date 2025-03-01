@@ -15,7 +15,7 @@
           </th>
           <th>Position</th>
           <th>Role</th>
-          <th class="text-center">Actions</th>
+          <th class="text-center w-[200px]">Actions</th>
         </tr>
       </thead>
 

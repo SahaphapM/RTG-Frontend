@@ -14,7 +14,7 @@
       <button
         v-if="!isEditing"
         @click="isEditing = true"
-        class="w-32 btn btn-warning"
+        class="w-32 btn btn-warning text-white"
       >
         Edit
       </button>
@@ -40,7 +40,7 @@
         <button
           v-if="isEditing && projectStore.project?.id"
           @click="isDeleteModalOpen = true"
-          class="btn btn-error w-32"
+          class="btn btn-error w-32 text-white"
         >
           Delete
         </button>
@@ -59,11 +59,13 @@
         <button
           type="button"
           @click="resetForm(), (isEditing = false)"
-          class="btn btn-error w-32"
+          class="btn btn-error w-32 text-white"
         >
           Cancel
         </button>
-        <button @click="saveProject" class="btn btn-success w-32">Save</button>
+        <button @click="saveProject" class="btn btn-success w-32 text-white">
+          Save
+        </button>
       </div>
     </div>
 

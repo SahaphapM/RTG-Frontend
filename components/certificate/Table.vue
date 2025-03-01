@@ -74,19 +74,14 @@
               >
                 Edit
               </button>
+
               <!-- <button
-              @click="$emit('delete', certificate.id)"
-              class="btn btn-error btn-sm w-16"
-            >
-              Delete
-            </button> -->
-              <button
                 v-if="certificate.file"
                 @click.stop="$emit('download', certificate.file)"
                 class="btn btn-success btn-sm w-16"
               >
                 PDF
-              </button>
+              </button> -->
               <button
                 @click.stop="$emit('delete', certificate.id)"
                 class="btn btn-error btn-sm w-16"

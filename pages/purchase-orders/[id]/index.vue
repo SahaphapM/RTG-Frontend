@@ -20,7 +20,7 @@
         <button
           @click="exportPurchaseOrder"
           v-if="!isEditing"
-          class="btn btn-primary w-32"
+          class="btn btn-primary w-32 text-white"
         >
           Export
         </button>
@@ -220,7 +220,7 @@
       <button
         v-if="isEditing && purchaseOrder.id"
         @click="isDeleteModalOpen = true"
-        class="btn btn-error w-32"
+        class="btn btn-error w-32 text-white"
       >
         Delete
       </button>
@@ -235,21 +235,25 @@
         @cancel="isDeleteModalOpen = false"
       />
       <div class="ml-auto">
-        <button @click="goBack" v-if="!isEditing" class="btn btn-primary w-32">
+        <button
+          @click="goBack"
+          v-if="!isEditing"
+          class="btn btn-primary w-32 text-white"
+        >
           Back
         </button>
         <div class="flex gap-2">
           <button
             v-if="isEditing"
             @click="cancelEdit"
-            class="btn btn-error w-32"
+            class="btn btn-error w-32 text-white"
           >
             Cancel
           </button>
           <button
             v-if="isEditing"
             @click="savePurchaseOrder"
-            class="btn btn-success w-32"
+            class="btn btn-success w-32 text-white"
           >
             Save
           </button>

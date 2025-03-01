@@ -14,7 +14,7 @@
         <button
           v-if="!isEditing && selectedInvoiceId"
           @click="isEditing = true"
-          class="btn btn-warning w-32"
+          class="btn btn-warning w-32 text-white"
         >
           Edit
         </button>
@@ -23,7 +23,7 @@
             tabindex="0"
             role="button"
             style="color: white"
-            class="btn w-32 btn-primary"
+            class="btn w-32 btn-primary text-white"
           >
             Export
           </div>
@@ -75,7 +75,7 @@
         </select>
 
         <button
-          class="btn btn-primary w-32"
+          class="btn btn-primary w-32 text-white"
           v-if="!isEditing"
           @click="addInvoice"
         >
@@ -286,7 +286,7 @@
       <button
         v-if="isEditing && selectedInvoiceId"
         @click="isDeleteModalOpen = true"
-        class="btn btn-error w-32"
+        class="btn btn-error w-32 text-white"
       >
         Delete
       </button>
@@ -306,7 +306,7 @@
           <button
             @click="goBack"
             v-if="!isEditing"
-            class="btn btn-primary w-32"
+            class="btn btn-primary w-32 text-white"
           >
             Back
           </button>
@@ -315,14 +315,14 @@
           <button
             v-if="isEditing"
             @click="cancelEdit"
-            class="btn btn-error w-32"
+            class="btn btn-error w-32 text-white"
           >
             Cancel
           </button>
           <button
             v-if="isEditing"
             @click="save(invoice)"
-            class="btn btn-success w-32"
+            class="btn btn-success w-32 text-white"
           >
             Save
           </button>

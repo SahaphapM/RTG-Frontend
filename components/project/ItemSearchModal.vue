@@ -29,7 +29,7 @@
               </div>
               <!-- trash icon -->
 
-              <button @click.stop="" class="btn btn-error btn-xs">
+              <button @click.stop="" class="btn text-white btn-error btn-xs">
                 <TrashIcon class="w-4 h-4" color="white" />
               </button>
             </div>
@@ -40,13 +40,13 @@
       <div class="flex justify-between mt-6">
         <button
           @click="$emit('close')"
-          class="btn btn-primary text-md font-bold w-32"
+          class="btn text-white btn-primary text-md font-bold w-32"
         >
           Cancel
         </button>
         <button
           @click="$emit('new-item')"
-          class="btn btn-primary text-md font-bold w-32"
+          class="btn text-white btn-primary text-md font-bold w-32"
         >
           New Item
         </button>

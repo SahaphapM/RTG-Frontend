@@ -7,12 +7,12 @@
         <button
           v-if="!isEditing && selectedQuotationId"
           @click="startEdit"
-          class="btn btn-warning w-32"
+          class="btn btn-warning w-32 text-white"
         >
           Edit
         </button>
         <button
-          class="btn btn-primary w-32"
+          class="btn btn-primary w-32 text-white"
           style="color: white"
           @click="exportToPDF"
         >
@@ -41,7 +41,7 @@
           </option>
         </select>
         <button
-          class="btn btn-primary w-32"
+          class="btn btn-primary w-32 text-white"
           @click="createNewQuotation"
           v-if="!isEditing"
         >
@@ -161,10 +161,18 @@
       </div>
 
       <div class="flex justify-end gap-4">
-        <button @click="goBack" v-if="!isEditing" class="btn btn-primary w-32">
+        <button
+          @click="goBack"
+          v-if="!isEditing"
+          class="btn btn-primary w-32 text-white"
+        >
           Back
         </button>
-        <button @click="goNext" v-if="!isEditing" class="btn btn-primary w-32">
+        <button
+          @click="goNext"
+          v-if="!isEditing"
+          class="btn btn-primary w-32 text-white"
+        >
           Next
         </button>
         <button v-if="isEditing" @click="cancelEdit" class="btn btn-error w-32">

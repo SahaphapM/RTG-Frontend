@@ -12,7 +12,7 @@
             class="input input-bordered w-full"
           />
         </div>
-        <button @click="openModal()" class="btn btn-primary w-32">
+        <button @click="openModal()" class="btn btn-primary w-32 text-white">
           Add New
         </button>
       </div>
