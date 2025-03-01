@@ -89,13 +89,20 @@
 
     <!-- Pagination Controls -->
     <div class="pagination">
+      <!-- First Page Button (Hidden on First Page) -->
+      <button v-if="purchaseOrderStore.query.page > 1" @click="goToFirstPage">
+        <<
+      </button>
+
       <button @click="prevPage" :disabled="purchaseOrderStore.query.page === 1">
         <ChevronLeft />
       </button>
-      <span
-        >{{ purchaseOrderStore.query.page }} /
-        {{ purchaseOrderStore.totalPages }}</span
-      >
+
+      <span>
+        {{ purchaseOrderStore.query.page }} /
+        {{ purchaseOrderStore.totalPages }}
+      </span>
+
       <button
         @click="nextPage"
         :disabled="
@@ -103,6 +110,13 @@
         "
       >
         <ChevronRight />
+      </button>
+      <!-- Last Page Button (Hidden on Last Page) -->
+      <button
+        v-if="purchaseOrderStore.query.page < purchaseOrderStore.totalPages"
+        @click="goToLastPage"
+      >
+        >>
       </button>
     </div>
   </div>
@@ -128,6 +142,18 @@ const setSorting = (field: string) => {
   purchaseOrderStore.query.sortBy = field;
   purchaseOrderStore.query.order =
     purchaseOrderStore.query.order === "ASC" ? "DESC" : "ASC";
+  purchaseOrderStore.getPurchaseOrders();
+};
+
+// ✅ Go to First Page
+const goToFirstPage = () => {
+  purchaseOrderStore.query.page = 1;
+  purchaseOrderStore.getPurchaseOrders();
+};
+
+// ✅ Go to Last Page
+const goToLastPage = () => {
+  purchaseOrderStore.query.page = purchaseOrderStore.totalPages;
   purchaseOrderStore.getPurchaseOrders();
 };
 

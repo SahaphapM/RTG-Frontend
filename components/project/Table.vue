@@ -79,12 +79,18 @@
 
     <!-- Pagination Controls -->
     <div class="pagination">
+      <!-- First Page Button (Hidden on First Page) -->
+      <button v-if="projectStore.query.page > 1" @click="goToFirstPage">
+        <<
+      </button>
+
       <button @click="prevPage" :disabled="projectStore.query.page === 1">
         <ChevronLeft />
       </button>
 
       <span>
-        {{ projectStore.query.page }} / {{ projectStore.totalPages }}
+        {{ projectStore.query.page }} /
+        {{ projectStore.totalPages }}
       </span>
 
       <button
@@ -92,6 +98,13 @@
         :disabled="projectStore.query.page === projectStore.totalPages"
       >
         <ChevronRight />
+      </button>
+      <!-- Last Page Button (Hidden on Last Page) -->
+      <button
+        v-if="projectStore.query.page < projectStore.totalPages"
+        @click="goToLastPage"
+      >
+        >>
       </button>
     </div>
   </div>
@@ -149,6 +162,18 @@ const setSorting = (field: string) => {
   projectStore.query.sortBy = field;
   projectStore.query.order =
     projectStore.query.order === "ASC" ? "DESC" : "ASC";
+};
+
+// ✅ Go to First Page
+const goToFirstPage = () => {
+  projectStore.query.page = 1;
+  projectStore.getProjects();
+};
+
+// ✅ Go to Last Page
+const goToLastPage = () => {
+  projectStore.query.page = projectStore.totalPages;
+  projectStore.getProjects();
 };
 
 // Pagination functions

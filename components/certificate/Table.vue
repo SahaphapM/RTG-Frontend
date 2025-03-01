@@ -101,12 +101,18 @@
 
     <!-- Pagination Controls -->
     <div class="pagination">
+      <!-- First Page Button (Hidden on First Page) -->
+      <button v-if="certificateStore.query.page > 1" @click="goToFirstPage">
+        <<
+      </button>
+
       <button @click="prevPage" :disabled="certificateStore.query.page === 1">
         <ChevronLeft />
       </button>
 
       <span>
-        {{ certificateStore.query.page }} / {{ certificateStore.totalPages }}
+        {{ certificateStore.query.page }} /
+        {{ certificateStore.totalPages }}
       </span>
 
       <button
@@ -114,6 +120,13 @@
         :disabled="certificateStore.query.page === certificateStore.totalPages"
       >
         <ChevronRight />
+      </button>
+      <!-- Last Page Button (Hidden on Last Page) -->
+      <button
+        v-if="certificateStore.query.page < certificateStore.totalPages"
+        @click="goToLastPage"
+      >
+        >>
       </button>
     </div>
   </div>
@@ -168,6 +181,18 @@ const setSorting = (field: string) => {
   certificateStore.query.sortBy = field;
   certificateStore.query.order =
     certificateStore.query.order === "ASC" ? "DESC" : "ASC";
+};
+
+// ✅ Go to First Page
+const goToFirstPage = () => {
+  certificateStore.query.page = 1;
+  certificateStore.getCertificates();
+};
+
+// ✅ Go to Last Page
+const goToLastPage = () => {
+  certificateStore.query.page = certificateStore.totalPages;
+  certificateStore.getCertificates();
 };
 
 // Pagination functions

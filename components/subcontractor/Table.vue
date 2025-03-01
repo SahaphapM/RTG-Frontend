@@ -75,6 +75,11 @@
 
     <!-- Pagination Controls -->
     <div class="pagination">
+      <!-- First Page Button (Hidden on First Page) -->
+      <button v-if="subcontractorStore.query.page > 1" @click="goToFirstPage">
+        <<
+      </button>
+
       <button @click="prevPage" :disabled="subcontractorStore.query.page === 1">
         <ChevronLeft />
       </button>
@@ -91,6 +96,13 @@
         "
       >
         <ChevronRight />
+      </button>
+      <!-- Last Page Button (Hidden on Last Page) -->
+      <button
+        v-if="subcontractorStore.query.page < subcontractorStore.totalPages"
+        @click="goToLastPage"
+      >
+        >>
       </button>
     </div>
   </div>
@@ -134,6 +146,17 @@ const setSorting = (field: string) => {
   subcontractorStore.query.sortBy = field;
   subcontractorStore.query.order =
     subcontractorStore.query.order === "ASC" ? "DESC" : "ASC";
+};
+// ✅ Go to First Page
+const goToFirstPage = () => {
+  subcontractorStore.query.page = 1;
+  subcontractorStore.getSubcontractors();
+};
+
+// ✅ Go to Last Page
+const goToLastPage = () => {
+  subcontractorStore.query.page = subcontractorStore.totalPages;
+  subcontractorStore.getSubcontractors();
 };
 
 // Pagination functions

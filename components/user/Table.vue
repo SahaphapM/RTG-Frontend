@@ -59,17 +59,31 @@
     </table>
     <!-- Pagination Controls -->
     <div class="pagination">
+      <!-- First Page Button (Hidden on First Page) -->
+      <button v-if="userStore.query.page > 1" @click="goToFirstPage"><<</button>
+
+      <!-- Previous Page Button (Disabled on First Page) -->
       <button @click="prevPage" :disabled="userStore.query.page === 1">
         <ChevronLeft />
       </button>
 
+      <!-- Page Number Display -->
       <span> {{ userStore.query.page }} / {{ userStore.totalPages }} </span>
 
+      <!-- Next Page Button (Disabled on Last Page) -->
       <button
         @click="nextPage"
         :disabled="userStore.query.page === userStore.totalPages"
       >
         <ChevronRight />
+      </button>
+
+      <!-- Last Page Button (Hidden on Last Page) -->
+      <button
+        v-if="userStore.query.page < userStore.totalPages"
+        @click="goToLastPage"
+      >
+        >>
       </button>
     </div>
   </div>
@@ -111,6 +125,18 @@ watch(
 const setSorting = (field: string) => {
   userStore.query.sortBy = field;
   userStore.query.order = userStore.query.order === "ASC" ? "DESC" : "ASC";
+};
+
+// ✅ Go to First Page
+const goToFirstPage = () => {
+  userStore.query.page = 1;
+  userStore.getUsers();
+};
+
+// ✅ Go to Last Page
+const goToLastPage = () => {
+  userStore.query.page = userStore.totalPages;
+  userStore.getUsers();
 };
 
 // Pagination functions
