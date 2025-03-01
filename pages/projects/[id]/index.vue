@@ -216,4 +216,8 @@ const confirmDeleteProject = async () => {
     console.error("Failed to delete purchase order:", error);
   }
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

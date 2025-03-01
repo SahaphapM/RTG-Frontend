@@ -51,8 +51,4 @@ const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 
 defineEmits(["toggle-sidebar"]);
-
-const logout = () => {
-  console.log("Logging out...");
-};
 </script>

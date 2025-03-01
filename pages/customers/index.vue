@@ -50,6 +50,7 @@ import useCustomerService from "~/composables/customersService";
 import type { Customer } from "~/types/customer";
 
 const customerStore = useCustomerStore();
+const authStore = useAuthStore();
 const { createCustomer, updateCustomer, deleteCustomer } = useCustomerService();
 
 const isModalOpen = ref(false);
@@ -58,9 +59,7 @@ const isDeleteModalOpen = ref(false);
 const customerToDelete = ref<number | null>(null);
 
 onMounted(async () => {
-  await nextTick(async () => {
-    getCustomers();
-  });
+  await getCustomers();
 });
 
 const getCustomers = async () => {

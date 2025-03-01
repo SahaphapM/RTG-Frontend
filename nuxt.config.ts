@@ -20,4 +20,7 @@ export default defineNuxtConfig({
     storesDirs: ["./stores/**"],
   },
   pages: true, // Ensure automatic routing is enabled
+  routeRules: {
+    "/users/**": { appMiddleware: "auth-role" }, // ✅ Ensure `/users` is protected
+  },
 });

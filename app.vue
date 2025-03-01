@@ -4,13 +4,14 @@ import { NuxtLayout } from "#components";
 const authStore = useAuthStore();
 
 onMounted(async () => {
+  // ✅ Ensure authentication finishes before the app starts
   nextTick(async () => {
     await authStore.initAuth();
+    if (!authStore.isAuthenticated) {
+      console.log("User is not authenticated, redirecting to login.");
+      console.log("value : ", authStore.isAuthenticated);
+    }
   });
-}); // ✅ Ensure user is authenticated before rendering
-
-definePageMeta({
-  middleware: "auth-role",
 });
 </script>
 

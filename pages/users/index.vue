@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="p-6" v-if="authStore.user && authStore.user.role === 'admin'">
     <!-- Header Section -->
     <div class="flex items-center mb-6">
       <h1 class="text-2xl font-bold w-[50%]">User Management</h1>
@@ -51,6 +51,7 @@ import { ref, onMounted, nextTick } from "vue";
 import type { User } from "~/types/user";
 
 const userStore = useUserStore();
+const authStore = useAuthStore();
 const { createUser, updateUser } = useServiceUsers();
 
 const isModalOpen = ref(false);
@@ -60,9 +61,9 @@ const userToDelete = ref<number | null>(null);
 
 // Load Users on Page Load
 onMounted(async () => {
-  await nextTick(async () => {
-    getUsers();
-  });
+  if (!authStore.isAuthenticated) navigateTo("/");
+  if (authStore.user?.role !== "admin") navigateTo("/projects");
+  await getUsers();
 });
 
 // Fetch Users
@@ -111,7 +112,9 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-definePageMeta({
-  middleware: "auth-role", // ✅ This ensures role-based access
+nextTick(async () => {
+  definePageMeta({
+    middleware: "auth-role",
+  });
 });
 </script>

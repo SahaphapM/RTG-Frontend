@@ -80,12 +80,17 @@ const allMenuItems = [
     icon: BookText,
     roles: ["admin", "user"],
   },
-  { to: "/customers", label: "Customer", icon: UsersIcon, roles: ["admin"] },
+  {
+    to: "/customers",
+    label: "Customer",
+    icon: UsersIcon,
+    roles: ["admin", "user"],
+  },
   {
     to: "/subcontractors",
     label: "Subcontractor",
     icon: BriefcaseIcon,
-    roles: ["admin"],
+    roles: ["admin", "user"],
   },
   { to: "/users", label: "User", icon: UserIcon, roles: ["admin"] },
 ];

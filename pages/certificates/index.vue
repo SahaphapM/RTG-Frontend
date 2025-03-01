@@ -90,4 +90,8 @@ const toDeleteCustomer = async () => {
   isDeleteModalOpen.value = false;
   await certificateStore.getCertificates();
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

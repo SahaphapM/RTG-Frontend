@@ -18,6 +18,7 @@
     </div>
 
     <Table
+      :role="authStore.user?.role"
       :projects="projectStore.projects"
       :isLoading="projectStore.isLoading"
       @edit="editProject"
@@ -46,6 +47,8 @@ const { deleteProject } = useProjectService();
 const projectStore = useProjectStore();
 const isDeleteModalOpen = ref(false);
 const projectToDelete = ref<number | null>(null);
+
+const authStore = useAuthStore();
 
 onMounted(async () => {
   await nextTick(async () => {

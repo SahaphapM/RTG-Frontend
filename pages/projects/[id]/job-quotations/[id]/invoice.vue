@@ -971,4 +971,8 @@ const exportInvoicePDF = async (invoice: Invoice, original: boolean) => {
     doc.save(`Invoice_${invoice.id || "New"}.pdf`);
   };
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

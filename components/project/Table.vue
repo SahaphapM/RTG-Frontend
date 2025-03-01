@@ -13,7 +13,11 @@
           <th>Customer</th>
           <th>Start Date</th>
           <!-- <th>End Date</th> -->
-          <th @click="setSorting('totalProjectPrice')" class="cursor-pointer">
+          <th
+            v-if="role === 'admin'"
+            @click="setSorting('totalProjectPrice')"
+            class="cursor-pointer"
+          >
             <div class="flex justify-end text-right">
               Total Price
               <SortDescIcon class="sort-icon" />
@@ -50,7 +54,7 @@
               {{ purchaseOrder.shippedDate ? "Shipped" : "Shipping" }}
             </div>
           </td> -->
-          <td class="text-right">
+          <td v-if="role === 'admin'" class="text-right">
             {{ project.totalProjectPrice!.toLocaleString() }}
           </td>
           <td v-if="role === 'admin'">
@@ -105,7 +109,7 @@ import { defineEmits, onMounted, nextTick, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useProjectStore } from "~/stores/project";
 
-const prop = defineProps<{ role: string }>();
+const prop = defineProps<{ role: string | undefined }>();
 
 const emit = defineEmits(["edit", "delete"]);
 const router = useRouter();

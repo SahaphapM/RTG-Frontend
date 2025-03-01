@@ -49,12 +49,8 @@ import { ref, onMounted } from "vue";
 import useSubcontractorService from "~/composables/subcontractorService";
 import type { Subcontractor } from "~/types/subcontractor";
 
-const {
-  fetchSubcontractors,
-  createSubcontractor,
-  updateSubcontractor,
-  deleteSubcontractor,
-} = useSubcontractorService();
+const { createSubcontractor, updateSubcontractor, deleteSubcontractor } =
+  useSubcontractorService();
 
 const subcontractorStore = useSubcontractorStore();
 const subcontractors = ref<Subcontractor[]>([]);
@@ -123,6 +119,11 @@ const toDeleteSubcontractor = async () => {
     await subcontractorStore.getSubcontractors();
   }
 };
+
+onMounted(async () => {
+  await subcontractorStore.getSubcontractors();
+  isLoading.value = false;
+});
 
 definePageMeta({
   middleware: "auth-role",

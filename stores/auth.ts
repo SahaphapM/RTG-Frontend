@@ -10,11 +10,6 @@ export const useAuthStore = defineStore("auth", () => {
   const router = useRouter();
   const URL = useRuntimeConfig().public.apiBase;
 
-  // ✅ Check authentication before app starts
-  const initAuth = async () => {
-    await getUser();
-  };
-
   // ✅ Login and fetch user data
   const login = async (email: string, password: string) => {
     try {
@@ -51,13 +46,17 @@ export const useAuthStore = defineStore("auth", () => {
 
       if (!error.value) {
         user.value = data.value;
-        console.log("User authenticated:", user.value);
       } else {
         user.value = null; // ✅ Ensure user is null if token is invalid
       }
     } catch (err) {
       console.error("Error fetching user:", err);
     }
+  };
+
+  // ✅ Check authentication before app starts
+  const initAuth = async () => {
+    await getUser();
   };
 
   return { user, isAuthenticated, login, logout, getUser, initAuth };

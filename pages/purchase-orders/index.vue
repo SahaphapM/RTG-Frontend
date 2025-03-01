@@ -52,9 +52,7 @@ const isDeleteModalOpen = ref(false);
 const purchaseOrderToDelete = ref<number | null>(null);
 
 onMounted(async () => {
-  await nextTick(async () => {
-    await purchaseOrderStore.getPurchaseOrders();
-  });
+  await purchaseOrderStore.getPurchaseOrders();
 });
 
 // Handle delete action
@@ -71,4 +69,8 @@ const toDeletePurchaseOrder = async () => {
     await purchaseOrderStore.getPurchaseOrders();
   }
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

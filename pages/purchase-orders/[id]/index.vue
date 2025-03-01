@@ -501,4 +501,8 @@ const setShipping = () => {
   if (!isEditing.value) savePurchaseOrder();
   isDropdownOpen.value = false; // ปิด dropdown หลังจากเลือก Unpaid
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

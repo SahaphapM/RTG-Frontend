@@ -611,4 +611,8 @@ const exportToPDF = async () => {
     doc.save(`Job_Quotation_${quotation.value.id || "New"}.pdf`);
   };
 };
+
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>

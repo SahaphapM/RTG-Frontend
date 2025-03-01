@@ -287,4 +287,7 @@ const toDeleteCertificate = async () => {
     router.push("/certificates");
   }
 };
+definePageMeta({
+  middleware: "auth-role",
+});
 </script>
