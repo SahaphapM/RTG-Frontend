@@ -255,7 +255,9 @@ export default function usePurchaseOrderService() {
   const exportPOToPDF = async (
     purchaseOrder: PurchaseOrder,
     notoThaiSanNormal: string,
-    notoThaiSanBold: string
+    notoThaiSanBold: string,
+    subTotal: number,
+    vat: number
   ) => {
     const { default: jsPDF } = await import("jspdf");
     const autoTable = (await import("jspdf-autotable")).default;
@@ -467,17 +469,7 @@ export default function usePurchaseOrderService() {
       yPos = (doc as any).lastAutoTable.finalY;
 
       // Total, Discount, and VAT
-      let tableBody = [
-        [
-          "",
-          "Sub Total:",
-          `${(
-            purchaseOrder.total +
-            (purchaseOrder.discount || 0) -
-            ((purchaseOrder.vat || 0) / 100) * purchaseOrder.total
-          ).toLocaleString()} Baht`,
-        ],
-      ];
+      let tableBody = [["", "Sub Total:", `${subTotal.toLocaleString()} Baht`]];
 
       if (purchaseOrder.discount && purchaseOrder.discount > 0) {
         tableBody.push([
@@ -487,11 +479,11 @@ export default function usePurchaseOrderService() {
         ]);
       }
 
-      const vatAmount = (
-        purchaseOrder.total *
-        (purchaseOrder.vat / 100)
-      ).toFixed(2);
-      tableBody.push(["", `VAT ${purchaseOrder.vat}%`, `${vatAmount} Baht`]);
+      tableBody.push([
+        "",
+        `VAT ${purchaseOrder.vat}%`,
+        `${vat.toLocaleString()} Baht`,
+      ]);
 
       // Render the table
       autoTable(doc, {

@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-semibold">Purchase Order Detail</h1>
         <div class="flex gap-2">
           <h1 class="text-md">No.</h1>
-          <h1 class="text-md">{{ purchaseOrder.number }}</h1>
+          <h1 class="text-md">PO{{ purchaseOrder.number }}</h1>
         </div>
       </div>
       <div class="flex gap-4">
@@ -482,7 +482,9 @@ const exportPurchaseOrder = () => {
   exportPOToPDF(
     purchaseOrder.value,
     stateStore.notoThaiSanNormal,
-    stateStore.notoThaiSanBold
+    stateStore.notoThaiSanBold,
+    subTotal.value,
+    vat.value
   );
 };
 
