@@ -1,8 +1,6 @@
 import { useFetch } from "#app";
 import type { PaginationQuery, PaginationResponse } from "~/types/pagination";
 import type { Subcontractor } from "~/types/subcontractor";
-import { toast } from "vue3-toastify";
-import "vue3-toastify/dist/index.css";
 
 export default function useSubcontractorService() {
   const config = useRuntimeConfig();
