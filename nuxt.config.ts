@@ -23,4 +23,7 @@ export default defineNuxtConfig({
   routeRules: {
     "/users/**": { appMiddleware: "auth-role" }, // ✅ Ensure `/users` is protected
   },
+  css: [
+    "@/assets/css/global.css", // หรือ '@assets/css/global.scss' หากคุณใช้ SCSS
+  ],
 });

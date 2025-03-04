@@ -52,9 +52,11 @@
         >
           <td>{{ purchaseOrder.number }}</td>
 
-          <td class="truncate">{{ purchaseOrder.name }}</td>
+          <td class="ellipsis-cell">{{ purchaseOrder.name }}</td>
           <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
-          <td>{{ purchaseOrder.subcontractor?.name || "-" }}</td>
+          <td class="ellipsis-cell">
+            {{ purchaseOrder.subcontractor?.name || "-" }}
+          </td>
           <td>
             <div
               class="badge gap-2 badge-md font-medium text-white h-7 w-20"
@@ -180,7 +182,8 @@ const navigateToPurchaseOrder = (id: number) => {
 
 // Helper Functions
 const formatDate = (date: string) => new Date(date).toLocaleDateString();
-const formatPrice = (price: number) => (price ? `${price}` : "-");
+const formatPrice = (price: number) =>
+  price ? `${price.toLocaleString()}` : "-";
 
 // Debounce search
 let debounceTimeout = ref<NodeJS.Timeout | null>(null);

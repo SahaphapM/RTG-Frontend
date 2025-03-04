@@ -59,7 +59,7 @@
         <button
           type="button"
           @click="
-            !projectStore.project?.id
+            !form?.id
               ? router.push('/projects')
               : (resetForm(), (isEditing = false))
           "
@@ -151,7 +151,6 @@ const saveProject = async () => {
     ...item,
     totalPrice: Number(item.totalPrice), // Ensure price is a number
   }));
-  console.log("form.value.projectItems", form.value);
 
   if (isNewProject.value) {
     const savedProject = await createProject(form.value);

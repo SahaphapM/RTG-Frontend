@@ -8,10 +8,13 @@
         <h2 class="text-xl font-bold text-red-600">{{ title }}</h2>
         <p class="mt-2 text-gray-700">{{ message }}</p>
         <div class="mt-4 flex justify-center gap-4">
-          <button @click="$emit('cancel')" class="btn btn-active px-8">
+          <button
+            @click="$emit('cancel')"
+            class="btn btn-active px-8 text-white"
+          >
             {{ cancelText }}
           </button>
-          <button @click="$emit('confirm')" class="btn btn-error">
+          <button @click="$emit('confirm')" class="btn btn-error text-white">
             {{ confirmText }}
           </button>
         </div>

@@ -13,19 +13,17 @@
               Name <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('description')" class="cursor-pointer">
-            <div class="flex items-center">
-              Description <SortDescIcon class="sort-icon" />
-            </div>
+          <th>
+            <div class="flex items-center">Description</div>
           </th>
           <th @click="setSorting('date')" class="cursor-pointer">
             <div class="flex items-center">
               Date <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <!-- <th>
-            <div class="flex items-center">File</div>
-          </th> -->
+          <th>
+            <div class="flex items-center">Project</div>
+          </th>
           <th>
             <div class="flex items-center">Subcontractor</div>
           </th>
@@ -50,7 +48,7 @@
         >
           <td>{{ index + 1 }}</td>
           <td>{{ certificate.name }}</td>
-          <td>{{ certificate.description }}</td>
+          <td class="description-cell">{{ certificate.description }}</td>
           <td>{{ certificate.date }}</td>
           <!-- <td>
             <a
@@ -63,7 +61,10 @@
             </a>
             <span v-else class="text-gray-400 italic">No file</span>
           </td> -->
-          <td>{{ certificate.subcontractor?.name }}</td>
+          <td class="description-cell">{{ certificate.project?.name }}</td>
+          <td class="description-cell">
+            {{ certificate.subcontractor?.name }}
+          </td>
           <td>
             <div class="text-center justify-center flex gap-2">
               <button
@@ -289,5 +290,12 @@ onMounted(async () => {
   width: 15px;
   height: 15px;
   margin-left: 6px;
+}
+
+.description-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* Adjust this width according to your design */
 }
 </style>

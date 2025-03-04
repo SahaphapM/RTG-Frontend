@@ -40,8 +40,8 @@
           }"
         >
           <td class="text-center">{{ project.number }}</td>
-          <td>{{ project.name }}</td>
-          <td class="truncate" :title="project.customer?.name">
+          <td class="ellipsis-cell">{{ project.name }}</td>
+          <td class="truncate">
             {{ project.customer?.name || "N/A" }}
           </td>
           <td class="text-center">{{ project.startDate }}</td>
@@ -243,7 +243,7 @@ onMounted(async () => {
   text-align: right;
 }
 .truncate {
-  max-width: 150px;
+  max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

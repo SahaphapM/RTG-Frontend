@@ -272,7 +272,7 @@ async function resetForm() {
     certificate.value = data;
   }
 
-  if (certificate.value.file) {
+  if (certificate.value.file && certificate.value.file !== "") {
     previewUrl.value = await fetchCertificateFile(certificate.value.file); // Fetch PDF URL
     file.value = null; // Reset selected file (since no new file is uploaded yet)
   }
