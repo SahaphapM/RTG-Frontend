@@ -55,6 +55,7 @@ export default function useJobQuotationService() {
     jobQuotation: Omit<JobQuotation, "id">
   ) => {
     try {
+      console.log("createJobQuotation", jobQuotation);
       const { data } = await useFetch<JobQuotation>(
         `${config.public.apiBase}/job-quotations/${projectId}`,
 
@@ -114,6 +115,7 @@ export default function useJobQuotationService() {
         `${config.public.apiBase}/job-quotations/${jobQuotationId}/invoices`,
         { credentials: "include" }
       );
+      console.log("data", data);
       return data.value || [];
     } catch (error: any) {
       console.error("Error fetching invoices:", error.message);
@@ -126,7 +128,7 @@ export default function useJobQuotationService() {
     invoice: Partial<Invoice>
   ) => {
     try {
-      const { data } = await useFetch<Invoice>(
+      const { data, error } = await useFetch<Invoice>(
         `${config.public.apiBase}/job-quotations/${jobQuotationId}/invoices`,
         {
           method: "POST",
@@ -134,9 +136,12 @@ export default function useJobQuotationService() {
           credentials: "include",
         }
       );
+      if (error.value) {
+        console.error("Server responded with error:", error.value);
+      }
       return data.value;
     } catch (error: any) {
-      console.error("Error creating invoice:", error.message);
+      console.error("Error creating invoice:", error);
     }
   };
 

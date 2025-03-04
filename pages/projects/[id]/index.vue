@@ -58,7 +58,11 @@
       <div class="flex gap-4">
         <button
           type="button"
-          @click="resetForm(), (isEditing = false)"
+          @click="
+            !projectStore.project?.id
+              ? router.push('/projects')
+              : (resetForm(), (isEditing = false))
+          "
           class="btn btn-error w-32 text-white"
         >
           Cancel
@@ -143,15 +147,21 @@ onMounted(async () => {
 
 // Save Project
 const saveProject = async () => {
+  form.value.projectItems = form.value.projectItems.map((item) => ({
+    ...item,
+    totalPrice: Number(item.totalPrice), // Ensure price is a number
+  }));
+  console.log("form.value.projectItems", form.value);
+
   if (isNewProject.value) {
-    const updatedProject = await createProject(form.value);
-    if (updatedProject) {
-      projectStore.project = updatedProject;
+    const savedProject = await createProject(form.value);
+    if (savedProject) {
+      projectStore.project = savedProject;
       resetForm();
       isNewProject.value = false;
 
       // เปลี่ยนเส้นทางไปยังหน้าใหม่พร้อมกับ ID ของ project
-      router.push(`/projects/${updatedProject.id}`);
+      router.push(`/projects/${savedProject.id}`);
     }
   } else {
     // Update existing project
@@ -210,7 +220,7 @@ const addItem = (item: Item) => {
 
   form.value.projectItems.push({
     quantity: 1,
-    price: item.price,
+    price: Number(item.price),
     totalPrice: item.price,
     item: item,
   });

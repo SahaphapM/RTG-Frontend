@@ -84,19 +84,23 @@ export default function usePurchaseOrderService() {
     }
   };
 
-  // Create Purchase Order
-  const createPurchaseOrder = async (
-    purchaseOrder: Omit<PurchaseOrder, "id" | "createdAt" | "updatedAt">
-  ) => {
+  // Create Purchase Order with error handling
+  const createPurchaseOrder = async (purchaseOrder: Partial<PurchaseOrder>) => {
     try {
-      const { data } = await useFetch<PurchaseOrder>(API_URL, {
+      const { data, error } = await useFetch<PurchaseOrder>(API_URL, {
         method: "POST",
         body: purchaseOrder,
         credentials: "include",
       });
-      return data.value;
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+
+      return data.value || ({} as PurchaseOrder);
     } catch (error: any) {
       console.error("Error creating purchase order:", error.message);
+      return {} as PurchaseOrder;
     }
   };
 
@@ -167,6 +171,7 @@ export default function usePurchaseOrderService() {
     id: number,
     purchaseOrder: Partial<PurchaseOrder>
   ) => {
+    console.log("Sending purchase order data:", purchaseOrder);
     try {
       await useFetch(`${API_URL}/${id}`, {
         method: "PATCH",
@@ -191,6 +196,7 @@ export default function usePurchaseOrderService() {
   };
 
   function convertNumberToThaiText(amount: number): string {
+    console.log("amount", amount);
     const thaiNumbers = [
       "ศูนย์",
       "หนึ่ง",
@@ -205,7 +211,7 @@ export default function usePurchaseOrderService() {
     ];
     const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
 
-    let [integerPart, decimalPart] = amount.toFixed(2).split(".");
+    let [integerPart, decimalPart] = Number(amount).toFixed(2).split(".");
 
     let result =
       convertIntegerToText(parseInt(integerPart), thaiNumbers, units) + "บาท";
@@ -316,14 +322,18 @@ export default function usePurchaseOrderService() {
       let currentY = yPos; // Use currentY to track the vertical position
 
       // Left Column
-      doc.text(`${purchaseOrder.subcontractor.name || ""}`, leftX, currentY);
+      doc.text(`${purchaseOrder.subcontractor!.name || ""}`, leftX, currentY);
       currentY += lineHeight;
       doc.setFont("NotoSansThai", "normal");
       doc.setFontSize(9);
-      doc.text(`${purchaseOrder.subcontractor.address || ""}`, leftX, currentY);
+      doc.text(
+        `${purchaseOrder.subcontractor!.address || ""}`,
+        leftX,
+        currentY
+      );
       currentY += lineHeight;
       doc.text(
-        `${purchaseOrder.subcontractor.contact || "sdfsdfdsfd"}`,
+        `${purchaseOrder.subcontractor!.contact || "sdfsdfdsfd"}`,
         leftX,
         currentY
       );
@@ -331,7 +341,7 @@ export default function usePurchaseOrderService() {
       doc.setFont("NotoSansThai", "bold");
       doc.setFontSize(10);
       doc.text(
-        `เลขประจําตัวผู้เสียภาษี ${purchaseOrder.subcontractor.taxId || ""}`,
+        `เลขประจําตัวผู้เสียภาษี ${purchaseOrder.subcontractor!.taxId || ""}`,
         leftX,
         currentY
       );

@@ -1,8 +1,8 @@
 import type { InvoiceDetail } from "./invoiceDetail";
 
 export type Invoice = {
-  id: number | null;
-  date: Date;
+  id?: number | null;
+  date: string;
   ourRef: string;
   ourTax: string;
   cusTax: string;
@@ -18,5 +18,5 @@ export type Invoice = {
   accountNumber: string;
   swift: string;
   receivedBy: string;
-  receivedDate: Date | null;
+  receivedDate: string | null;
 };

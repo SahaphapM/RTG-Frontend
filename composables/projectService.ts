@@ -85,7 +85,7 @@ export default function useProjectService() {
         project.projectItems?.map((item) => ({
           itemId: item.item.id, // Ensure only `itemId` is sent
           quantity: item.quantity,
-          price: item.item.price,
+          price: Number(item.item.price),
         })) || [];
 
       // Create the final payload

@@ -223,7 +223,6 @@ const newQuotationTemplate: JobQuotation = {
   deliveryTime: "",
   deliveryPlace: "",
   vatPercentage: 7,
-  bestRegards: "",
   message: "",
   priceOffered: 0,
   ourRef: "",
@@ -287,11 +286,13 @@ const startEdit = () => {
 // Save quotation
 const saveQuotation = async () => {
   quotation.value.vatPercentage = Number(quotation.value.vatPercentage);
+
   console.log("quotation", quotation.value);
 
   if (!quotation.value.priceOffered) {
     quotation.value.priceOffered = projectStore.project?.totalProjectPrice || 0;
   }
+  quotation.value.priceOffered = Number(quotation.value.priceOffered);
 
   if (quotation.value.id) {
     await updateJobQuotation(quotation.value.id, quotation.value);
@@ -321,6 +322,10 @@ const createNewQuotation = () => {
 const cancelEdit = () => {
   selectedQuotationId.value = originalQuotation.value?.id || null;
   quotation.value = originalQuotation.value || { ...newQuotationTemplate };
+  if (!quotation.value.id) {
+    router.push(`/projects/${route.params.id}`);
+    return;
+  }
   isEditing.value = false;
 };
 

@@ -10,8 +10,8 @@ export type PurchaseOrder = {
   ourRef: string;
   description: string;
   date: string; // Date of the purchase order (ISO format: "YYYY-MM-DD")
-  subcontractor: Subcontractor;
-  customer: Customer;
+  subcontractor: Subcontractor | null;
+  customer: Customer | null;
   orderDetails: OrderDetail[];
   total: number;
   discount: number;

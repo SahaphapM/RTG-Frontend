@@ -136,7 +136,7 @@
         <label class="block font-semibold">Date:</label>
         <input
           :disabled="!isEditing"
-          v-model="formattedDate"
+          v-model="invoice.date"
           type="date"
           class="input input-bordered w-full"
         />
@@ -361,8 +361,7 @@ const router = useRouter();
 
 // **Default Invoice Object**
 const newInvoice = (): Invoice => ({
-  id: null,
-  date: new Date(),
+  date: new Date().toISOString().split("T")[0],
   ourRef: "",
   taxInvoice: "",
   ourTax: "",
@@ -391,6 +390,11 @@ const isDeleteModalOpen = ref(false);
 // Invoice backup for canceling changes
 const invoiceBackup = ref<Invoice>();
 
+const fullPath = route.fullPath;
+// Extract projectId and jobquotationid from the full path
+const pathParts = fullPath.split("/");
+const projectId = pathParts[2]; // extract the third part (index 2)
+
 // สถานะการแสดงผลของ input และ dropdown
 const isDropdownOpen = ref(false);
 
@@ -417,7 +421,7 @@ const refresh = async () => {
   if (data.length > 0) {
     const lastIndex = data.length - 1;
     invoices.value = data;
-    selectedInvoiceId.value = invoices.value[lastIndex].id;
+    selectedInvoiceId.value = invoices.value[lastIndex].id || null;
     invoice.value = invoices.value[lastIndex];
     isEditing.value = isEditing.value;
   } else {
@@ -463,7 +467,11 @@ const remainingBalance = computed(() => {
   const totalPaid = invoices.value.reduce((sum, pay) => {
     // Exclude the invoice with the current selectedInvoiceId
     return pay.id !== invoice.value.id
-      ? sum + (pay.total || 0) + (pay.discount || 0)
+      ? sum +
+          (pay.invoiceDetails.reduce(
+            (detailSum, detail) => detailSum + (detail.unitPrice || 0),
+            0
+          ) || 0)
       : sum;
   }, 0);
   return (
@@ -486,18 +494,18 @@ const addInvoice = () => {
   isEditing.value = !isEditing.value;
   const invoicesLength = invoices.value.length;
   invoice.value = newInvoice();
-  invoice.value.accountName = invoices.value[invoicesLength]?.accountName;
-  invoice.value.accountNumber = invoices.value[invoicesLength]?.accountNumber;
-  invoice.value.branch = invoices.value[invoicesLength]?.branch;
-  invoice.value.swift = invoices.value[invoicesLength]?.swift;
-  invoice.value.invoiceTerms =
-    invoices.value[invoicesLength]?.invoiceTerms || "";
-  invoice.value.taxInvoice = invoices.value[invoicesLength]?.taxInvoice || "";
-  invoice.value.ourRef = invoices.value[invoicesLength]?.ourRef || "";
-  invoice.value.ourTax = invoices.value[invoicesLength]?.ourTax || "";
-  invoice.value.cusTax = invoices.value[invoicesLength]?.cusTax || "";
-  invoice.value.bank = invoices.value[invoicesLength]?.bank || "";
-  invoice.value.receivedBy = invoices.value[invoicesLength]?.receivedBy || "";
+  // invoice.value.accountName = invoices.value[invoicesLength]?.accountName;
+  // invoice.value.accountNumber = invoices.value[invoicesLength]?.accountNumber;
+  // invoice.value.branch = invoices.value[invoicesLength]?.branch;
+  // invoice.value.swift = invoices.value[invoicesLength]?.swift;
+  // invoice.value.invoiceTerms =
+  //   invoices.value[invoicesLength]?.invoiceTerms || "";
+  // invoice.value.taxInvoice = invoices.value[invoicesLength]?.taxInvoice || "";
+  // invoice.value.ourRef = invoices.value[invoicesLength]?.ourRef || "";
+  // invoice.value.ourTax = invoices.value[invoicesLength]?.ourTax || "";
+  // invoice.value.cusTax = invoices.value[invoicesLength]?.cusTax || "";
+  // invoice.value.bank = invoices.value[invoicesLength]?.bank || "";
+  // invoice.value.receivedBy = invoices.value[invoicesLength]?.receivedBy || "";
 };
 
 const cancelEdit = () => {
@@ -512,24 +520,21 @@ const cancelEdit = () => {
     ); // Restore original
 
     selectedInvoiceId.value = invoice.value.id || null;
-    isEditing.value = !isEditing.value;
-  } else {
-    isEditing.value = !isEditing.value;
   }
+  if (!invoice.value.id) {
+    router.push(`/projects/${projectId}/job-quotations`);
+    return;
+  }
+  isEditing.value = !isEditing.value;
 };
 
 const goBack = () => {
-  const fullPath = route.fullPath;
-
-  // Extract projectId and jobquotationid from the full path
-  const pathParts = fullPath.split("/");
-  const projectId = pathParts[2]; // extract the third part (index 2)
-
   // Use the extracted values to navigate back
   router.push(`/projects/${projectId}/job-quotations`);
 };
 
 const save = async (invoiceInput: Invoice) => {
+  console.log("invoiceInput", invoiceInput);
   if (invoiceInput.id) {
     const data = await updateInvoice(invoiceInput);
   } else {
@@ -538,7 +543,7 @@ const save = async (invoiceInput: Invoice) => {
 
       if (data) {
         invoice.value = data;
-        selectedInvoiceId.value = data.id;
+        selectedInvoiceId.value = data.id || null;
         invoices.value.push(data);
       }
     }
@@ -555,17 +560,6 @@ const confirmDeleteInvoice = async () => {
   isDeleteModalOpen.value = false;
   await refresh();
 };
-
-const formattedDate = computed({
-  get() {
-    if (!invoice.value.date) return "";
-    const date = new Date(invoice.value.date);
-    return date.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
-  },
-  set(value: string) {
-    invoice.value.date = new Date(value);
-  },
-});
 
 // ฟังก์ชันที่ใช้ตั้งค่าว่า "Paid"
 const setPaid = () => {
@@ -962,7 +956,7 @@ const exportInvoicePDF = async (
       startY: yPos,
       body: [
         ["Received by :", invoice.receivedBy || ""],
-        ["Date :", invoice.receivedDate?.toLocaleDateString("en-GB") || ""],
+        ["Date :", invoice.receivedDate || ""],
       ],
       theme: "grid",
       styles: {

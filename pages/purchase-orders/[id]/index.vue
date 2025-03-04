@@ -131,6 +131,7 @@
           <CustomerSearch
             :modelValue="purchaseOrder.customer"
             :isEditing="isEditing"
+            @update:model-value="updateCustomer"
           />
         </div>
         <div class="mb-4">
@@ -270,6 +271,7 @@ import CustomerSearch from "~/components/project/customerSearch.vue";
 import PaymentTable from "~/components/project/InvoiceTable.vue";
 import SubContractorSearch from "~/components/subcontractor/SubContractorSearch.vue";
 import usePurchaseOrderService from "~/composables/purchase-orderService";
+import type { Customer } from "~/types/customer";
 import type { OrderDetail } from "~/types/orderDetail";
 import type { PurchaseOrder } from "~/types/purchase-order";
 import type { Subcontractor } from "~/types/subcontractor";
@@ -297,19 +299,8 @@ const newPurchaseOrder = (): PurchaseOrder => ({
   number: "",
   description: "",
   date: new Date().toISOString().split("T")[0],
-  subcontractor: {
-    name: "",
-    address: "",
-    email: "",
-    contact: "",
-    taxId: "",
-  }, // กำหนดค่าเริ่มต้นเป็น object ว่าง
-  customer: {
-    name: "",
-    email: "",
-    contact: "",
-    address: "",
-  }, // กำหนดค่าเริ่มต้นเป็น object ว่าง
+  subcontractor: null,
+  customer: null,
   orderDetails: [],
   total: 0,
   discount: 0,
@@ -344,7 +335,7 @@ const formattedDate = computed({
 
 const subTotal = computed(() => {
   return purchaseOrder.value.orderDetails.reduce(
-    (sum, detail) => sum + (detail.qty || 0) * (detail.unitPrice || 0),
+    (sum, detail) => sum + (detail.qty || 0) * (Number(detail.unitPrice) || 0),
     0
   );
 });
@@ -418,12 +409,21 @@ const refresh = async () => {
 
 // **Update Order Details**
 const updateOrderDetails = (details: OrderDetail[]) => {
+  // conver to number
+  details.forEach((detail) => {
+    detail.unitPrice = Number(detail.unitPrice);
+  });
   purchaseOrder.value.orderDetails = details;
 };
 
 // **Update Subcontractor**
 const updateSubcontractor = (subcontractor: Subcontractor) => {
   purchaseOrder.value.subcontractor = subcontractor;
+};
+
+// **Update Customer**
+const updateCustomer = (customer: Customer) => {
+  purchaseOrder.value.customer = customer;
 };
 
 // **Save Purchase Order**
@@ -434,7 +434,6 @@ const savePurchaseOrder = async () => {
         subTotal.value - purchaseOrder.value.discount + vat.value;
       await updatePurchaseOrder(purchaseOrder.value.id, purchaseOrder.value);
     } else {
-      console.log("save New");
       const savedPurchaseOrder = await createPurchaseOrder(purchaseOrder.value);
 
       if (savedPurchaseOrder) {
@@ -473,6 +472,10 @@ const confirmDeletePurchaseOrder = async () => {
 // **Cancel Edit**
 const cancelEdit = () => {
   isEditing.value = false;
+  if (!purchaseOrder.value.id) {
+    router.push(`/purchase-orders`);
+    return;
+  }
   refresh();
 };
 

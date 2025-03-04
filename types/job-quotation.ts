@@ -5,14 +5,10 @@ export type JobQuotation = {
   description: string;
   ourRef: string;
   priceOffered: number;
-  invoiceMethod?: string;
   invoiceTerms: string;
   deliveryTime: string;
   deliveryPlace: string;
   vatPercentage: number;
   message: string;
-  bestRegards: string;
   invoices?: Invoice[];
-  createdAt?: Date;
-  updatedAt?: Date;
 };

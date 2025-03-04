@@ -65,7 +65,13 @@
               {{ purchaseOrder.shippedDate ? "Shipped" : "Shipping" }}
             </div>
           </td>
-          <td class="text-right">{{ formatPrice(purchaseOrder.total) }}</td>
+          <td class="text-right">
+            {{
+              formatPrice(purchaseOrder.total) !== "0"
+                ? formatPrice(purchaseOrder.total)
+                : "-"
+            }}
+          </td>
 
           <td class="text-center">
             <div class="flex gap-2">
@@ -174,7 +180,7 @@ const navigateToPurchaseOrder = (id: number) => {
 
 // Helper Functions
 const formatDate = (date: string) => new Date(date).toLocaleDateString();
-const formatPrice = (price: number) => (price ? `$${price.toFixed(2)}` : "-");
+const formatPrice = (price: number) => (price ? `${price}` : "-");
 
 // Debounce search
 let debounceTimeout = ref<NodeJS.Timeout | null>(null);

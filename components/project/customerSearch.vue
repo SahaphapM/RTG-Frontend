@@ -58,7 +58,7 @@ import useCustomerService from "~/composables/customersService";
 import type { Customer } from "~/types/customer";
 
 const props = defineProps<{
-  modelValue: Customer | null;
+  modelValue: Customer | null | undefined;
   isEditing: boolean;
 }>();
 const emit = defineEmits(["update:modelValue"]);
@@ -123,7 +123,7 @@ watch(
   () => props.modelValue,
   (newValue) => {
     emit("update:modelValue", newValue);
-
+    console.log("newValue", newValue);
     selectedCustomer.value = newValue;
     searchQuery.value = newValue ? newValue.name : "";
   },

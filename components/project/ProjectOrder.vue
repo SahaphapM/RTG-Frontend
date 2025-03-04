@@ -58,6 +58,8 @@
             <td class="text-right">
               <input
                 v-if="isEditing"
+                type="number"
+                :step="5000"
                 v-model.number="item.price"
                 class="input input-sm input-bordered w-30 text-right"
               />
@@ -119,13 +121,6 @@
         </tfoot>
       </table>
     </div>
-
-    <!-- <div class="flex justify-end mt-4 font-semibold text-lg">
-    
-      <span>{{
-        `Total Value :    ${totalValue.toLocaleString()}   Baht`
-      }}</span>
-    </div> -->
   </div>
 </template>
 
@@ -157,14 +152,10 @@ const emit = defineEmits([
 const isSearchModalOpen = ref(false);
 const isNewItemModalOpen = ref(false);
 
-// Computed properties
-const totalAmount = computed(() => {
-  return props.projectItems.reduce((sum, item) => sum + item.quantity, 0);
-});
-
 const totalValue = computed(() => {
   return props.projectItems.reduce(
-    (sum, item) => sum + (item.price || item.item.price) * item.quantity,
+    (sum, item) =>
+      sum + (Number(item.price) || item.item.price) * item.quantity,
     0
   );
 });
