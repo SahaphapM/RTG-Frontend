@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # ติดตั้ง Dependencies
-RUN npm install --only=production
+RUN npm install
 
 # คัดลอกโค้ดทั้งหมด
 COPY . .
