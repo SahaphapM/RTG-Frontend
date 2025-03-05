@@ -119,6 +119,15 @@ const removeRow = (index: number) => {
 watch(
   () => props.details,
   () => {
+    // if (props.details.unitPrice === null) props.details.unitPrice = 0;
+    // if (props.details.qty === null) props.details.qty = 1;
+    // set the unitPrice and qty to 0 if they are null
+    props.details.forEach((detail: any) => {
+      if (detail.unitPrice === null || detail.unitPrice === "")
+        detail.unitPrice = 0;
+      if (detail.qty === null || detail.qty === "") detail.qty = 1;
+    });
+
     updateDetails();
   },
   { deep: true }

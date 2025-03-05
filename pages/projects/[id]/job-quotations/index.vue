@@ -89,7 +89,7 @@
         />
       </div>
       <div>
-        <h3 class="text-lg font-medium">Invoice</h3>
+        <h3 class="text-lg font-medium">Payment</h3>
         <input
           v-model="quotation.invoiceTerms"
           type="text"

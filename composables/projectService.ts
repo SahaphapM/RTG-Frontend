@@ -95,7 +95,7 @@ export default function useProjectService() {
         number: project.number,
         startDate: project.startDate,
         endDate: project.endDate,
-        customerId: project.customer?.id, // Ensure only `customerId` is sent
+        customer: project.customer, // Ensure only `customerId` is sent
         projectItems: formattedProjectItems, // Use transformed items
       };
       console.log("Sending project data:", projectData);

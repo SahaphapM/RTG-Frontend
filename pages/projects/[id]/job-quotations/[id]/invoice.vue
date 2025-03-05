@@ -877,14 +877,14 @@ const exportInvoicePDF = async (
       },
     });
 
-    yPos = (doc as any).lastAutoTable.finalY;
+    yPos = (doc as any).lastAutoTable.finalY + 0.1;
 
     // Add Grand Total in a new table
     autoTable(doc, {
       startY: yPos,
       body: [["", "Grand Total", `${invoice.total.toLocaleString()} baht`]],
-      theme: "grid",
-      styles: { fontSize: 10, cellPadding: 4, lineColor: [0, 0, 0] }, // Increase cell padding for all rows
+
+      styles: { fontSize: 10, cellPadding: 4 }, // Increase cell padding for all rows
       columnStyles: {
         0: { cellWidth: 15, fillColor: [r, g, b] }, // Empty space for alignment
         1: {
@@ -927,13 +927,13 @@ const exportInvoicePDF = async (
 
     autoTable(doc, {
       startY: yPos,
-      head: [["Bank Details"]],
+      head: [["Bank Details", ""]],
       body: [
-        [invoice.bank],
-        [invoice.accountName],
-        [invoice.accountNumber],
-        [invoice.branch],
-        [invoice.swift],
+        ["Bank :", invoice.bank],
+        ["Account Name :", invoice.accountName],
+        ["Account Number :", invoice.accountNumber],
+        ["Branch :", invoice.branch],
+        ["SWIFT :", invoice.swift],
       ],
       // .filter((row) => row[0] !== "" && row[0] !== null) // Filter out empty or null rows
       // .map((row) => row), // Map to ensure we get the same format for each row
@@ -945,8 +945,11 @@ const exportInvoicePDF = async (
         font: "NotoSansThai",
         lineColor: [0, 0, 0],
       },
-      headStyles: { fillColor: [r, g, b], cellWidth: 180 },
-      columnStyles: { 0: { cellWidth: 180, halign: "left" } },
+      headStyles: { fillColor: [r, g, b], halign: "left" },
+      columnStyles: {
+        0: { cellWidth: 35, halign: "left" },
+        1: { cellWidth: 145, halign: "left" },
+      },
     });
 
     yPos = (doc as any).lastAutoTable.finalY + 10;

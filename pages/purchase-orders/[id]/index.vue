@@ -349,7 +349,9 @@ const vat = computed(() => {
 });
 
 const totalAmount = computed(() => {
-  return subTotal.value - purchaseOrder.value.discount + vat.value;
+  // Calculate the total amount
+  return (purchaseOrder.value.total =
+    subTotal.value - purchaseOrder.value.discount + vat.value);
 });
 
 // **Fetch Data on Mount**
