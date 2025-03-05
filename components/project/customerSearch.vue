@@ -130,6 +130,17 @@ watch(
   { immediate: true }
 );
 
+// Watch for changes in searchQuery if value === '' then update modelValue to null
+watch(
+  searchQuery,
+  (newValue) => {
+    if (newValue === "") {
+      emit("update:modelValue", null);
+    }
+  },
+  { immediate: true }
+);
+
 onMounted(async () => {
   nextTick(async () => {
     await customerStore.getCustomers();

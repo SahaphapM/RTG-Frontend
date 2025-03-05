@@ -238,6 +238,7 @@ const handleFileUpload = (event: Event) => {
 // Save Certificate
 const saveCertificate = async () => {
   let newCertificate;
+  console.log("saveCertificate", certificate.value);
   if (isNewCertificate.value) {
     newCertificate = await createCertificate(certificate.value);
     if (newCertificate) {

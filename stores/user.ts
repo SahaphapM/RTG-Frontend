@@ -14,7 +14,7 @@ export const useUserStore = defineStore("user", () => {
     limit: 10,
     search: "",
     sortBy: "id",
-    order: "ASC",
+    order: "DESC",
   });
 
   // **Wrapper function to fetch users (calls fetchUsers from composable)**

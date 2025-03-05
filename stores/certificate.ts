@@ -18,7 +18,7 @@ export const useCertificateStore = defineStore("certificate", () => {
     limit: 10,
     search: "",
     sortBy: "id",
-    order: "ASC",
+    order: "DESC",
   });
 
   // **Wrapper function to fetch certificates (calls fetchCertificates from composable)**

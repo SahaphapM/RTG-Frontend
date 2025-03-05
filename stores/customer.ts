@@ -19,7 +19,7 @@ export const useCustomerStore = defineStore("customer", () => {
     limit: 10,
     search: "",
     sortBy: "id",
-    order: "ASC",
+    order: "DESC",
   });
 
   // **Wrapper function to fetch customers (calls fetchCustomers from composable)**

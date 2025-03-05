@@ -13,6 +13,7 @@
           :disabled="!isEditing"
           required
         />
+        <!-- Remove Icon -->
         <!-- Search Icon -->
         <Search
           class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500"
@@ -88,6 +89,7 @@ const newSubcontractor: Subcontractor = {
   type: "Contractor",
   email: "",
   contact: "",
+  taxId: "",
 };
 const selectedSubcontractor = ref<Subcontractor | null>(null);
 const isSubcontractorModalOpen = ref(false);
@@ -141,6 +143,17 @@ watch(
   (newValue) => {
     selectedSubcontractor.value = newValue;
     searchQuery.value = newValue ? newValue.name : "";
+  },
+  { immediate: true }
+);
+
+// Watch for changes in searchQuery if value === '' then update modelValue to null
+watch(
+  searchQuery,
+  (newValue) => {
+    if (newValue === "") {
+      emit("update:modelValue", null);
+    }
   },
   { immediate: true }
 );

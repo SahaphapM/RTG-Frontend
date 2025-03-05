@@ -20,7 +20,7 @@ export const useSubcontractorStore = defineStore("subcontractor", () => {
     limit: 10,
     search: "",
     sortBy: "id",
-    order: "ASC",
+    order: "DESC",
   });
 
   // **Wrapper function to fetch subcontractors (calls fetchSubcontractors from composable)**
