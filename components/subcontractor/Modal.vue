@@ -4,7 +4,7 @@
   >
     <!-- Modal Content -->
     <div
-      class="bg-white p-6 rounded-lg w-3/7 shadow-lg scale-95 transition-transform duration-300 ease-in-out"
+      class="bg-white p-6 rounded-lg w-[50%] shadow-lg scale-95 transition-transform duration-300 ease-in-out"
     >
       <h2 class="text-xl font-bold mb-4">
         {{ subcontractor ? "Edit Subcontractor" : "Add Subcontractor" }}
@@ -19,23 +19,24 @@
         />
 
         <!-- Type Dropdown -->
-        <select
-          v-model="form.type"
-          class="select select-bordered w-full mb-2"
-          required
-        >
+        <select v-model="form.type" class="select select-bordered w-full mb-2">
           <option disabled value="">Select Type</option>
           <option>Contractor</option>
           <option>Supplier</option>
           <option>Vendor</option>
         </select>
 
+        <textarea
+          v-model="form.description"
+          placeholder="Description"
+          class="textarea textarea-bordered textarea-md w-full"
+        ></textarea>
+
         <input
           v-model="form.email"
           type="email"
           placeholder="Email"
           class="input input-bordered w-full mb-2"
-          required
         />
 
         <input
@@ -43,21 +44,18 @@
           type="text"
           placeholder="Contact"
           class="input input-bordered w-full mb-2"
-          required
         />
         <input
           v-model="form.taxId"
           type="text"
           placeholder="Tax ID"
           class="input input-bordered w-full mb-2"
-          required
         />
 
         <textarea
           v-model="form.address"
           placeholder="Address"
           class="textarea textarea-bordered textarea-md w-full"
-          required
         ></textarea>
 
         <div class="flex justify-end mt-4">
@@ -91,6 +89,7 @@ const form = ref<Subcontractor>({
   contact: "",
   address: "",
   taxId: "",
+  description: "",
 });
 
 watch(
@@ -100,6 +99,7 @@ watch(
       ? { ...subcontractor }
       : {
           name: "",
+          description: "",
           type: "Contractor",
           email: "",
           contact: "",
