@@ -12,7 +12,8 @@
           </th>
           <th>Customer</th>
           <th>Start Date</th>
-          <!-- <th>End Date</th> -->
+          <th>End Date</th>
+          <th>Status</th>
           <th
             v-if="role === 'admin'"
             @click="setSorting('totalProjectPrice')"
@@ -45,7 +46,22 @@
             {{ project.customer?.name || "N/A" }}
           </td>
           <td class="text-center">{{ project.startDate }}</td>
-          <!-- <td class="text-center">{{ project.endDate }}</td> -->
+          <td class="text-center">{{ project.endDate }}</td>
+          <!-- set status with badge  with different color by status -->
+          <td>
+            <div
+              v-if="project.status"
+              class="badge gap-2 badge-md font-regular text-white h-7 w-24"
+              :class="{
+                'bg-neutral-400': project.status === 'Pending',
+                'bg-success': project.status === 'Completed',
+                'bg-error': project.status === 'Cancelled',
+                'bg-warning': project.status === 'In Progress',
+              }"
+            >
+              {{ project.status }}
+            </div>
+          </td>
           <!-- <td>
             <div
               class="badge gap-2 badge-md font-medium text-white h-7 w-20"

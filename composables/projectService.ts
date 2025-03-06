@@ -88,16 +88,13 @@ export default function useProjectService() {
           price: Number(item.item.price),
         })) || [];
 
+      // Prepare the payload
+      const projectData = JSON.stringify({
+        ...project,
+        projectItems: formattedProjectItems,
+      });
+
       // Create the final payload
-      const projectData = {
-        name: project.name,
-        description: project.description,
-        number: project.number,
-        startDate: project.startDate,
-        endDate: project.endDate,
-        customer: project.customer, // Ensure only `customerId` is sent
-        projectItems: formattedProjectItems, // Use transformed items
-      };
       console.log("Sending project data:", projectData);
 
       // Send the request

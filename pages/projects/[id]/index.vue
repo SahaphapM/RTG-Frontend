@@ -119,6 +119,7 @@ const form = ref<Project>({
   projectItems: [] as ProjectItem[],
   totalProjectPrice: 0,
   jobQuotations: [],
+  status: null,
 });
 
 // Load project data
