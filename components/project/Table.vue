@@ -11,9 +11,20 @@
             <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
           </th>
           <th>Customer</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Status</th>
+          <th @click="setSorting('startDate')" class="cursor-pointer">
+            <div class="flex">
+              Start Date <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <th @click="setSorting('endDate')" class="cursor-pointer">
+            <div class="flex">End Date <SortDescIcon class="sort-icon" /></div>
+          </th>
+          <!-- จำนวนวัน -->
+          <th class="text-center">Duration</th>
+
+          <th @click="setSorting('status')" class="cursor-pointer">
+            <div class="flex">Status <SortDescIcon class="sort-icon" /></div>
+          </th>
           <th
             v-if="role === 'admin'"
             @click="setSorting('totalProjectPrice')"
@@ -45,8 +56,18 @@
           <td class="truncate">
             {{ project.customer?.name || "N/A" }}
           </td>
-          <td class="text-center">{{ project.startDate }}</td>
-          <td class="text-center">{{ project.endDate }}</td>
+          <td class="text-left">{{ project.startDate }}</td>
+          <td class="text-left">{{ project.endDate }}</td>
+          <td class="text-center">
+            {{
+              Math.ceil(
+                (new Date(project.endDate!).getTime() -
+                  new Date(project.startDate!).getTime()) /
+                  (1000 * 3600 * 24)
+              )
+            }}
+          </td>
+
           <!-- set status with badge  with different color by status -->
           <td>
             <div
@@ -253,7 +274,7 @@ onMounted(async () => {
 
 /* Alignments */
 .text-center {
-  text-align: left;
+  text-align: center;
 }
 .text-right {
   text-align: right;

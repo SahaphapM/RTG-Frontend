@@ -14,11 +14,12 @@
               Name <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('type')" class="cursor-pointer">
+          <!-- <th @click="setSorting('type')" class="cursor-pointer w-24A">
             <div class="flex items-center">
               Type <SortDescIcon class="sort-icon" />
             </div>
-          </th>
+          </th> -->
+          <th class="w-62">Description</th>
           <th @click="setSorting('email')" class="cursor-pointer">
             <div class="flex items-center">
               Email <SortDescIcon class="sort-icon" />
@@ -50,9 +51,10 @@
         >
           <td>{{ subcontractor.id }}</td>
           <td>{{ subcontractor.name }}</td>
-          <td>{{ subcontractor.type }}</td>
+          <!-- <td>{{ subcontractor.type }}</td> -->
+          <td class="ellipsis-cell">{{ subcontractor.description }}</td>
           <td>{{ subcontractor.email }}</td>
-          <td>{{ subcontractor.contact }}</td>
+          <td class="ellipsis-cell">{{ subcontractor.contact }}</td>
           <td class="text-center">
             <div class="flex justify-center gap-2">
               <button

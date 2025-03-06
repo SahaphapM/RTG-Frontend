@@ -3,7 +3,7 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th @click="setSorting('number')" class="sortable">
+          <th @click="setSorting('number')" class="sortable w-28">
             <div class="flex items-center">
               No. <SortDescIcon class="sort-icon" />
             </div>
@@ -14,16 +14,19 @@
               Name <SortDescIcon class="sort-icon" />
             </div>
           </th>
+
+          <th>
+            <div class="flex items-center">Subcontractor</div>
+          </th>
           <th @click="setSorting('date')" class="sortable text-center w-32">
             <div class="flex justify-center items-center">
               Date <SortDescIcon class="sort-icon" />
             </div>
           </th>
           <th>
-            <div class="flex items-center">Subcontractor</div>
-          </th>
-          <th>
-            <div>Shipped</div>
+            <div class="flex justify-center items-center w-22">
+              Delivery <SortDescIcon class="sort-icon" />
+            </div>
           </th>
           <th @click="setSorting('total')" class="sortable w-32">
             <div class="flex justify-end items-center">
@@ -53,11 +56,12 @@
           <td>{{ purchaseOrder.number }}</td>
 
           <td class="ellipsis-cell">{{ purchaseOrder.name }}</td>
-          <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
+
           <td class="ellipsis-cell">
             {{ purchaseOrder.subcontractor?.name || "-" }}
           </td>
-          <td>
+          <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
+          <td class="text-center">
             <div
               class="badge gap-2 badge-md font-medium text-white h-7 w-20"
               :class="

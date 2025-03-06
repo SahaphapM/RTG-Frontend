@@ -19,12 +19,12 @@
         />
 
         <!-- Type Dropdown -->
-        <select v-model="form.type" class="select select-bordered w-full mb-2">
+        <!-- <select v-model="form.type" class="select select-bordered w-full mb-2">
           <option disabled value="">Select Type</option>
           <option>Contractor</option>
           <option>Supplier</option>
           <option>Vendor</option>
-        </select>
+        </select> -->
 
         <textarea
           v-model="form.description"
@@ -84,7 +84,6 @@ const emit = defineEmits(["save", "close"]);
 
 const form = ref<Subcontractor>({
   name: "",
-  type: "Contractor",
   email: "",
   contact: "",
   address: "",
@@ -100,7 +99,6 @@ watch(
       : {
           name: "",
           description: "",
-          type: "Contractor",
           email: "",
           contact: "",
           address: "",

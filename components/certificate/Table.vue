@@ -47,8 +47,8 @@
           @click="certificate.id ? navigateToCertificate(certificate.id) : ''"
         >
           <td>{{ index + 1 }}</td>
-          <td>{{ certificate.name }}</td>
-          <td class="description-cell">{{ certificate.description }}</td>
+          <td class="ellipsis-cell">{{ certificate.name }}</td>
+          <td class="ellipsis-cell">{{ certificate.description }}</td>
           <td>{{ certificate.date }}</td>
           <!-- <td>
             <a

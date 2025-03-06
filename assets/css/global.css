@@ -3,5 +3,5 @@
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  max-width: 200px !important; /* ปรับขนาดให้เหมาะสมกับการออกแบบของคุณ */
+  max-width: 280px !important; /* ปรับขนาดให้เหมาะสมกับการออกแบบของคุณ */
 }

@@ -19,9 +19,19 @@
               Email <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('contact')" class="cursor-pointer">
+          <th @click="setSorting('name')" class="cursor-pointer">
             <div class="flex items-center">
-              Contact <SortDescIcon class="sort-icon" />
+              Agent <SortDescIcon class="sort-icon" />
+            </div>
+          </th>
+          <!-- <th @click="setSorting('email')" class="cursor-pointer">
+            <div class="flex items-center">
+              Agent Email <SortDescIcon class="sort-icon" />
+            </div>
+          </th> -->
+          <th @click="setSorting('contact')" class="cursor-pointer w-16">
+            <div class="flex items-center">
+              Agent Contact <SortDescIcon class="sort-icon" />
             </div>
           </th>
           <th class="text-center w-32">Actions</th>
@@ -43,9 +53,12 @@
           class="hover"
         >
           <td>{{ customer.id }}</td>
-          <td>{{ customer.name }}</td>
-          <td>{{ customer.email }}</td>
-          <td>{{ customer.contact }}</td>
+          <td class="ellipsis-cell">{{ customer.name || "-" }}</td>
+          <td class="ellipsis-cell">{{ customer.email || "-" }}</td>
+          <td class="ellipsis-cell">{{ customer.agentName || "-" }}</td>
+          <!-- <td class="ellipsis-cell">{{ customer.agentEmail || "-" }}</td> -->
+          <td class="ellipsis-cell">{{ customer.agentContact || "-" }}</td>
+
           <td class="text-center">
             <div class="justify-center flex gap-2">
               <button
