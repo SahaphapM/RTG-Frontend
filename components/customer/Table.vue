@@ -4,7 +4,7 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th @click="setSorting('id')" class="cursor-pointer">
+          <th @click="setSorting('id')" class="cursor-pointer w-20">
             <div class="flex items-center">
               ID <SortDescIcon class="sort-icon" />
             </div>
@@ -19,7 +19,7 @@
               Email <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('name')" class="cursor-pointer">
+          <th @click="setSorting('agentName')" class="cursor-pointer">
             <div class="flex items-center">
               Agent <SortDescIcon class="sort-icon" />
             </div>
@@ -29,7 +29,7 @@
               Agent Email <SortDescIcon class="sort-icon" />
             </div>
           </th> -->
-          <th @click="setSorting('contact')" class="cursor-pointer w-16">
+          <th @click="setSorting('agentContact')" class="cursor-pointer w-46">
             <div class="flex items-center">
               Agent Contact <SortDescIcon class="sort-icon" />
             </div>

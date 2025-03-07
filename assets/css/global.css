@@ -3,5 +3,17 @@
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  max-width: 280px !important; /* ปรับขนาดให้เหมาะสมกับการออกแบบของคุณ */
+  max-width: 180px !important; /* ปรับขนาดให้เหมาะสมกับการออกแบบของคุณ */
+}
+.ellipsis-cell-medium {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 190px !important; /* ปรับขนาดให้เหมาะสมกับการออกแบบของคุณ */
+}
+.ellipsis-cell-long {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 340px !important; /* ปรับขนาดให้เหมาะสมกับการออกแบบของคุณ */
 }

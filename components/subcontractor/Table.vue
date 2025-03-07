@@ -4,7 +4,7 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th @click="setSorting('id')" class="cursor-pointer">
+          <th @click="setSorting('id')" class="cursor-pointer w-20">
             <div class="flex items-center">
               ID <SortDescIcon class="sort-icon" />
             </div>

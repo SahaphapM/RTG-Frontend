@@ -3,7 +3,7 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th @click="setSorting('number')" class="sortable w-28">
+          <th @click="setSorting('number')" class="sortable w-18">
             <div class="flex items-center">
               No. <SortDescIcon class="sort-icon" />
             </div>
@@ -16,15 +16,22 @@
           </th>
 
           <th>
+            <div class="flex items-center">Project</div>
+          </th>
+
+          <th>
             <div class="flex items-center">Subcontractor</div>
           </th>
-          <th @click="setSorting('date')" class="sortable text-center w-32">
+          <th>
+            <div class="flex items-center">Customer</div>
+          </th>
+          <th @click="setSorting('date')" class="sortable text-center w-20">
             <div class="flex justify-center items-center">
               Date <SortDescIcon class="sort-icon" />
             </div>
           </th>
           <th>
-            <div class="flex justify-center items-center w-22">
+            <div class="flex justify-center items-center w-20">
               Delivery <SortDescIcon class="sort-icon" />
             </div>
           </th>
@@ -34,7 +41,7 @@
             </div>
           </th>
 
-          <th class="text-center w-32">Actions</th>
+          <th class="text-center w-20">Actions</th>
         </tr>
       </thead>
 
@@ -55,10 +62,16 @@
         >
           <td>{{ purchaseOrder.number }}</td>
 
-          <td class="ellipsis-cell">{{ purchaseOrder.name }}</td>
+          <td class="ellipsis-cell-long">{{ purchaseOrder.name }}</td>
+          <td class="ellipsis-cell">
+            {{ purchaseOrder.project?.name || "-" }}
+          </td>
 
           <td class="ellipsis-cell">
             {{ purchaseOrder.subcontractor?.name || "-" }}
+          </td>
+          <td class="ellipsis-cell">
+            {{ purchaseOrder.customer?.name || "-" }}
           </td>
           <td class="text-center">{{ formatDate(purchaseOrder.date) }}</td>
           <td class="text-center">

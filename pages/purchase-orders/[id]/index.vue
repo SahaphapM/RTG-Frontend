@@ -111,13 +111,33 @@
             class="input input-bordered w-full"
           />
         </div>
+
+        <div class="mb-4 flex gap-4 justify-between">
+          <div class="mb-4 w-[50%]">
+            <label class="block font-semibold">Our Ref:</label>
+            <input
+              :disabled="!isEditing"
+              v-model="purchaseOrder.ourRef"
+              type="text"
+              class="input input-bordered w-full"
+            />
+          </div>
+          <div class="mb-4 w-[50%]">
+            <label class="block font-semibold">Date:</label>
+            <input
+              :disabled="!isEditing"
+              v-model="formattedDate"
+              type="date"
+              class="input input-bordered w-full"
+            />
+          </div>
+        </div>
+
         <div class="mb-4">
-          <label class="block font-semibold">Our Ref:</label>
-          <input
-            :disabled="!isEditing"
-            v-model="purchaseOrder.ourRef"
-            type="text"
-            class="input input-bordered w-full"
+          <ProjectSearch
+            :modelValue="purchaseOrder.project"
+            :isEditing="isEditing"
+            @update:model-value="updateProject"
           />
         </div>
         <div class="mb-4">
@@ -127,20 +147,12 @@
             @update:model-value="updateSubcontractor"
           />
         </div>
+
         <div class="mb-4">
           <CustomerSearch
             :modelValue="purchaseOrder.customer"
             :isEditing="isEditing"
             @update:model-value="updateCustomer"
-          />
-        </div>
-        <div class="mb-4">
-          <label class="block font-semibold">Date:</label>
-          <input
-            :disabled="!isEditing"
-            v-model="formattedDate"
-            type="date"
-            class="input input-bordered w-full"
           />
         </div>
 
@@ -267,12 +279,14 @@
 <script setup lang="ts">
 import { HardDriveUpload } from "lucide-vue-next";
 import { ref, computed, onMounted, nextTick } from "vue";
+import ProjectSearch from "~/components/certificate/ProjectSearch.vue";
 import CustomerSearch from "~/components/project/customerSearch.vue";
 import PaymentTable from "~/components/project/InvoiceTable.vue";
 import SubContractorSearch from "~/components/subcontractor/SubContractorSearch.vue";
 import usePurchaseOrderService from "~/composables/purchase-orderService";
 import type { Customer } from "~/types/customer";
 import type { OrderDetail } from "~/types/orderDetail";
+import type { Project } from "~/types/project";
 import type { PurchaseOrder } from "~/types/purchase-order";
 import type { Subcontractor } from "~/types/subcontractor";
 
@@ -310,6 +324,7 @@ const newPurchaseOrder = (): PurchaseOrder => ({
   file: null,
   name: "",
   shippedDate: null,
+  project: null,
 });
 
 // **State Variables**
@@ -426,6 +441,11 @@ const updateSubcontractor = (subcontractor: Subcontractor) => {
 // **Update Customer**
 const updateCustomer = (customer: Customer) => {
   purchaseOrder.value.customer = customer;
+};
+
+// ** Update Project**
+const updateProject = (project: Project) => {
+  purchaseOrder.value.project = project;
 };
 
 // **Save Purchase Order**

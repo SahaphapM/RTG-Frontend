@@ -4,10 +4,13 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th @click="setSorting('id')" class="cursor-pointer">
+          <th @click="setSorting('id')" class="cursor-pointer w-20">
             <div class="flex">ID <SortDescIcon class="sort-icon" /></div>
           </th>
-          <th @click="setSorting('name')" class="cursor-pointer">
+          <th
+            @click="setSorting('name')"
+            class="cursor-pointer ellipsis-cell-long"
+          >
             <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
           </th>
           <th @click="setSorting('email')" class="cursor-pointer">

@@ -4,26 +4,33 @@
       <!-- Table Header -->
       <thead>
         <tr>
-          <th @click="setSorting('number')" class="cursor-pointer">
+          <th @click="setSorting('number')" class="cursor-pointer w-20">
             <div class="flex">No. <SortDescIcon class="sort-icon" /></div>
           </th>
-          <th @click="setSorting('name')" class="cursor-pointer">
-            <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
+          <th
+            @click="setSorting('name')"
+            class="cursor-pointer ellipsis-cell-long"
+          >
+            <div class="flex ellipsis-cell-long w-60">
+              Name <SortDescIcon class="sort-icon" />
+            </div>
           </th>
-          <th>Customer</th>
-          <th @click="setSorting('startDate')" class="cursor-pointer">
+          <th class="ellipsis-cell">Customer</th>
+          <th @click="setSorting('startDate')" class="cursor-pointer w-36">
             <div class="flex">
               Start Date <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <th @click="setSorting('endDate')" class="cursor-pointer">
+          <th @click="setSorting('endDate')" class="cursor-pointer w-36">
             <div class="flex">End Date <SortDescIcon class="sort-icon" /></div>
           </th>
           <!-- จำนวนวัน -->
-          <th class="text-center">Duration</th>
+          <th class="text-center w-20">Duration</th>
 
-          <th @click="setSorting('status')" class="cursor-pointer">
-            <div class="flex">Status <SortDescIcon class="sort-icon" /></div>
+          <th @click="setSorting('status')" class="cursor-pointer w-20">
+            <div class="flex justify-center">
+              Status <SortDescIcon class="sort-icon" />
+            </div>
           </th>
           <th
             v-if="role === 'admin'"
@@ -51,7 +58,7 @@
             'cursor-pointer': role === 'admin',
           }"
         >
-          <td class="text-center">{{ project.number }}</td>
+          <td class="ellipsis-cell-long">{{ project.number }}</td>
           <td class="ellipsis-cell">{{ project.name }}</td>
           <td class="truncate">
             {{ project.customer?.name || "N/A" }}
@@ -69,7 +76,7 @@
           </td>
 
           <!-- set status with badge  with different color by status -->
-          <td>
+          <td class="text-center">
             <div
               v-if="project.status"
               class="badge gap-2 badge-md font-regular text-white h-7 w-24"

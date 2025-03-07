@@ -1,5 +1,6 @@
 import type { Customer } from "./customer";
 import type { OrderDetail } from "./orderDetail";
+import type { Project } from "./project";
 import type { Subcontractor } from "./subcontractor";
 
 export type PurchaseOrder = {
@@ -10,6 +11,7 @@ export type PurchaseOrder = {
   ourRef: string;
   description: string;
   date: string; // Date of the purchase order (ISO format: "YYYY-MM-DD")
+  project: Project | null;
   subcontractor: Subcontractor | null;
   customer: Customer | null;
   orderDetails: OrderDetail[];
