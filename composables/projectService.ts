@@ -80,27 +80,16 @@ export default function useProjectService() {
   // Update Project
   const updateProject = async (id: number, project: Partial<Project>) => {
     try {
-      // Transform `projectItems` to use `itemId`
-      const formattedProjectItems =
-        project.projectItems?.map((item) => ({
-          itemId: item.item.id, // Ensure only `itemId` is sent
-          quantity: item.quantity,
-          price: Number(item.item.price),
-        })) || [];
-
       // Prepare the payload
-      const projectData = JSON.stringify({
-        ...project,
-        projectItems: formattedProjectItems,
-      });
+      delete project.jobQuotations;
 
       // Create the final payload
-      console.log("Sending project data:", projectData);
+      console.log("Sending project data:", project);
 
       // Send the request
       await useFetch(`${config.public.apiBase}/projects/${id}`, {
         method: "PUT",
-        body: projectData,
+        body: project,
         credentials: "include",
       });
     } catch (error: any) {

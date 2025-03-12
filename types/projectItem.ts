@@ -1,9 +1,7 @@
-import type { Item } from "./item";
-
 export type ProjectItem = {
   id?: number;
+  name: string;
   quantity: number;
-  price: number | null;
-  totalPrice: number | null;
-  item: Item;
+  price: number;
+  totalPrice: number;
 };

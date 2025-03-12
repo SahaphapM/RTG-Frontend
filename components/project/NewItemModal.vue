@@ -23,7 +23,7 @@
       />
 
       <div class="flex justify-between mt-6">
-        <button @click="$emit('close')" class="btn btn-primary w-32">
+        <button @click="$emit('close')" class="btn btn-primary w-32 text-white">
           Cancel
         </button>
         <button @click="createItem" class="btn btn-success text-white w-32">

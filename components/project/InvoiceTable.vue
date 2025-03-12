@@ -2,15 +2,39 @@
   <div>
     <!-- Add New Item Button -->
     <div class="flex justify-between items-end">
-      <div class="font-semibold text-md">Invoice Items</div>
-      <button
-        v-if="isEditing"
-        @click="addItem"
-        class="btn btn-primary w-32 mb-2"
-      >
-        Add Item
-      </button>
+      <div class="font-semibold text-md">{{ lebel }} Items</div>
+      <div class="flex gap-4">
+        <button
+          v-if="isEditing"
+          @click="openSearchModal"
+          class="btn btn-primary w-32 text-white"
+        >
+          Search
+        </button>
+        <button
+          v-if="isEditing"
+          @click="addItem()"
+          class="btn btn-primary w-32 mb-2 text-white"
+        >
+          Add Item
+        </button>
+      </div>
     </div>
+
+    <ItemSearchModal
+      :isOpen="isSearchModalOpen"
+      :items="availableItems"
+      @delete-item="toDeleteItem"
+      @close="isSearchModalOpen = false"
+      @select-item="addItemToProject"
+      @new-item="openNewItemModal"
+    />
+
+    <NewItemModal
+      :isOpen="isNewItemModalOpen"
+      @close="isNewItemModalOpen = false"
+      @create-item="addNewItem"
+    />
 
     <!-- Table -->
     <div class="table-container">
@@ -81,12 +105,20 @@
 <script setup lang="ts">
 import { TrashIcon } from "lucide-vue-next";
 import { defineProps, defineEmits } from "vue";
+import ItemSearchModal from "./ItemSearchModal.vue";
+import NewItemModal from "./NewItemModal.vue";
+import type { Item } from "~/types/item";
+import useItemService from "~/composables/itemService";
 
 // Props to receive details
-const props = defineProps(["details", "isEditing"]);
+const props = defineProps(["details", "isEditing", "lebel"]);
 
 // Emit event for updating details in parent
 const emit = defineEmits(["update:details"]);
+const { createItem, fetchItems, deleteItem } = useItemService();
+
+const isSearchModalOpen = ref(false);
+const isNewItemModalOpen = ref(false);
 
 // Emit updates whenever a field changes
 const updateDetails = () => {
@@ -94,25 +126,34 @@ const updateDetails = () => {
 };
 
 // Add a new row
-const addItem = () => {
+const addItem = (item?: Item) => {
   props.details.push({
-    description: "",
+    description: item?.name ? item.name : "",
     qty: 1,
-    unitPrice: 0,
+    unitPrice: item?.price ? item.price : 0,
   });
   updateDetails();
-};
-
-const autoResize = (event: any) => {
-  const textarea = event.target;
-  textarea.style.height = "auto"; // Reset height to auto
-  textarea.style.height = `${textarea.scrollHeight}px`; // Set height to scrollHeight
 };
 
 // Remove a row and emit update
 const removeRow = (index: number) => {
   props.details.splice(index, 1);
   updateDetails();
+};
+
+const availableItems = ref<Item[]>([]); // Load available items from API
+
+const addItemToProject = (item: Item) => {
+  addItem(item);
+  isSearchModalOpen.value = false;
+};
+
+const addNewItem = async (newItem: { name: string; price: number }) => {
+  const createdItem = await createItem(newItem); // Assume API function exists
+  if (!createdItem) return;
+  availableItems.value.push(createdItem);
+  addItemToProject(createdItem);
+  isNewItemModalOpen.value = false;
 };
 
 // Watch for changes in details and emit update
@@ -150,8 +191,23 @@ watch(
   }
 );
 
-onMounted(() => {
+const openNewItemModal = () => {
+  isSearchModalOpen.value = false;
+  isNewItemModalOpen.value = true;
+};
+
+const openSearchModal = () => {
+  isSearchModalOpen.value = true;
+};
+
+const toDeleteItem = (item: Item) => {
+  deleteItem(item.id);
+  availableItems.value = availableItems.value.filter((i) => i.id !== item.id);
+};
+
+onMounted(async () => {
   if (props.details.length === 0) addItem();
+  availableItems.value = await fetchItems(); // Fetch available items from API
 });
 </script>
 

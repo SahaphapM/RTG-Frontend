@@ -211,7 +211,7 @@ watch(
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
       purchaseOrderStore.getPurchaseOrders();
-    }, 800);
+    }, 200);
   }
 );
 

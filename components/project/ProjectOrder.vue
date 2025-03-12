@@ -2,6 +2,7 @@
   <ItemSearchModal
     :isOpen="isSearchModalOpen"
     :items="availableItems"
+    @delete-item="toDeleteItem"
     @close="isSearchModalOpen = false"
     @select-item="addItemToProject"
     @new-item="openNewItemModal"
@@ -54,7 +55,7 @@
             class="text-left"
           >
             <td class="">{{ index + 1 }}</td>
-            <td class="">{{ item.item.name }}</td>
+            <td class="">{{ item.name }}</td>
             <td class="text-right">
               <input
                 v-if="isEditing"
@@ -85,11 +86,7 @@
               </div>
             </td>
             <td class="text-right">
-              {{
-                (
-                  (item.price || item.item.price) * item.quantity
-                ).toLocaleString()
-              }}
+              {{ (item.price * item.quantity).toLocaleString() }}
             </td>
             <td>{{}}</td>
             <td v-if="isEditing" class="">
@@ -138,8 +135,7 @@ const props = defineProps<{
   isEditing: boolean;
 }>();
 
-const { createItem } = useItemService();
-const { fetchItems } = useItemService();
+const { createItem, fetchItems, deleteItem } = useItemService();
 
 const emit = defineEmits([
   "increase-amount",
@@ -154,8 +150,7 @@ const isNewItemModalOpen = ref(false);
 
 const totalValue = computed(() => {
   return props.projectItems.reduce(
-    (sum, item) =>
-      sum + (Number(item.price) || item.item.price) * item.quantity,
+    (sum, item) => sum + Number(item.price) * item.quantity,
     0
   );
 });
@@ -182,6 +177,11 @@ const openNewItemModal = () => {
 
 const openSearchModal = () => {
   isSearchModalOpen.value = true;
+};
+
+const toDeleteItem = (item: Item) => {
+  deleteItem(item.id);
+  availableItems.value = availableItems.value.filter((i) => i.id !== item.id);
 };
 
 onMounted(async () => {

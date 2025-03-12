@@ -56,14 +56,16 @@
       </div> -->
 
       <!-- Price -->
-      <div class="flex justify-end gap-8 items-center">
+      <div class="flex justify-end gap-4 items-center">
         <h2 class="text-lg font-semibold">Total Price</h2>
-        <div
-          class="p-2 px-8 text-xl border font-medium bg-gray-100 rounded-lg text-right"
-        >
-          {{ formatPrice?.toLocaleString() }}
-          <span class="text-lg font-medium">Bath</span>
-        </div>
+
+        <input
+          v-model="quotation.priceOffered"
+          type="text"
+          class="input input-bordered w-64 text-right text-xl font-semibold"
+          :disabled="!isEditing"
+        />
+        <span class="text-lg font-medium">Bath</span>
       </div>
     </div>
 
@@ -144,7 +146,7 @@
         <button
           v-if="isEditing && selectedQuotationId"
           @click="isDeleteModalOpen = true"
-          class="btn btn-error w-32"
+          class="btn btn-error w-32 text-white"
         >
           Delete
         </button>
@@ -175,13 +177,17 @@
         >
           Next
         </button>
-        <button v-if="isEditing" @click="cancelEdit" class="btn btn-error w-32">
+        <button
+          v-if="isEditing"
+          @click="cancelEdit"
+          class="btn btn-error w-32 text-white"
+        >
           Cancel
         </button>
         <button
           v-if="isEditing"
           @click="saveQuotation"
-          class="btn btn-success w-32"
+          class="btn btn-success w-32 text-white"
         >
           Save
         </button>
@@ -230,13 +236,6 @@ const newQuotationTemplate: JobQuotation = {
 
 const quotation = ref<JobQuotation>({ ...newQuotationTemplate });
 
-// Format price helper
-const formatPrice = computed(() =>
-  quotation.value.priceOffered > 0
-    ? quotation.value.priceOffered
-    : projectStore.project?.totalProjectPrice
-);
-
 // Fetch project and initialize quotation
 onMounted(async () => {
   nextTick(async () => {
@@ -274,6 +273,9 @@ const loadSelectedQuotation = () => {
   );
   if (selected) {
     quotation.value = JSON.parse(JSON.stringify(selected));
+    if (!quotation.value.priceOffered)
+      quotation.value.priceOffered =
+        projectStore.project?.totalProjectPrice || 0;
     originalQuotation.value = JSON.parse(JSON.stringify(quotation.value));
   }
 };

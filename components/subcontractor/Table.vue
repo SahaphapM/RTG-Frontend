@@ -127,7 +127,7 @@ watch(
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
       subcontractorStore.getSubcontractors();
-    }, 800);
+    }, 200);
   }
 );
 

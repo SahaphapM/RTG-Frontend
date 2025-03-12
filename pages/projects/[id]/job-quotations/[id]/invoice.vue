@@ -166,6 +166,7 @@
           :disabled="!isEditing"
           v-model="invoice.ourTax"
           type="text"
+          maxlength="13"
           class="input input-bordered w-full"
         />
       </div>
@@ -174,6 +175,7 @@
         <input
           :disabled="!isEditing"
           v-model="invoice.cusTax"
+          maxlength="13"
           type="text"
           class="input input-bordered w-full"
         />
@@ -185,6 +187,7 @@
       class="mt-4"
       :isEditing="isEditing"
       :details="invoice.invoiceDetails"
+      :lebel="'Invoice'"
       @update:details="updateInvoiceDetails"
     />
 

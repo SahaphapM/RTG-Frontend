@@ -6,7 +6,7 @@
           {{ isNewProject ? "New Project" : projectStore.project?.name }}
         </h1>
         <div class="flex gap-2">
-          <h1 class="text-md">PROJECT No.</h1>
+          <h1 class="text-md">Project No.</h1>
           <h1 class="text-md">{{ projectStore.project?.number }}</h1>
         </div>
       </div>
@@ -210,19 +210,11 @@ const decreaseAmount = (index: number) => {
 
 const addItem = (item: Item) => {
   // check if item already exists
-  const existingItem = form.value.projectItems.find(
-    (i) => i.item.id === item.id
-  );
-  if (existingItem) {
-    existingItem.quantity++;
-    return;
-  }
-
   form.value.projectItems.push({
+    name: item.name,
     quantity: 1,
     price: Number(item.price),
     totalPrice: item.price,
-    item: item,
   });
 };
 

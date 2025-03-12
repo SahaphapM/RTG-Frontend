@@ -173,6 +173,7 @@
         v-if="isEditing || purchaseOrder.orderDetails.length > 0"
         :isEditing="isEditing"
         :details="purchaseOrder.orderDetails"
+        :lebel="'Purchase Order'"
         @update:details="updateOrderDetails"
       />
     </div>

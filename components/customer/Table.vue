@@ -129,7 +129,7 @@ watch(
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
       customerStore.getCustomers();
-    }, 800);
+    }, 200);
   }
 );
 

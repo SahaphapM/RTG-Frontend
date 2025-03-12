@@ -158,10 +158,11 @@ let debounceTimeout = ref<NodeJS.Timeout | null>(null);
 watch(
   () => certificateStore.query.search,
   () => {
+    console.log("Search query changed:", certificateStore.query.search);
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
-    debounceTimeout.value = setTimeout(() => {
-      certificateStore.getCertificates();
-    }, 800);
+    debounceTimeout.value = setTimeout(async () => {
+      await certificateStore.getCertificates();
+    }, 200);
   }
 );
 

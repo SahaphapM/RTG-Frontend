@@ -108,7 +108,7 @@ watch(
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
       userStore.getUsers();
-    }, 800);
+    }, 200);
   }
 );
 

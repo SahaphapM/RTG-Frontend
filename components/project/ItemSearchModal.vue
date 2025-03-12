@@ -29,7 +29,10 @@
               </div>
               <!-- trash icon -->
 
-              <button @click.stop="" class="btn text-white btn-error btn-xs">
+              <button
+                @click.stop="deleteItem(item)"
+                class="btn text-white btn-error btn-xs"
+              >
                 <TrashIcon class="w-4 h-4" color="white" />
               </button>
             </div>
@@ -61,7 +64,7 @@ import { ref, defineProps, defineEmits, computed } from "vue";
 import type { Item } from "~/types/item";
 
 const props = defineProps<{ isOpen: boolean; items: Item[] }>();
-const emit = defineEmits(["close", "select-item", "new-item"]);
+const emit = defineEmits(["close", "select-item", "new-item", "delete-item"]);
 
 const searchQuery = ref("");
 
@@ -75,6 +78,10 @@ const filteredItems = computed(() => {
 const selectItem = (item: Item) => {
   searchQuery.value = "";
   emit("select-item", item);
+};
+
+const deleteItem = (item: Item) => {
+  emit("delete-item", item);
 };
 </script>
 

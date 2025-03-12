@@ -185,7 +185,7 @@ watch(
     if (debounceTimeout.value) clearTimeout(debounceTimeout.value);
     debounceTimeout.value = setTimeout(() => {
       projectStore.getProjects();
-    }, 800);
+    }, 200);
   }
 );
 
