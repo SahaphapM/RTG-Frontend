@@ -7,16 +7,11 @@
           <th @click="setSorting('number')" class="cursor-pointer w-20">
             <div class="flex">No. <SortDescIcon class="sort-icon" /></div>
           </th>
-          <th
-            @click="setSorting('name')"
-            class="cursor-pointer ellipsis-cell-long"
-          >
-            <div class="flex ellipsis-cell-long w-60">
-              Name <SortDescIcon class="sort-icon" />
-            </div>
+          <th @click="setSorting('name')" class="cursor-pointer">
+            <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
           </th>
           <th class="ellipsis-cell">Customer</th>
-          <th @click="setSorting('startDate')" class="cursor-pointer w-36">
+          <th @click="setSorting('startDate')" class="cursor-pointer w-340">
             <div class="flex">
               Start Date <SortDescIcon class="sort-icon" />
             </div>
@@ -25,7 +20,7 @@
             <div class="flex">End Date <SortDescIcon class="sort-icon" /></div>
           </th>
           <!-- จำนวนวัน -->
-          <th class="text-center w-20">Duration</th>
+          <th class="text-center w-12">Duration</th>
 
           <th @click="setSorting('status')" class="cursor-pointer w-20">
             <div class="flex justify-center">
@@ -35,7 +30,7 @@
           <th
             v-if="role === 'admin'"
             @click="setSorting('totalProjectPrice')"
-            class="cursor-pointer"
+            class="cursor-pointer w-44"
           >
             <div class="flex justify-end text-right">
               Total Price
@@ -58,10 +53,10 @@
             'cursor-pointer': role === 'admin',
           }"
         >
-          <td class="ellipsis-cell-long">{{ project.number }}</td>
+          <td>{{ project.number }}</td>
           <td class="ellipsis-cell">{{ project.name }}</td>
-          <td class="truncate">
-            {{ project.customer?.name || "N/A" }}
+          <td class="ellipsis-cell">
+            {{ project.customer?.name || "-" }}
           </td>
           <td class="text-left">{{ project.startDate }}</td>
           <td class="text-left">{{ project.endDate }}</td>
@@ -272,10 +267,7 @@ onMounted(async () => {
 
 /* Table Body */
 .custom-table td {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
 

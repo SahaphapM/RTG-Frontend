@@ -83,7 +83,7 @@ import type { Customer } from "~/types/customer";
 const props = defineProps<{ customer?: Customer | null }>();
 const emit = defineEmits(["save", "close"]);
 
-const form = ref({
+const form = ref<Customer>({
   name: "",
   email: "",
   contact: "",

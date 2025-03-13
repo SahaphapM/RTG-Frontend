@@ -3,40 +3,36 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th @click="setSorting('number')" class="sortable w-18">
-            <div class="flex items-center">
-              No. <SortDescIcon class="sort-icon" />
-            </div>
+          <th @click="setSorting('number')" class="sortable w-12">
+            <div class="flex">No. <SortDescIcon class="sort-icon" /></div>
           </th>
 
           <th @click="setSorting('name')" class="sortable">
-            <div class="flex items-center">
-              Name <SortDescIcon class="sort-icon" />
-            </div>
+            <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
           </th>
 
           <th>
-            <div class="flex items-center">Project</div>
+            <div class="flex">Project</div>
           </th>
 
           <th>
-            <div class="flex items-center">Subcontractor</div>
+            <div class="flex">Subcontractor</div>
           </th>
           <th>
-            <div class="flex items-center">Customer</div>
+            <div class="flex">Customer</div>
           </th>
           <th @click="setSorting('date')" class="sortable text-center w-20">
-            <div class="flex justify-center items-center">
+            <div class="flex justify-center">
               Date <SortDescIcon class="sort-icon" />
             </div>
           </th>
           <th>
-            <div class="flex justify-center items-center w-20">
+            <div class="flex justify-center w-20">
               Delivery <SortDescIcon class="sort-icon" />
             </div>
           </th>
           <th @click="setSorting('total')" class="sortable w-32">
-            <div class="flex justify-end items-center">
+            <div class="flex justify-end">
               Price <SortDescIcon class="sort-icon" />
             </div>
           </th>
@@ -308,7 +304,8 @@ watch(
   color: #5a5a5a;
   width: 15px;
   height: 15px;
-  margin-left: 6px;
+  margin-top: 5px;
+  margin-left: 4px;
 }
 /* Sortable Columns */
 .sortable {

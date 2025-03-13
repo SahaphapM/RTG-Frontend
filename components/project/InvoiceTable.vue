@@ -67,7 +67,7 @@
               <input
                 v-model.number="detail.qty"
                 type="number"
-                :step="5"
+                :step="1"
                 class="input input-bordered text-center w-full"
                 min="1"
                 :disabled="!isEditing"

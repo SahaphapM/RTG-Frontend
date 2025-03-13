@@ -4,7 +4,7 @@
   >
     <!-- Modal Content -->
     <div
-      class="bg-white p-6 rounded-lg w-96 shadow-lg scale-95 transition-transform duration-300 ease-in-out"
+      class="bg-white p-6 rounded-lg w-[50%] shadow-lg scale-95 transition-transform duration-300 ease-in-out"
     >
       <h2 class="text-xl font-bold mb-4">
         {{ user ? "Edit User" : "Add User" }}
@@ -24,14 +24,12 @@
           type="contact"
           placeholder="Contact"
           class="input input-bordered w-full mb-2"
-          required
         />
         <input
           v-model="form.email"
           type="email"
           placeholder="Email"
           class="input input-bordered w-full mb-2"
-          required
         />
 
         <input
@@ -39,21 +37,21 @@
           type="text"
           placeholder="Password"
           class="input input-bordered w-full mb-2"
+          required
         />
-        <!-- <input
+        <input
           v-model="form.position"
           type="text"
           placeholder="Position"
           class="input input-bordered w-full mb-2"
-          required
-        /> -->
+        />
         <select
           v-model="form.role"
           class="select select-bordered w-full mb-2"
           required
         >
+          <option selected value="user">User</option>
           <option value="admin">Admin</option>
-          <option value="user">User</option>
         </select>
 
         <div class="flex justify-end mt-4">
@@ -85,7 +83,7 @@ const form = ref<User>({
   position: "",
   contact: "",
   email: "",
-  role: "User",
+  role: "user",
   password: "",
 });
 
@@ -101,7 +99,7 @@ watch(
         email: "",
         contact: "",
         position: "",
-        role: "User",
+        role: "user",
         password: "",
       };
     }

@@ -4,32 +4,28 @@
       <thead>
         <tr>
           <th @click="setSorting('id')" class="cursor-pointer w-20">
-            <div class="flex items-center">
-              ID <SortDescIcon class="sort-icon" />
-            </div>
+            <div class="flex">ID <SortDescIcon class="sort-icon" /></div>
           </th>
           <th
             @click="setSorting('name')"
             class="cursor-pointer ellipsis-cell-long"
           >
-            <div class="flex items-center">
-              Name <SortDescIcon class="sort-icon" />
-            </div>
+            <div class="flex">Name <SortDescIcon class="sort-icon" /></div>
           </th>
-          <th>
-            <div class="flex items-center">Description</div>
+          <th @click="setSorting('description')">
+            <div class="cursor-pointer flex">
+              Description <SortDescIcon class="sort-icon" />
+            </div>
           </th>
 
           <th>
-            <div class="flex items-center">Project</div>
+            <div class="flex">Project</div>
           </th>
           <th>
-            <div class="flex items-center">Subcontractor</div>
+            <div class="flex">Subcontractor</div>
           </th>
           <th @click="setSorting('date')" class="cursor-pointer">
-            <div class="flex items-center">
-              Date <SortDescIcon class="sort-icon" />
-            </div>
+            <div class="flex">Date <SortDescIcon class="sort-icon" /></div>
           </th>
           <th class="text-center w-32">Actions</th>
         </tr>
@@ -295,7 +291,8 @@ onMounted(async () => {
   color: #5a5a5a;
   width: 15px;
   height: 15px;
-  margin-left: 6px;
+  margin-top: 5px;
+  margin-left: 4px;
 }
 
 .description-cell {

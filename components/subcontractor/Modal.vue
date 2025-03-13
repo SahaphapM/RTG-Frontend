@@ -29,7 +29,7 @@
         <textarea
           v-model="form.description"
           placeholder="Description"
-          class="textarea textarea-bordered textarea-md w-full"
+          class="textarea textarea-bordered textarea-md w-full text-md h-32"
         ></textarea>
 
         <input
@@ -49,13 +49,14 @@
           v-model="form.taxId"
           type="text"
           placeholder="Tax ID"
+          length="13"
           class="input input-bordered w-full mb-2"
         />
 
         <textarea
           v-model="form.address"
           placeholder="Address"
-          class="textarea textarea-bordered textarea-md w-full"
+          class="textarea textarea-bordered textarea-md w-full text-md h-32"
         ></textarea>
 
         <div class="flex justify-end mt-4">

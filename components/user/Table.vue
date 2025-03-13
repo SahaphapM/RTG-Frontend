@@ -194,13 +194,9 @@ onMounted(async () => {
 
 /* Table Body */
 .custom-table td {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
-
 /* Alignments */
 .text-center {
   text-align: center;

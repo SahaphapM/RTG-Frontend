@@ -14,12 +14,11 @@
               Name <SortDescIcon class="sort-icon" />
             </div>
           </th>
-          <!-- <th @click="setSorting('type')" class="cursor-pointer w-24A">
+          <th @click="setSorting('description')" class="cursor-pointer">
             <div class="flex items-center">
-              Type <SortDescIcon class="sort-icon" />
+              Description <SortDescIcon class="sort-icon" />
             </div>
-          </th> -->
-          <th class="w-62">Description</th>
+          </th>
           <th @click="setSorting('email')" class="cursor-pointer">
             <div class="flex items-center">
               Email <SortDescIcon class="sort-icon" />
@@ -50,10 +49,10 @@
           class="hover"
         >
           <td>{{ subcontractor.id }}</td>
-          <td>{{ subcontractor.name }}</td>
+          <td class="ellipsis-cell-long">{{ subcontractor.name }}</td>
           <!-- <td>{{ subcontractor.type }}</td> -->
           <td class="ellipsis-cell">{{ subcontractor.description }}</td>
-          <td>{{ subcontractor.email }}</td>
+          <td class="ellipsis-cell">{{ subcontractor.email }}</td>
           <td class="ellipsis-cell">{{ subcontractor.contact }}</td>
           <td class="text-center">
             <div class="flex justify-center gap-2">
