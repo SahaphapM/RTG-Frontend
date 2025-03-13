@@ -10,69 +10,82 @@
         {{ user ? "Edit User" : "Add User" }}
       </h2>
 
-      <!-- Form -->
-      <form @submit.prevent="save">
-        <input
-          v-model="form.name"
-          type="text"
-          placeholder="Name"
-          class="input input-bordered w-full mb-2"
-          required
-        />
-        <input
-          v-model="form.contact"
-          type="contact"
-          placeholder="Contact"
-          class="input input-bordered w-full mb-2"
-        />
-        <input
-          v-model="form.email"
-          type="email"
-          placeholder="Email"
-          class="input input-bordered w-full mb-2"
-        />
+      <input
+        v-model="form.name"
+        type="text"
+        placeholder="Name"
+        class="input input-bordered w-full mb-2"
+        required
+      />
+      <input
+        v-model="form.contact"
+        type="contact"
+        placeholder="Contact"
+        class="input input-bordered w-full mb-2"
+      />
+      <input
+        v-model="form.email"
+        type="email"
+        placeholder="Email"
+        class="input input-bordered w-full mb-2"
+      />
 
+      <div class="flex align-middle gap-2">
+        <!-- If want to set new password -->
         <input
+          :disabled="!setNewPassword && form.id !== undefined"
           v-model="form.password"
           type="text"
           placeholder="Password"
           class="input input-bordered w-full mb-2"
           required
         />
-        <input
-          v-model="form.position"
-          type="text"
-          placeholder="Position"
-          class="input input-bordered w-full mb-2"
-        />
-        <select
-          v-model="form.role"
-          class="select select-bordered w-full mb-2"
-          required
+        <!-- Icon to enable set new password -->
+        <button
+          v-if="form.id !== undefined"
+          @click="setNewPassword = !setNewPassword"
+          class="btn w-32"
         >
-          <option selected value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+          {{ setNewPassword ? "Cancel" : "New Password" }}
+        </button>
+      </div>
+      <input
+        v-model="form.position"
+        type="text"
+        placeholder="Position"
+        class="input input-bordered w-full mb-2"
+      />
+      <select
+        v-model="form.role"
+        class="select select-bordered w-full mb-2"
+        required
+      >
+        <option selected value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
 
-        <div class="flex justify-end mt-4">
-          <button
-            @click="$emit('close')"
-            type="button"
-            class="btn text-white btn-error mr-2 px-8"
-          >
-            Cancel
-          </button>
-          <button type="submit" class="btn text-white btn-success px-10">
-            Save
-          </button>
-        </div>
-      </form>
+      <div class="flex justify-end mt-4">
+        <button
+          @click="$emit('close')"
+          type="button"
+          class="btn text-white btn-error mr-2 px-8"
+        >
+          Cancel
+        </button>
+        <button
+          @click="save"
+          type="submit"
+          class="btn text-white btn-success px-10"
+        >
+          Save
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits } from "vue";
 import type { User } from "~/types/user";
 
 const props = defineProps<{ user?: User | null }>();
@@ -87,25 +100,22 @@ const form = ref<User>({
   password: "",
 });
 
-// Watch for changes (Edit Mode)
-watch(
-  () => props.user,
-  (user) => {
-    if (user) {
-      form.value = { ...user };
-    } else {
-      form.value = {
-        name: "",
-        email: "",
-        contact: "",
-        position: "",
-        role: "user",
-        password: "",
-      };
-    }
-  },
-  { immediate: true }
-);
+const setNewPassword = ref(false);
+
+onMounted(() => {
+  if (props.user) {
+    form.value = { ...props.user };
+  } else {
+    form.value = {
+      name: "",
+      email: "",
+      contact: "",
+      position: "",
+      role: "user",
+      password: "",
+    };
+  }
+});
 
 // Save User
 const save = () => {

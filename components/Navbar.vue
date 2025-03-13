@@ -8,35 +8,21 @@
 
     <!-- Middle Section: Nav Links (Desktop) -->
     <div class="flex flex-col items-end mx-4 leading-2">
-      <span class="font-semibold text-lg">{{ user?.name }}</span>
-      <div class="text-sm font-semibold">
-        {{ user?.role === "admin" ? "Admin" : "User" }}
-      </div>
+      <span class="font-semibold text-lg"> {{ user?.name }}</span>
+
+      <span class="font-semibold text-sm"> {{ user?.position }}</span>
     </div>
 
     <!-- Right Section: Profile Dropdown -->
-    <div class="flex-none">
-      <div class="dropdown dropdown-end">
-        <button class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img src="../public/image/user-icon-thumb.png" alt="User Avatar" />
-          </div>
-        </button>
-        <!-- <ul
-          tabindex="0"
-          class="dropdown-content menu menu-sm bg-base-200 rounded-lg shadow-md mt-2 w-48"
-        >
-          <li>
-            <NuxtLink to="/profile">
-              <UserIcon class="w-4 h-4" /> Profile
-            </NuxtLink>
-          </li>
-          <li>
-            <button @click="logout">
-              <LogOutIcon class="w-4 h-4 text-red-500" /> Logout
-            </button>
-          </li>
-        </ul> -->
+
+    <div class="flex flex-col">
+      <button class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img src="../public/image/user-icon-thumb.png" alt="User Avatar" />
+        </div>
+      </button>
+      <div class="text-xs font-bold" style="margin-top: -6px">
+        {{ user?.role === "admin" ? "Admin" : "User" }}
       </div>
     </div>
   </div>
