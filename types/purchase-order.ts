@@ -9,7 +9,7 @@ export type PurchaseOrder = {
   name: string;
   qtNumber: string;
   ourRef: string;
-  description: string;
+  // description: string;
   date: string; // Date of the purchase order (ISO format: "YYYY-MM-DD")
   project: Project | null;
   subcontractor: Subcontractor | null;

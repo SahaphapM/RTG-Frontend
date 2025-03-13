@@ -372,27 +372,26 @@ const exportToPDF = async () => {
   // ✅ Dynamically import jsPDF
   const { default: jsPDF } = await import("jspdf");
 
-  var callAddFont = function (this: any) {
-    this.addFileToVFS(
-      "NotoSansThai-Regular-normal.ttf",
-      stateStore.notoThaiSanNormal
-    );
-    this.addFont("NotoSansThai-Regular-normal.ttf", "NotoSansThai", "normal");
-    this.addFileToVFS(
-      "NotoSansThai-Bold-normal.ttf",
-      stateStore.notoThaiSanBold
-    );
-    this.addFont("NotoSansThai-Bold-normal.ttf", "NotoSansThai", "bold");
-  };
-  jsPDF.API.events.push(["addFonts", callAddFont]);
-
-  // Add custom font (Noto Sans Thai)
+  // โหลดฟอนต์ให้แน่ใจว่าพร้อมใช้งานก่อนสร้าง PDF
+  const [saraban, sarabanBold] = await Promise.all([
+    stateStore.saraban,
+    stateStore.sarabanBold,
+  ]);
 
   const doc = new jsPDF({
     unit: "mm",
     format: "a4",
     orientation: "portrait",
   });
+
+  // เพิ่มฟอนต์ลงใน PDF
+  doc.addFileToVFS("Sarabun-Regular-normal.ttf", saraban);
+  doc.addFont("Sarabun-Regular-normal.ttf", "Sarabun", "normal");
+  doc.addFileToVFS("Sarabun-Bold-normal.ttf", sarabanBold);
+  doc.addFont("Sarabun-Bold-normal.ttf", "Sarabun", "bold");
+
+  // ตั้งค่าฟอนต์ที่ใช้
+  doc.setFont("Sarabun");
 
   const marginLeft = 14; // Left margin
   const marginRight = 14; // Right margin distance
@@ -420,7 +419,7 @@ const exportToPDF = async () => {
 
     yPos += 4; // Move Y down after logo
 
-    doc.setFont("NotoSansThai", "normal");
+    doc.setFont("Sarabun", "normal");
     console.log(doc.getFontList());
     doc.setFontSize(10);
     // set text alignment right
@@ -459,7 +458,7 @@ const exportToPDF = async () => {
     doc.setTextColor(0, 0, 0);
 
     // ✅ Date & Reference (Left-Aligned)
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     doc.setFontSize(11);
     doc.text(
       `Bangkok: ${new Date().toLocaleDateString("en-GB")}`,
@@ -476,13 +475,17 @@ const exportToPDF = async () => {
     // doc.text(splitDescription, marginLeft, (yPos += 8));
 
     // ✅ Customer Address (Right-Aligned)
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     doc.setFontSize(12);
-    doc.text(
+    // wrapped customer long name
+    let wrappedCustomerName = doc.splitTextToSize(
       `${projectStore.project?.customer?.name}`,
-      companyX - 20,
-      (yPos -= 6)
+      80
     );
+    doc.text(wrappedCustomerName, companyX - 20, (yPos -= 6));
+
+    // ✅ Increase Y position dynamically based on the number of lines
+    yPos += wrappedCustomerName.length * 3;
 
     const exampleAddress =
       `${projectStore.project?.customer?.address}` || "no address";
@@ -490,7 +493,7 @@ const exportToPDF = async () => {
     let wrappedAddress = doc.splitTextToSize(exampleAddress, 80);
 
     // ✅ Print wrapped address and adjust Y position
-    doc.setFont("NotoSansThai", "normal");
+    doc.setFont("Sarabun", "normal");
     doc.setFontSize(12);
     doc.text(wrappedAddress, companyX - 20, (yPos += 8));
 
@@ -498,7 +501,7 @@ const exportToPDF = async () => {
     yPos += wrappedAddress.length * 4 + 2; // Moves down depending on text lines
 
     // ✅ Attention Line
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     doc.setFontSize(12);
     doc.text(
       `Attn: ${projectStore.project?.customer?.agentName}`,
@@ -508,7 +511,7 @@ const exportToPDF = async () => {
 
     // ✅ Job Quotation Subject
     doc.setFontSize(12);
-    doc.setFont("NotoSansThai", "normal");
+    doc.setFont("Sarabun", "normal");
     doc.text(
       `Subject : ${projectStore.project?.name || ""}`,
       marginLeft,
@@ -526,7 +529,7 @@ const exportToPDF = async () => {
     yPos += splitMessage.length * 6 - 5; // แต่ละบรรทัดเพิ่ม yPos 6 หน่วย
 
     // ✅ Job Description (Auto-Wrap)
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     doc.setFontSize(12);
     doc.text(`${projectStore.project?.name || ""}`, marginLeft, (yPos += 8));
 
@@ -539,14 +542,14 @@ const exportToPDF = async () => {
     yPos += splitDescription.length * 6; // เพิ่ม yPos ตามจำนวนบรรทัดของ description
 
     // ✅ Price Offered (Right-Aligned)
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     let priceText = `${quotation.value.priceOffered?.toLocaleString()} Baht`;
     let pageWidth = doc.internal.pageSize.getWidth();
     doc.text(priceText, pageWidth - marginLeft, yPos, { align: "right" });
 
     // ✅ Commercial Conditions (Formatted as Text)
     yPos += 10;
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     doc.setFontSize(12);
     // ✅ Define Text & Position
     let textCommercial = "Commercial Condition";
@@ -583,9 +586,9 @@ const exportToPDF = async () => {
 
     yPos += 10;
     conditions.forEach(([label, value]) => {
-      doc.setFont("NotoSansThai", "bold");
+      doc.setFont("Sarabun", "bold");
       doc.text(`${label}:`, marginLeft, yPos);
-      doc.setFont("NotoSansThai", "normal");
+      doc.setFont("Sarabun", "normal");
       let wrappedValue = doc.splitTextToSize(value, maxWidth);
       doc.text(wrappedValue, marginLeft + 40, yPos);
       yPos += 4 + wrappedValue.length * 2; // Adjust spacing dynamically
@@ -596,7 +599,7 @@ const exportToPDF = async () => {
 
     checkPageBreak(12); // ✅ ตรวจสอบว่ามีที่ว่างพอไหมก่อนเพิ่มหัวข้อใหม่
 
-    doc.setFont("NotoSansThai", "normal");
+    doc.setFont("Sarabun", "normal");
     doc.setFontSize(12);
 
     // เว้นวรรค
@@ -618,7 +621,7 @@ const exportToPDF = async () => {
     doc.setFontSize(11);
     doc.text("Best regards.", marginLeft, yPos);
     doc.setFontSize(12);
-    doc.setFont("NotoSansThai", "bold");
+    doc.setFont("Sarabun", "bold");
     doc.text("Socrate Alexiadis", marginLeft, (yPos += 8));
     doc.text("CEO", marginLeft, (yPos += 5));
     // ✅ Define Text & Position

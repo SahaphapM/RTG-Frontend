@@ -205,7 +205,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
         body: invoice.invoiceDetails.map((detail, index) => [
           index + 1,
           doc.splitTextToSize(detail.description || "", 80),
-          detail.qty ? detail.qty : "",
+          detail.qty === 1 && detail.unitPrice === 0 ? "" : detail.qty,
           (detail.unitPrice || "").toLocaleString(),
           (detail.qty && (detail.unitPrice || 0)
             ? (detail.qty || 1) * (detail.unitPrice || 0)

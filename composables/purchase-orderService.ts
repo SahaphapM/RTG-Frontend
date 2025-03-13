@@ -383,7 +383,10 @@ export default function usePurchaseOrderService() {
         body: purchaseOrder.orderDetails.map((detail, index) => [
           index + 1,
           detail.description.toLocaleString(),
-          (detail.qty || "").toLocaleString(),
+          (detail.qty === 1 && detail.total === 0
+            ? ""
+            : detail.qty || 0
+          ).toLocaleString(),
           (detail.unitPrice || "").toLocaleString(),
           (
             detail.total || (detail.qty || 0) * (detail.unitPrice || 0)

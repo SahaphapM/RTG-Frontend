@@ -49,7 +49,7 @@
           v-model="form.taxId"
           type="text"
           placeholder="Tax ID"
-          length="13"
+          maxlength="13"
           class="input input-bordered w-full mb-2"
         />
 

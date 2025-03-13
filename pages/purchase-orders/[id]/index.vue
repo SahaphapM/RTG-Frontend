@@ -156,14 +156,14 @@
           />
         </div>
 
-        <div class="mb-4">
+        <!-- <div class="mb-4">
           <label class="block font-semibold">Description:</label>
           <textarea
             :disabled="!isEditing"
             v-model="purchaseOrder.description"
             class="textarea textarea-bordered w-full text-lg min-h-32"
           ></textarea>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -312,7 +312,6 @@ const router = useRouter();
 // **Default Purchase Order Object**
 const newPurchaseOrder = (): PurchaseOrder => ({
   number: "",
-  description: "",
   date: new Date().toISOString().split("T")[0],
   subcontractor: null,
   customer: null,
@@ -511,8 +510,8 @@ const goBack = () => {
 const exportPurchaseOrder = () => {
   exportPOToPDF(
     purchaseOrder.value,
-    stateStore.notoThaiSanNormal,
-    stateStore.notoThaiSanBold,
+    stateStore.saraban,
+    stateStore.sarabanBold,
     subTotal.value,
     vat.value
   );

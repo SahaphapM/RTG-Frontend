@@ -16,7 +16,7 @@
     <!-- Right Section: Profile Dropdown -->
 
     <div class="flex flex-col">
-      <button class="btn btn-ghost btn-circle avatar">
+      <button class="btn btn-ghost btn-circle avatar btn-md">
         <div class="w-10 rounded-full">
           <img src="../public/image/user-icon-thumb.png" alt="User Avatar" />
         </div>
