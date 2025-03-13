@@ -22,41 +22,35 @@
           type="email"
           placeholder="Email"
           class="input input-bordered w-full mb-2"
-          required
         />
         <input
           v-model="form.contact"
           type="text"
           placeholder="Contact"
           class="input input-bordered w-full mb-2"
-          required
         />
         <textarea
           v-model="form.address"
           placeholder="Address"
           class="textarea textarea-bordered textarea-md w-full text-[16px]"
-          required
         ></textarea>
         <input
           v-model="form.agentName"
           type="text"
           placeholder="Agent Name"
           class="input input-bordered w-full mb-2"
-          required
         />
         <input
           v-model="form.agentEmail"
           type="text"
           placeholder="Agent Email"
           class="input input-bordered w-full mb-2"
-          required
         />
         <input
           v-model="form.agentContact"
           type="text"
           placeholder="Agent Contact"
           class="input input-bordered w-full mb-2"
-          required
         />
         <!-- lg -->
         <div class="flex justify-end mt-4">
