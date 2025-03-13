@@ -24,6 +24,13 @@
           class="input input-bordered w-full mb-2"
         />
         <input
+          v-model="form.taxId"
+          type="text"
+          placeholder="Tax ID"
+          maxlength="13"
+          class="input input-bordered w-full mb-2"
+        />
+        <input
           v-model="form.contact"
           type="text"
           placeholder="Contact"
@@ -85,6 +92,7 @@ const form = ref<Customer>({
   agentName: "",
   agentContact: "",
   agentEmail: "",
+  taxId: "",
 });
 
 watch(
@@ -100,6 +108,7 @@ watch(
           agentName: "",
           agentContact: "",
           agentEmail: "",
+          taxId: "",
         };
   },
   { immediate: true }

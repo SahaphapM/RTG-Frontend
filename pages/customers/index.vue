@@ -63,6 +63,7 @@ onMounted(async () => {
 });
 
 const getCustomers = async () => {
+  customerStore.query.search = "";
   await customerStore.getCustomers();
 };
 

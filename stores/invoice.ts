@@ -1,4 +1,6 @@
+import useProjectService from "~/composables/projectService";
 import type { Invoice } from "~/types/invoice";
+import type { Project } from "~/types/project";
 
 export const useInvoiceStore = defineStore("invoice", () => {
   async function exportInvoicePDF(
@@ -7,11 +9,11 @@ export const useInvoiceStore = defineStore("invoice", () => {
     subtotal: number,
     vat: number,
     vatPercentage: number,
-    pathParts: string[],
-    fetchProject: Function
+    pathParts: string[]
   ) {
-    const project = await fetchProject(Number(pathParts[2]));
+    const projectService = useProjectService();
     const stateStore = useStateStore();
+    const project = await projectService.fetchProject(Number(pathParts[2]));
     const { default: jsPDF } = await import("jspdf");
     const autoTable = (await import("jspdf-autotable")).default;
     // โหลดฟอนต์ให้แน่ใจว่าพร้อมใช้งานก่อนสร้าง PDF
@@ -117,7 +119,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
             "Tax Invoice :",
             `No ${invoice.taxInvoice || ""}`,
             "Our Tax ID :",
-            invoice.ourTax || "",
+            "0105554041131",
           ],
         ],
         theme: "grid",
@@ -176,7 +178,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
 
       autoTable(doc, {
         startY: yPos,
-        body: [["Tax ID: ", invoice.cusTax || ""]],
+        body: [["Tax ID: ", project.customer?.taxId || ""]],
         theme: "grid",
         styles: {
           fontSize: 10,

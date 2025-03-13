@@ -4,8 +4,8 @@ export type Invoice = {
   id?: number | null;
   date: string;
   ourRef: string;
-  ourTax: string;
-  cusTax: string;
+  // ourTax: string;
+  // cusTax: string;
   paidDate: string | null;
   taxInvoice: string;
   invoiceTerms: string;

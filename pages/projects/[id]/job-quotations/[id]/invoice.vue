@@ -152,7 +152,7 @@
           class="input input-bordered w-full"
         />
       </div> -->
-      <div>
+      <!-- <div>
         <label class="block font-semibold">Our Tax ID:</label>
         <input
           :disabled="!isEditing"
@@ -161,8 +161,8 @@
           maxlength="13"
           class="input input-bordered w-full"
         />
-      </div>
-      <div>
+      </div> -->
+      <!-- <div>
         <label class="block font-semibold">Customer Tax ID:</label>
         <input
           :disabled="!isEditing"
@@ -171,7 +171,7 @@
           type="text"
           class="input input-bordered w-full"
         />
-      </div>
+      </div> -->
     </div>
 
     <!-- Invoice Table -->
@@ -359,8 +359,6 @@ const newInvoice = (): Invoice => ({
   date: new Date().toISOString().split("T")[0],
   ourRef: "",
   taxInvoice: "",
-  ourTax: "",
-  cusTax: "",
   paidDate: null,
   invoiceTerms: "",
   invoiceDetails: [],
@@ -579,8 +577,7 @@ function exportInvoicePDF(isOriginal: boolean) {
     Number(totalInvoiceAmount.value),
     Number(vatPrice.value),
     Number(jobQuotation.value?.vatPercentage),
-    pathParts,
-    fetchProject
+    pathParts
   );
 }
 
