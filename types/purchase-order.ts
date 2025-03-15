@@ -20,4 +20,7 @@ export type PurchaseOrder = {
   vat: number;
   file: string | null;
   shippedDate: string | null; // ส่งแล้ว กำลังส่ง
+  shipPlace: string | null;
+  startDate: string | null;
+  payment: string | null;
 };

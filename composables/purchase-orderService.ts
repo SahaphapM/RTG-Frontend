@@ -270,10 +270,10 @@ export default function usePurchaseOrderService() {
 
     // Add Noto Sans Thai font
     var callAddFont = function (this: any) {
-      this.addFileToVFS("NotoSansThai-Regular-normal.ttf", notoThaiSanNormal);
-      this.addFont("NotoSansThai-Regular-normal.ttf", "NotoSansThai", "normal");
-      this.addFileToVFS("NotoSansThai-Bold-normal.ttf", notoThaiSanBold);
-      this.addFont("NotoSansThai-Bold-normal.ttf", "NotoSansThai", "bold");
+      this.addFileToVFS("Sarabun-Regular-normal.ttf", notoThaiSanNormal);
+      this.addFont("Sarabun-Regular-normal.ttf", "Sarabun", "normal");
+      this.addFileToVFS("Sarabun-Bold-normal.ttf", notoThaiSanBold);
+      this.addFont("Sarabun-Bold-normal.ttf", "Sarabun", "bold");
     };
     jsPDF.API.events.push(["addFonts", callAddFont]);
 
@@ -299,7 +299,7 @@ export default function usePurchaseOrderService() {
       yPos += 30;
 
       // Center the header text
-      doc.setFont("NotoSansThai", "bold");
+      doc.setFont("Sarabun", "bold");
       doc.setFontSize(11);
 
       const text = "PURCHASE ORDER";
@@ -315,7 +315,7 @@ export default function usePurchaseOrderService() {
       yPos += 10;
 
       // Company Details (Left)
-      doc.setFont("NotoSansThai", "bold");
+      doc.setFont("Sarabun", "bold");
       doc.setFontSize(10);
       let lineHeight = 7;
       const leftX = marginLeft;
@@ -324,7 +324,7 @@ export default function usePurchaseOrderService() {
       // Left Column
       doc.text(`${purchaseOrder.subcontractor!.name || ""}`, leftX, currentY);
       currentY += lineHeight;
-      doc.setFont("NotoSansThai", "normal");
+      doc.setFont("Sarabun", "normal");
       doc.setFontSize(9);
       doc.text(
         `${purchaseOrder.subcontractor!.address || ""}`,
@@ -338,7 +338,7 @@ export default function usePurchaseOrderService() {
         currentY
       );
       currentY += lineHeight;
-      doc.setFont("NotoSansThai", "bold");
+      doc.setFont("Sarabun", "bold");
       doc.setFontSize(10);
       doc.text(
         `เลขประจําตัวผู้เสียภาษี ${purchaseOrder.subcontractor!.taxId || ""}`,
@@ -347,7 +347,7 @@ export default function usePurchaseOrderService() {
       );
 
       // Purchase Order Info (Right)
-      doc.setFont("NotoSansThai", "bold");
+      doc.setFont("Sarabun", "bold");
       const rightX = 193;
       currentY = yPos; // Reset currentY for the right column
 
@@ -383,14 +383,13 @@ export default function usePurchaseOrderService() {
         body: purchaseOrder.orderDetails.map((detail, index) => [
           index + 1,
           detail.description.toLocaleString(),
-          (detail.qty === 1 && detail.total === 0
+          (detail.qty || 0).toLocaleString(),
+          detail.qty === 1 && detail.unitPrice === 0
             ? ""
-            : detail.qty || 0
-          ).toLocaleString(),
-          (detail.unitPrice || "").toLocaleString(),
-          (
-            detail.total || (detail.qty || 0) * (detail.unitPrice || 0)
-          ).toLocaleString(),
+            : (detail.unitPrice || "").toLocaleString(),
+          detail.unitPrice === 0
+            ? ""
+            : ((detail.qty || 0) * (detail.unitPrice || 0)).toLocaleString(),
         ]),
         theme: "grid",
         styles: {
@@ -402,7 +401,7 @@ export default function usePurchaseOrderService() {
         headStyles: {
           fillColor: [204, 228, 243],
           textColor: [0, 0, 0],
-          font: "NotoSansThai",
+          font: "Sarabun",
           halign: "center",
         }, // Light blue header
         columnStyles: {
@@ -429,7 +428,7 @@ export default function usePurchaseOrderService() {
           cellPadding: 2,
           // red text color
           textColor: [255, 0, 0],
-          font: "NotoSansThai",
+          font: "Sarabun",
           fontStyle: "bold",
           lineColor: [0, 0, 0],
         },
@@ -447,7 +446,7 @@ export default function usePurchaseOrderService() {
       // คำนวณจำนวนแถวเปล่าที่เหลือจนกว่าจะเต็มหน้า
       const pageHeight = doc.internal.pageSize.getHeight();
 
-      const remainingHeight = pageHeight - yPos - 80; // เว้นระยะห่าง 20 หน่วยจากขอบล่าง
+      const remainingHeight = pageHeight - yPos - 90; // เว้นระยะห่าง 20 หน่วยจากขอบล่าง
       console.log("yPos", yPos);
       console.log("pageHeight", pageHeight);
       console.log(" remainingHeight", remainingHeight);
@@ -481,8 +480,35 @@ export default function usePurchaseOrderService() {
 
       yPos = (doc as any).lastAutoTable.finalY;
 
+      // Render the table
+      autoTable(doc, {
+        startY: yPos,
+        body: [
+          ["", `สถานที่ส่งสินค้า = ${purchaseOrder.shipPlace}`, "", ""],
+          ["", `เริ่มงาน = ${purchaseOrder.startDate}`, "", ""],
+          ["", `การชําระเงิน = ${purchaseOrder.payment}`, "", ""],
+        ],
+        theme: "grid",
+        styles: {
+          fontSize: 10,
+          textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
+          font: "Sarabun",
+        },
+        columnStyles: {
+          0: { cellWidth: 15 },
+          1: { cellWidth: 105, halign: "left" },
+          2: { cellWidth: 32, halign: "right" },
+          3: { cellWidth: 30, halign: "right" },
+        },
+      });
+
+      yPos = (doc as any).lastAutoTable.finalY;
+
       // Total, Discount, and VAT
-      let tableBody = [["", "Sub Total:", `${subTotal.toLocaleString()} Baht`]];
+      let tableBody = [];
+
+      tableBody.push(["", "Sub Total:", `${subTotal.toLocaleString()} Baht`]);
 
       if (purchaseOrder.discount && purchaseOrder.discount > 0) {
         tableBody.push([
@@ -503,7 +529,12 @@ export default function usePurchaseOrderService() {
         startY: yPos,
         body: tableBody,
         theme: "grid",
-        styles: { fontSize: 10, textColor: [0, 0, 0], lineColor: [0, 0, 0] },
+        styles: {
+          fontSize: 10,
+          textColor: [0, 0, 0],
+          lineColor: [0, 0, 0],
+          font: "Sarabun",
+        },
         columnStyles: {
           0: { cellWidth: 15 },
           1: { cellWidth: 105, halign: "right" },
@@ -527,7 +558,7 @@ export default function usePurchaseOrderService() {
         styles: {
           fontSize: 10,
           cellPadding: 4,
-          font: "NotoSansThai",
+          font: "Sarabun",
           textColor: [0, 0, 0],
           lineColor: [0, 0, 0],
         },
@@ -544,7 +575,7 @@ export default function usePurchaseOrderService() {
 
       yPos = (doc as any).lastAutoTable.finalY + 12;
       // ✅ Centered Address Example
-      doc.setFont("NotoSansThai", "normal");
+      doc.setFont("Sarabun", "normal");
       doc.setFontSize(9);
       doc.setTextColor(0, 102, 204); // Blue color
 

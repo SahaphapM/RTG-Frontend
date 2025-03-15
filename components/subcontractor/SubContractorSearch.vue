@@ -22,7 +22,7 @@
 
       <!-- "New Subcontractor" Button -->
       <button
-        class="btn btn-primary w-32"
+        class="btn btn-primary w-32 text-white"
         v-if="isEditing"
         @click="isSubcontractorModalOpen = true"
       >
@@ -86,10 +86,10 @@ const showDropdown = ref(false);
 const newSubcontractor: Subcontractor = {
   name: "",
   address: "",
-  type: "Contractor",
   email: "",
   contact: "",
   taxId: "",
+  description: "",
 };
 const selectedSubcontractor = ref<Subcontractor | null>(null);
 const isSubcontractorModalOpen = ref(false);

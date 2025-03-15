@@ -112,7 +112,7 @@
           />
         </div>
 
-        <div class="mb-4 flex gap-4 justify-between">
+        <div class="flex gap-4 justify-between">
           <div class="mb-4 w-[50%]">
             <label class="block font-semibold">Our Ref:</label>
             <input
@@ -128,6 +128,35 @@
               :disabled="!isEditing"
               v-model="formattedDate"
               type="date"
+              class="input input-bordered w-full"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block font-semibold">Ship Place:</label>
+          <input
+            :disabled="!isEditing"
+            v-model="purchaseOrder.shipPlace"
+            type="text"
+            class="input input-bordered w-full"
+          />
+        </div>
+        <div class="flex gap-4 justify-between">
+          <div class="mb-4 w-[50%]">
+            <label class="block font-semibold">Start Date:</label>
+            <input
+              :disabled="!isEditing"
+              v-model="purchaseOrder.startDate"
+              type="text"
+              class="input input-bordered w-full"
+            />
+          </div>
+          <div class="mb-4 w-[50%]">
+            <label class="block font-semibold">Payment:</label>
+            <input
+              :disabled="!isEditing"
+              v-model="purchaseOrder.payment"
+              type="text"
               class="input input-bordered w-full"
             />
           </div>
@@ -167,7 +196,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="mt-4">
       <!-- Order Details Table -->
       <PaymentTable
         v-if="isEditing || purchaseOrder.orderDetails.length > 0"
@@ -325,6 +354,9 @@ const newPurchaseOrder = (): PurchaseOrder => ({
   name: "",
   shippedDate: null,
   project: null,
+  shipPlace: null,
+  startDate: null,
+  payment: null,
 });
 
 // **State Variables**
