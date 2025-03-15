@@ -206,7 +206,6 @@ const toDeleteItem = (item: Item) => {
 };
 
 onMounted(async () => {
-  if (props.details.length === 0) addItem();
   availableItems.value = await fetchItems(); // Fetch available items from API
 });
 </script>

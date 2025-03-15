@@ -198,7 +198,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
         },
       });
 
-      yPos = (doc as any).lastAutoTable.finalY + 10;
+      yPos = (doc as any).lastAutoTable.finalY + 5;
 
       // Add your main table first
       autoTable(doc, {
@@ -207,7 +207,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
         body: invoice.invoiceDetails.map((detail, index) => [
           index + 1,
           doc.splitTextToSize(detail.description || "", 80),
-          detail.qty === 1 && detail.unitPrice === 0 ? "" : detail.qty,
+          detail.qty,
           (detail.unitPrice || "").toLocaleString(),
           (detail.qty && (detail.unitPrice || 0)
             ? (detail.qty || 1) * (detail.unitPrice || 0)
@@ -339,7 +339,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
       autoTable(doc, {
         startY: yPos,
         head: [["Payment Terms"]],
-        body: [[invoice.invoiceTerms || "ไม่มีค่า"]],
+        body: [[invoice.invoiceTerms]],
         theme: "grid",
         styles: {
           fontSize: 10,
